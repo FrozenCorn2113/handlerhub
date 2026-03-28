@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import authConfig from '@/lib/auth/auth.config'
+import authConfig from '@/lib/auth/auth.config.edge'
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,

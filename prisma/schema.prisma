@@ -13,8 +13,30 @@ datasource db {
 
 enum UserRole {
   ADMIN
-  EDITOR
-  USER
+  EXHIBITOR
+  HANDLER
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+enum HandlerLevel {
+  NEW
+  VERIFIED
+  PROFESSIONAL
+  ELITE
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  COMPLETED
+  CANCELLED
 }
 
 model Account {
@@ -66,7 +88,7 @@ model User {
   deletedAt DateTime?
   isBlocked Boolean   @default(false)
 
-  role UserRole @default(USER)
+  role UserRole @default(EXHIBITOR)
 
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -83,6 +105,18 @@ model User {
   stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
   stripePriceId          String?   @map(name: "stripe_price_id")
   stripeCurrentPeriodEnd DateTime? @map(name: "stripe_current_period_end")
+
+  // HandlerHub relationships
+  handlerProfile          HandlerProfile?
+  dogProfiles             DogProfile[]      @relation("DogProfiles")
+  bookingRequestsSent     BookingRequest[]  @relation("ExhibitorRequests")
+  bookingRequestsReceived BookingRequest[]  @relation("HandlerRequests")
+  reviewsGiven            Review[]          @relation("ExhibitorReviews")
+  reviewsReceived         Review[]          @relation("HandlerReviews")
+  conversations           Conversation[]    @relation("ConversationParticipants")
+  messagesSent            Message[]
+  serviceRequests         ServiceRequest[]
+  handlerResponses        RequestResponse[] @relation("HandlerResponses")
 
   @@map(name: "users")
 }
@@ -136,4 +170,295 @@ model TwoFactorConfirmation {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+// HandlerHub specific models
+model HandlerProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Basic info
+  fullName        String?
+  businessName    String?
+  bio             String?   @db.Text
+  yearsExperience Int?
+  experienceLevel ExperienceLevel @default(INTERMEDIATE)
+
+  // Contact & Location
+  contactEmail  String?
+  contactPhone  String?
+  website       String?
+  facebook      String?
+  instagram     String?
+  city          String?
+  state         String?
+  country       String    @default("USA")
+  regions       String[]  // Array of regions they serve (e.g., ["Pacific Northwest", "California", "Western US"])
+  travelWillingness String[] // ["Local", "Regional", "National", "International"]
+
+  // Specializations
+  breeds        String[]  // Array of breed names they specialize in
+  services      String[]  // Array of services (e.g., ["Conformation Handling", "Professional Handling", "Grooming", "Training"])
+
+  // Pricing & Availability
+  ratePerShow   Float?    // Rate per show in USD
+  ratePerDay    Float?    // Rate per day in USD
+  priceRange    String?   // e.g., "$$" or "$100-$200/show"
+  feeRangeMin   Float?    // Minimum fee
+  feeRangeMax   Float?    // Maximum fee
+  availability  String?   @db.Text // Free text for availability description
+  availabilityScheduleLink String? // Link to Calendly or other scheduling tool
+  isAvailable   Boolean   @default(true)
+  preferredContactMethod String? // "Email", "Phone", "Text", "Facebook Messenger"
+
+  // Portfolio & Proof
+  showHighlights String?  @db.Text // Westminster finalist, AKC Group Winner, etc.
+  pastClients    String?  @db.Text // Past clients or kennels worked with
+  handlerResume  String?  @db.Text // Detailed resume/bio
+
+  // Trust & Verification
+  isInsured         Boolean  @default(false)
+  isBonded          Boolean  @default(false)
+  referencesAvailable Boolean @default(false)
+  kennelClubMemberships String[] // ["AKC", "CKC", "UKC", etc.]
+
+  // Automated Handler Level System (Fiverr-style)
+  handlerLevel            HandlerLevel @default(NEW)
+  totalCompletedBookings  Int          @default(0)
+  averageRating           Float?       // Calculated from reviews
+  responseRate            Float?       // % of requests responded to within 24hrs
+  profileCompleteness     Float?       // % of profile fields filled (0-100)
+  lastLevelUpAt           DateTime?
+  levelUpEligibleAt       DateTime?
+
+  // Media
+  profileImage  String?
+  coverImage    String?
+  galleryImages String[]
+
+  // Stats
+  viewCount     Int       @default(0)
+  featured      Boolean   @default(false)
+
+  // Fee schedule & registries
+  feeSchedule Json?
+  registries  String[]
+
+  // Terms acceptance
+  agreedToTerms Boolean   @default(false)
+  termsAgreedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([city, state])
+  @@index([isAvailable])
+  @@map("handler_profiles")
+}
+
+model DogProfile {
+  id     String @id @default(cuid())
+  userId String
+
+  // Basic Information
+  name   String
+  breed  String
+  sex    String  // "Male", "Female"
+  age    Int     // Age in years
+
+  // Registration & Titles
+  registeredName String?  @db.Text // Official AKC/registered name
+  titles         String?  @db.Text // CH, GCH, GCHB, etc.
+  achievements   String?  @db.Text // Major wins, accomplishments
+
+  // Experience & Behavior
+  showExperience String   @default("FIRST_TIMER") // "FIRST_TIMER", "BEGINNER", "INTERMEDIATE", "VETERAN"
+  temperament    String?  @db.Text // Behavior notes for handlers
+  specialNeeds   String?  @db.Text // Medication, grooming quirks, allergies, etc.
+
+  // Preferences
+  preferredHandlerTraits String? @db.Text // e.g., "female only", "breed specialist"
+
+  // Schedule & Shows
+  upcomingShows  String?  @db.Text // Upcoming show schedule
+
+  // Media
+  photos         String[] // Array of photo URLs
+
+  // Metadata
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner          User     @relation("DogProfiles", fields: [userId], references: [id], onDelete: Cascade)
+  bookingRequests BookingRequest[]
+
+  @@index([userId])
+  @@index([breed])
+  @@map("dog_profiles")
+}
+
+model BookingRequest {
+  id String @id @default(cuid())
+
+  // Parties involved
+  exhibitorId String
+  handlerId   String
+  dogProfileId String? // Optional - links to a saved dog profile
+
+  // Show details
+  showName     String
+  showLocation String
+  showDate     DateTime
+
+  // Dog details (can be from profile or entered manually)
+  dogBreed     String
+  dogName      String?
+
+  // Request details
+  message      String    @db.Text
+  status       RequestStatus @default(PENDING)
+
+  // Handler response tracking
+  handlerNotes String?   @db.Text
+  handlerResponded Boolean @default(false)
+  respondedAt  DateTime?
+  completedAt  DateTime? // When booking was marked COMPLETED
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exhibitor    User          @relation("ExhibitorRequests", fields: [exhibitorId], references: [id], onDelete: Cascade)
+  handler      User          @relation("HandlerRequests", fields: [handlerId], references: [id], onDelete: Cascade)
+  dogProfile   DogProfile?   @relation(fields: [dogProfileId], references: [id], onDelete: SetNull)
+  review       Review?
+  conversation Conversation?
+
+  @@index([exhibitorId])
+  @@index([handlerId])
+  @@index([dogProfileId])
+  @@index([status])
+  @@index([showDate])
+  @@map("booking_requests")
+}
+
+model Review {
+  id String @id @default(cuid())
+
+  // Booking this review is for (one review per booking)
+  bookingRequestId String @unique
+
+  // Reviewer (exhibitor) and reviewee (handler)
+  exhibitorId String
+  handlerId   String
+
+  // Review content
+  rating  Int    // 1-5 stars
+  comment String @db.Text
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookingRequest BookingRequest @relation(fields: [bookingRequestId], references: [id], onDelete: Cascade)
+  exhibitor      User           @relation("ExhibitorReviews", fields: [exhibitorId], references: [id], onDelete: Cascade)
+  handler        User           @relation("HandlerReviews", fields: [handlerId], references: [id], onDelete: Cascade)
+
+  @@index([bookingRequestId])
+  @@index([exhibitorId])
+  @@index([handlerId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+model Conversation {
+  id String @id @default(cuid())
+
+  // Link to booking request this conversation is about (optional for direct messaging)
+  bookingRequestId String? @unique
+
+  // Participant IDs (exhibitor and handler)
+  participantIds String[] // Array of user IDs
+
+  // Metadata
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bookingRequest  BookingRequest?  @relation(fields: [bookingRequestId], references: [id], onDelete: Cascade)
+  participants    User[]           @relation("ConversationParticipants")
+  messages        Message[]
+  requestResponse RequestResponse?
+
+  @@index([bookingRequestId])
+  @@map("conversations")
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  conversationId String
+  senderId       String
+
+  content String @db.Text
+
+  // Read tracking
+  readAt DateTime?
+
+  // Timestamps
+  sentAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([sentAt])
+  @@map("messages")
+}
+
+model ServiceRequest {
+  id           String    @id @default(cuid())
+  title        String
+  description  String
+  breed        String?
+  akcGroup     String?
+  showName     String?
+  showDate     DateTime?
+  showLocation String?
+  serviceType  String    // HANDLING, GROOMING, TRANSPORT, OTHER
+  region       String?
+  status       String    @default("OPEN") // OPEN, FILLED, EXPIRED, FLAGGED
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  responses    RequestResponse[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([serviceType])
+  @@map("service_requests")
+}
+
+model RequestResponse {
+  id             String          @id @default(cuid())
+  requestId      String
+  request        ServiceRequest  @relation(fields: [requestId], references: [id])
+  handlerId      String
+  handler        User            @relation("HandlerResponses", fields: [handlerId], references: [id])
+  message        String
+  conversationId String?         @unique
+  conversation   Conversation?   @relation(fields: [conversationId], references: [id])
+  createdAt      DateTime        @default(now())
+
+  @@index([requestId])
+  @@index([handlerId])
+  @@index([conversationId])
+  @@map("request_responses")
 }

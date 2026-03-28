@@ -5,12 +5,17 @@
  */
 export const publicRoutes = [
   '/',
-  '/pre-sale',
-  '/blocks',
   '/blog',
-  '/docs',
-  '/guides',
   '/pricing',
+  '/handlers',
+  '/requests',
+  '/for-handlers',
+  '/onboarding',
+  '/contact',
+  '/help',
+  '/feedback',
+  '/legal',
+  '/learn',
 ]
 
 /**

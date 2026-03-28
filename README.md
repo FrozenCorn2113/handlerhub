@@ -1,122 +1,169 @@
-<a href="https://next-saas-template.vercel.app">
-  <img alt="SaaS Starter" src="public/og.jpg" />
-  <h1 align="center">Next SaaS Template Starter</h1>
-</a>
+# HandlerHub
 
-<p align="center">
-  Start at full speed with SaaS Starter !
-</p>
+**The Professional Dog Show Handler Marketplace**
 
-<p align="center">
-  <a href="https://twitter.com/johanguse">
-    <img src="https://img.shields.io/twitter/follow/SaasTemplate?style=flat&label=SaasTemplate&logo=twitter&color=0bf&logoColor=fff" alt="Next SaaS Template Twitter follower count" />
-  </a>
-</p>
+HandlerHub connects professional dog show handlers with exhibitors, making it easy to find, book, and manage handler services for dog shows across the country.
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#installation"><strong>Installation</strong></a> ·
-  <a href="#tech-stack--features"><strong>Tech Stack + Features</strong></a> ·
-  <a href="#author"><strong>Author</strong></a> ·
-  <a href="#credits"><strong>Credits</strong></a>
-</p>
-<br/>
+## About HandlerHub
 
-## Introduction
+HandlerHub is a specialized marketplace platform that helps:
 
-Empower your next project with the stack of Next.js 14, Prisma, PostgreSQL, Auth.js v5, Resend, React Email, Shadcn/ui, and Stripe.
-<br/>
-All seamlessly integrated with the SaaS Starter to accelerate your development and saas journey.
+- **Exhibitors** find and book qualified professional handlers for their dogs
+- **Handlers** showcase their expertise, manage bookings, and grow their business
+- **Show community** build trust through verified profiles and transparent pricing
 
-## Installation
-
-Clone & create this repo locally with the following command:
-
-```bash
-npx create-next-app my-saas-project --example "https://github.com/johanguse/next-saas-template"
-```
-
-1. Install dependencies using pnpm:
-
-```sh
-pnpm install
-```
-
-2. Copy `.env.example` to `.env.local` and update the variables.
-
-```sh
-cp .env.example .env.local
-```
-
-3. Start the development server:
-
-```sh
-pnpm dev
-```
-
-### Extra
-
-In case you need to change the database and seed again on localhost or at Vercel, use this command:
-
-```sh
-prisma generate && prisma db push --force-reset && pnpm prisma:seed && next build
-```
-
-Replace the at Vercel the default Build Command to this above
-
-> [!WARNING]  
-> You need update `.react-email` folder before use `pnpm run email`. Check the link [here](https://github.com/resend/react-email/issues/868#issuecomment-1828411325) if you have the error : `renderToReadableStream not found`
->
-> You can't use turbo mode to sent react-email. Check the issue [here](https://github.com/resend/resend-node/issues/258)
-> So if you are developer the emails use the command `pnpm run dev` if you are not you can use `pnpm run dev:turbo`
-
-## Roadmap
-
-Visit our [Public Roadmap](https://bit.ly/48LTNin) for more
-
-## Tech Stack + Features
+## Tech Stack
 
 ### Frameworks
 
-- [Next.js](https://nextjs.org/) – React framework for building performant apps with the best developer experience
-- [Auth.js](https://authjs.dev/) – Handle user authentication with ease with providers like Google, Twitter, GitHub, etc.
-- [Prisma](https://www.prisma.io/) – Typescript-first ORM for Node.js
-- [React Email](https://react.email/) – Versatile email framework for efficient and flexible email development
+- [Next.js 14](https://nextjs.org/) - React framework with App Router
+- [Auth.js v5](https://authjs.dev/) - Authentication with multiple providers
+- [Prisma](https://www.prisma.io/) - Type-safe database ORM
+- [React Email](https://react.email/) - Email template framework
 
-### Platforms
+### Database & Platforms
 
-- [Vercel](https://vercel.com/) – Easily preview & deploy changes with git
-- [PostgreSQL](https://www.postgresql.org/) – Open source object-relational database system with over 35 years of active development
-- [Resend](https://resend.com/) – A powerful email framework for streamlined email development
+- [PostgreSQL](https://www.postgresql.org/) via [Supabase](https://supabase.com/)
+- [Vercel](https://vercel.com/) - Deployment and hosting
+- [Resend](https://resend.com/) - Transactional emails
 
-### UI
+### UI & Styling
 
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework for rapid UI development
-- [Shadcn/ui](https://ui.shadcn.com/) – Re-usable components built using Radix UI and Tailwind CSS
-- [Framer Motion](https://framer.com/motion) – Motion library for React to animate components with ease
-- [Lucide](https://lucide.dev/) – Beautifully simple, pixel-perfect icons
-- [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) – Optimize custom fonts and remove external network requests for improved performance
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+- [Shadcn/ui](https://ui.shadcn.com/) - Accessible component library
+- [Framer Motion](https://framer.com/motion) - Animation library
+- [Lucide](https://lucide.dev/) - Icon library
 
-### Hooks and Utilities
+## Getting Started
 
-- `useIntersectionObserver` – React hook to observe when an element enters or leaves the viewport
-- `useLocalStorage` – Persist data in the browser's local storage
-- `useScroll` – React hook to observe scroll position ([example](https://github.com/johanguse/precedent/blob/main/components/layout/navbar.tsx#L12))
-- `nFormatter` – Format numbers with suffixes like `1.2k` or `1.2M`
-- `capitalize` – Capitalize the first letter of a string
-- `truncate` – Truncate a string to a specified length
-- [`use-debounce`](https://www.npmjs.com/package/use-debounce) – Debounce a function call / state update
+### Prerequisites
 
-### Code Quality
+- Node.js 20.10.0 or higher
+- npm, pnpm, or bun package manager
+- Supabase account (free tier works)
+- Google OAuth credentials
+- Resend account for emails
 
-- [TypeScript](https://www.typescriptlang.org/) – Static type checker for end-to-end typesafety
-- [Prettier](https://prettier.io/) – Opinionated code formatter for consistent code style
-- [ESLint](https://eslint.org/) – Pluggable linter for Next.js and TypeScript
+### Installation
 
-### Miscellaneous
+1. Clone the repository:
 
-- [Vercel Analytics](https://vercel.com/analytics) – Track unique visitors, pageviews, and more in a privacy-friendly way
+```bash
+git clone <your-repo-url>
+cd HandlerHub
+```
 
-## Author
+2. Install dependencies:
 
-Created by [@johanguse](https://twitter.com/johanguse) in 2023
+```bash
+npm install
+# or
+pnpm install
+# or
+bun install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your credentials:
+
+- Supabase database URLs
+- Google OAuth credentials
+- Resend API key
+- NextAuth secret
+
+See `HANDLERHUB_SETUP.md` for detailed setup instructions.
+
+4. Initialize the database:
+
+```bash
+npx prisma generate
+npx prisma db push
+npm run prisma:seed
+```
+
+5. Start the development server:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` to see the app!
+
+## Key Features
+
+- **User Roles**: Admin, Handler, and Exhibitor accounts
+- **Handler Profiles**: Showcase experience, specialties, breeds, and pricing
+- **Search & Discovery**: Find handlers by location, breeds, and services
+- **Booking System**: Request and manage handler bookings
+- **Secure Authentication**: Google OAuth and email/password login
+- **Responsive Design**: Works on desktop, tablet, and mobile
+
+## Project Structure
+
+```
+/src
+  /app                 # Next.js App Router pages
+    /(auth)           # Authentication pages
+    /(dashboard)      # User dashboard
+    /(dashboard-admin)# Admin dashboard
+    /(marketing)      # Public marketing pages
+    /api             # API routes
+  /components         # React components
+    /ui              # Shadcn UI components
+  /lib               # Utilities and helpers
+/prisma
+  schema.prisma      # Database schema
+  seed.ts           # Seed data script
+/public              # Static assets
+```
+
+## Development Commands
+
+```bash
+# Start dev server
+npm run dev
+
+# Start dev server (turbo mode)
+npm run dev:turbo
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+
+# Run linter
+npm run lint
+
+# Format code
+npm run format:fix
+
+# View database
+npx prisma studio
+
+# Reset and re-seed database
+npx prisma db push --force-reset && npm run prisma:seed
+```
+
+## Test Accounts
+
+After running the seed script, you can log in with:
+
+| Role      | Email                     | Password    |
+| --------- | ------------------------- | ----------- |
+| Admin     | admin@handlerhub.com      | password123 |
+| Handler   | handler1@handlerhub.com   | password123 |
+| Exhibitor | exhibitor1@handlerhub.com | password123 |
+
+## Contributing
+
+This is a private project. Please contact the team for contribution guidelines.
+
+## License
+
+Copyright (c) 2024 HandlerHub. All rights reserved.

@@ -15,6 +15,8 @@ import Resend from 'next-auth/providers/resend'
 
 var bcryptjs = require('bcryptjs')
 
+const resendFromEmail = env.RESEND_FROM_EMAIL ?? siteConfig.mailSupport
+
 export default {
   providers: [
     Google({
@@ -71,7 +73,7 @@ export default {
       id: 'resend',
       name: 'Resend',
       apiKey: env.RESEND_API_KEY,
-      from: env.RESEND_FROM_EMAIL,
+      from: resendFromEmail,
       async sendVerificationRequest({
         identifier,
         url,
@@ -81,7 +83,7 @@ export default {
       }) {
         try {
           await resend.emails.send({
-            from: env.RESEND_FROM_EMAIL,
+            from: resendFromEmail,
             to: [identifier],
             subject: `${siteConfig.name} magic link sign in`,
             react: MagicLinkEmail({ identifier, url }),

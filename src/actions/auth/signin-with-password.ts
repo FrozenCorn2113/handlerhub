@@ -1,5 +1,6 @@
 'use server'
 
+import { signIn } from '@/lib/auth/auth'
 import {
   SignInWithPasswordFormInput,
   signInWithPasswordSchema,
@@ -7,7 +8,6 @@ import {
 
 import { getUserByEmail } from '@/actions/user'
 import { AuthError } from 'next-auth'
-import { signIn } from 'next-auth/react'
 
 export async function signInWithPassword(
   rawInput: SignInWithPasswordFormInput

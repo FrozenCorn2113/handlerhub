@@ -4,6 +4,7 @@ import * as React from 'react'
 
 import { useSearchParams } from 'next/navigation'
 
+import { DEFAULT_LOGIN_REDIRECT } from '@/lib/auth/routes'
 import {
   type SignInWithEmailFormInput,
   signInWithEmailSchema,
@@ -29,6 +30,10 @@ import { toast } from 'sonner'
 
 export function SignInWithEmailForm(): JSX.Element {
   const searchParams = useSearchParams()
+  const callbackUrl =
+    searchParams.get('next') ||
+    searchParams.get('from') ||
+    DEFAULT_LOGIN_REDIRECT
 
   const [isPending, startTransition] = React.useTransition()
 
@@ -45,6 +50,7 @@ export function SignInWithEmailForm(): JSX.Element {
       try {
         await signIn('resend', {
           email: formData.email,
+          callbackUrl,
         })
       } catch (error) {
         console.error(error)

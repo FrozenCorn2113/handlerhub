@@ -1,3 +1,6 @@
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -31,7 +34,7 @@ const UserTableRow = ({ user }) => {
       <td className="p-3">
         <p className="font-medium">{user.name}</p>
       </td>
-      <td className="hidden p-3 text-gray-800 dark:text-gray-200 md:table-cell">
+      <td className="hidden p-3 text-gray-800 md:table-cell dark:text-gray-200">
         {user.email}
       </td>
       <td className="p-3 text-center">
@@ -67,12 +70,19 @@ export const metadata = {
   description: 'Manage your users.',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function UsersPage() {
-  const usersData = await prisma.user.findMany({
-    take: 12,
-    where: {},
-    orderBy: [{ createdAt: 'desc' }],
-  })
+  let usersData: any[] = []
+  try {
+    usersData = await prisma.user.findMany({
+      take: 12,
+      where: {},
+      orderBy: [{ createdAt: 'desc' }],
+    })
+  } catch {
+    usersData = []
+  }
   return (
     <ContentLayout title="Users">
       <Breadcrumb className="mb-6">

@@ -1,13 +1,19 @@
-import { headers } from "next/headers"
-import Stripe from "stripe"
+import { headers } from 'next/headers'
 
-import { prisma } from "@/lib/db"
-import { stripe } from "@/lib/stripe"
-import { env } from "@/root/env.mjs"
+import { prisma } from '@/lib/db'
+import { stripe } from '@/lib/stripe'
+
+import { env } from '@/root/env.mjs'
+import Stripe from 'stripe'
 
 export async function POST(req: Request) {
+  // Return early if Stripe is not configured
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    return new Response('Stripe not configured', { status: 501 })
+  }
+
   const body = await req.text()
-  const signature = headers().get("Stripe-Signature") as string
+  const signature = headers().get('Stripe-Signature') as string
 
   let event: Stripe.Event
 
@@ -23,7 +29,7 @@ export async function POST(req: Request) {
 
   const session = event.data.object as Stripe.Checkout.Session
 
-  if (event.type === "checkout.session.completed") {
+  if (event.type === 'checkout.session.completed') {
     // Retrieve the subscription details from Stripe.
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string
@@ -47,7 +53,7 @@ export async function POST(req: Request) {
     })
   }
 
-  if (event.type === "invoice.payment_succeeded") {
+  if (event.type === 'invoice.payment_succeeded') {
     // Retrieve the subscription details from Stripe.
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string

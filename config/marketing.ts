@@ -3,28 +3,16 @@ import { MarketingConfig } from 'types'
 export const marketingConfig: MarketingConfig = {
   mainNav: [
     {
-      title: 'Home',
-      href: '/',
+      title: 'Browse',
+      href: '/handlers',
     },
     {
-      title: 'Pre Sale',
-      href: '/pre-sale',
+      title: 'How it Works',
+      href: '/#how-it-works',
     },
     {
-      title: 'Blocks',
-      href: '/blocks',
-    },
-    {
-      title: 'Pricing',
-      href: '/pricing',
-    },
-    {
-      title: 'Blog',
-      href: '/blog',
-    },
-    {
-      title: 'Documentation',
-      href: '/docs',
+      title: 'For Handlers',
+      href: '/for-handlers',
     },
     {
       title: 'Contact',
@@ -33,47 +21,16 @@ export const marketingConfig: MarketingConfig = {
   ],
   multiLevelNav: [
     {
-      title: 'Home',
-      href: '/',
+      title: 'Browse',
+      href: '/handlers',
     },
     {
-      title: 'Pre Sale',
-      href: '/pre-sale',
+      title: 'How it Works',
+      href: '/#how-it-works',
     },
     {
-      title: 'Blocks',
-      href: '/blocks',
-    },
-    {
-      title: 'Pricing',
-      href: '/pricing',
-    },
-    {
-      title: 'Blog',
-      href: '/blog',
-    },
-    {
-      title: 'Documentation',
-      href: '/docs',
-      subMenu: [
-        {
-          title: 'Introduction',
-          href: '/docs',
-        },
-        {
-          title: 'Contentlayer',
-          href: '/docs/in-progress',
-          disabled: true,
-        },
-        {
-          title: 'Components',
-          href: '/docs/documentation/components',
-        },
-        {
-          title: 'Code Blocks',
-          href: '/docs/documentation/code-blocks',
-        },
-      ],
+      title: 'For Handlers',
+      href: '/for-handlers',
     },
     {
       title: 'Contact',

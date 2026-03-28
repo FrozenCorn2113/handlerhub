@@ -20,6 +20,7 @@ import {
 
 import { OAuthButtons } from '@/components/auth/oauth-buttons'
 import { SignInWithEmailForm } from '@/components/auth/signin-with-email-form'
+import { SignInWithPasswordForm } from '@/components/auth/signin-with-password-form'
 import { BlockTitle } from '@/components/layout/main-title'
 import { Icons } from '@/components/shared/icons'
 import IconLogo from '@/components/shared/logo-icon'
@@ -30,9 +31,28 @@ export const metadata: Metadata = {
   description: 'Sign in to your account',
 }
 
-export default async function SignInPage(): Promise<JSX.Element> {
+interface SignInPageProps {
+  searchParams?: {
+    next?: string
+    from?: string
+  }
+}
+
+function safeNext(nextValue: unknown): string | null {
+  if (typeof nextValue !== 'string') return null
+  if (!nextValue.startsWith('/')) return null
+  return nextValue
+}
+
+export default async function SignInPage({
+  searchParams,
+}: SignInPageProps): Promise<JSX.Element> {
   const session = await auth()
-  if (session) redirect(DEFAULT_LOGIN_REDIRECT)
+  const nextUrl =
+    safeNext(searchParams?.next) ??
+    safeNext(searchParams?.from) ??
+    DEFAULT_LOGIN_REDIRECT
+  if (session) redirect(nextUrl)
 
   return (
     <div className="size-screen container flex flex-col items-center justify-center">
@@ -50,11 +70,11 @@ export default async function SignInPage(): Promise<JSX.Element> {
       </Link>
       <div className="mx-auto mb-8 flex flex-col items-center">
         <IconLogo className="mb-2 size-16" />
-        <span className="mb-2 hidden font-urban text-xl font-bold text-black dark:text-white sm:inline-block">
+        <span className="mb-2 hidden font-urban text-xl font-bold text-black sm:inline-block dark:text-white">
           {siteConfig.name}
         </span>
       </div>
-      <Card className="max-sm:flex  max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
+      <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <CardTitle>
@@ -73,15 +93,13 @@ export default async function SignInPage(): Promise<JSX.Element> {
           </CardDescription>
         </CardHeader>
         <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
-          <OAuthButtons />
+          <SignInWithPasswordForm />
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
             <div className="relative mb-3 mt-6 flex justify-center text-xs uppercase">
-              <span className="bg-background px-2">
-                Or continue with magic link
-              </span>
+              <span className="bg-background px-2">Or use magic link</span>
             </div>
           </div>
           <SignInWithEmailForm />
@@ -92,7 +110,7 @@ export default async function SignInPage(): Promise<JSX.Element> {
             <span>Don&apos;t have an account? </span>
             <Link
               aria-label="Sign up"
-              href="/register"
+              href={`/register?next=${encodeURIComponent(nextUrl)}`}
               className="font-bold tracking-wide text-primary underline-offset-4 transition-colors hover:underline"
             >
               Sign up

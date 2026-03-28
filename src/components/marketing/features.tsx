@@ -11,12 +11,12 @@ export default function Features({ className }: { className?: string }) {
             <BlockTitle.Header elementType="h2">Features</BlockTitle.Header>
 
             <BlockTitle.Title elementType="h3">
-              Discover Our Unique Features and titles
+              Everything You Need to Find the Perfect Handler
             </BlockTitle.Title>
 
             <BlockTitle.Description>
-              Our features are designed to enhance your productivity and
-              streamline your workflow.
+              HandlerHub makes it easy to connect with professional handlers and
+              manage your dog show services.
             </BlockTitle.Description>
 
             <BlockTitle.Background />
@@ -27,62 +27,64 @@ export default function Features({ className }: { className?: string }) {
             <div className="grid-row grid animate-fade-up gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 lg:gap-16">
               <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
                 <div className="rounded-full p-2">
-                  <InboxIcon className="mb-2 size-6" />
+                  <SearchIcon className="mb-2 size-6" />
                 </div>
-                <h2 className="text-xl font-bold">Smart Inbox</h2>
-                <p>
-                  Our Smart Inbox feature helps you manage your emails
-                  efficiently by prioritizing important emails.
+                <h2 className="text-xl font-bold">Find Handlers</h2>
+                <p className="text-center text-muted-foreground">
+                  Browse verified professional handlers by location, breed
+                  specialties, experience level, and pricing.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
                 <div className="rounded-full p-2">
-                  <MergeIcon className="mb-2 size-6" />
+                  <InboxIcon className="mb-2 size-6" />
                 </div>
-                <h2 className="text-xl font-bold">Seamless Integration</h2>
-                <p>
-                  Seamless Integration allows you to connect with your favorite
-                  apps and services without leaving your inbox.
+                <h2 className="text-xl font-bold">Easy Booking</h2>
+                <p className="text-center text-muted-foreground">
+                  Send booking requests directly to handlers with show details,
+                  dates, and your specific requirements.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
                 <div className="rounded-full p-2">
                   <SettingsIcon className="mb-2 size-6" />
                 </div>
-                <h2 className="text-xl font-bold">Advanced Customization</h2>
-                <p>
-                  With Advanced Customization, you can personalize your email
-                  client to suit your preferences and work style.
+                <h2 className="text-xl font-bold">Handler Profiles</h2>
+                <p className="text-center text-muted-foreground">
+                  View detailed profiles with experience, breeds handled, show
+                  wins, and client reviews.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
                 <div className="rounded-full p-2">
-                  <SearchIcon className="mb-2 size-6" />
+                  <MergeIcon className="mb-2 size-6" />
                 </div>
-                <h2 className="text-xl font-bold">Powerful Search</h2>
-                <p>
-                  Our Powerful Search feature allows you to find any email,
-                  contact, or file in seconds.
+                <h2 className="text-xl font-bold">Manage Requests</h2>
+                <p className="text-center text-muted-foreground">
+                  Track all your booking requests and communications in one
+                  convenient dashboard.
                 </p>
               </div>
               <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
                 <div className="rounded-full p-2">
                   <LockIcon className="mb-2 size-6 opacity-75" />
                 </div>
-                <h2 className="text-xl font-bold">Reliable Security</h2>
-                <p>
-                  With Reliable Security, your data is always safe and
-                  protected.
+                <h2 className="text-xl font-bold">Secure Platform</h2>
+                <p className="text-center text-muted-foreground">
+                  Your information is protected with industry-standard security
+                  and privacy measures.
                 </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border-gray-800 p-4">
-                <div className="rounded-full p-2">
-                  <MergeIcon className="mb-2 size-6 opacity-75" />
+              <div className="flex flex-col items-center space-y-2 rounded-lg border-2 border-primary/20 bg-primary/5 p-4">
+                <div className="rounded-full bg-primary/10 p-2">
+                  <MergeIcon className="mb-2 size-6 text-primary" />
                 </div>
-                <h2 className="text-xl font-bold">Easy Collaboration</h2>
-                <p>
-                  Easy Collaboration allows you to share and edit documents with
-                  your team in real time.
+                <h2 className="text-xl font-bold text-primary">
+                  Founding Handler Program
+                </h2>
+                <p className="text-center text-muted-foreground">
+                  Join 100% free. No subscription fees, no commission. Build
+                  your profile, receive bookings, and grow your business.
                 </p>
               </div>
             </div>

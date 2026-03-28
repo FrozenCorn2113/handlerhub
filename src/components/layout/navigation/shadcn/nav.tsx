@@ -46,7 +46,7 @@ export function DashboardNav({ items }: DashboardNavProps) {
           )
         )
       })}
-      {(userRole === 'ADMIN' || userRole === 'EDITOR') && (
+      {userRole === 'ADMIN' && (
         <Button variant="tertiary" href="/dashboard-admin" className="mt-10">
           Go to admin dashboard
         </Button>

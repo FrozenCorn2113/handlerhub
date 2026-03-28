@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 import {
   type SignUpWithPasswordFormInput,
@@ -30,7 +31,11 @@ import { toast } from 'sonner'
 
 export function SignUpWithPasswordForm(): JSX.Element {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
+
+  const nextUrl =
+    searchParams.get('next') || searchParams.get('from') || '/dashboard'
 
   const form = useForm<SignUpWithPasswordFormInput>({
     resolver: zodResolver(signUpWithPasswordSchema),
@@ -61,7 +66,7 @@ export function SignUpWithPasswordForm(): JSX.Element {
             toast.success(
               'Success!<br/ >Check your inbox to verify your email address'
             )
-            router.push('/signin')
+            router.push(`/login?next=${encodeURIComponent(nextUrl)}`)
             break
           default:
             toast.error('Something went wrong<br/>Please try again')

@@ -41,8 +41,13 @@ export async function resetPassword(
       },
     })
 
+    const fromEmail = env.RESEND_FROM_EMAIL
+    if (!fromEmail) {
+      throw new Error('RESEND_FROM_EMAIL is not set')
+    }
+
     const emailSent = await resend.emails.send({
-      from: env.RESEND_FROM_EMAIL,
+      from: fromEmail,
       to: [validatedInput.data.email],
       subject: `${siteConfig.name} - Reset your password`,
       react: ResetPasswordEmail({

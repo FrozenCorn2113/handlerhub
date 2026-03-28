@@ -3,8 +3,8 @@ import { DashboardConfig } from 'types'
 export const dashboardConfig: DashboardConfig = {
   mainNav: [
     {
-      title: 'Documentation',
-      href: '/docs',
+      title: 'Browse Handlers',
+      href: '/handlers',
     },
     {
       title: 'Contact',
@@ -13,24 +13,19 @@ export const dashboardConfig: DashboardConfig = {
   ],
   sidebarNav: [
     {
-      title: 'Panel',
+      title: 'Dashboard',
       href: '/dashboard',
       icon: 'post',
     },
     {
-      title: 'Analitycs',
-      href: '/dashboard/analitycs',
-      icon: 'barChart',
+      title: 'Bookings',
+      href: '/dashboard/bookings',
+      icon: 'page',
     },
     {
-      title: 'Users',
-      href: '/dashboard/users',
+      title: 'My Profile',
+      href: '/dashboard/profile',
       icon: 'user',
-    },
-    {
-      title: 'Billing',
-      href: '/dashboard/billing',
-      icon: 'billing',
     },
     {
       title: 'Settings',

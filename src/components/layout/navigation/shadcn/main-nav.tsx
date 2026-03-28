@@ -49,11 +49,11 @@ export function MainNav({ items, children }: MainNavProps) {
     (href !== '/' && currentPathname.startsWith(href))
 
   return (
-    <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="items-center space-x-2 md:flex">
+    <div className="flex items-center gap-8 md:gap-10">
+      <Link href="/" className="flex items-center gap-2">
         <IconLogo />
-        <span className="hidden font-urban text-xl font-bold xl:inline-block">
-          {siteConfig.name}
+        <span className="hidden text-lg font-semibold tracking-tight text-slate-900 sm:inline-block">
+          Handler<span className="text-primary">Hub</span>
         </span>
       </Link>
       {items?.length ? (
@@ -63,10 +63,8 @@ export function MainNav({ items, children }: MainNavProps) {
               key={index}
               href={item.disabled ? '#' : item.href}
               className={cn(
-                'flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm',
-                isActiveLink(item.href)
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
+                'flex items-center text-sm font-medium transition-colors hover:text-slate-900',
+                isActiveLink(item.href) ? 'text-slate-900' : 'text-slate-600',
                 item.disabled && 'cursor-not-allowed opacity-80'
               )}
               onClick={closeMobileMenu}

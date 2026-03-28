@@ -18,8 +18,13 @@ export async function sendEmail(data: ContactFormInputs) {
   if (result.success) {
     const { name, email, message } = result.data
     try {
+      const fromEmail = env.RESEND_FROM_EMAIL
+      if (!fromEmail) {
+        throw new Error('RESEND_FROM_EMAIL is not set')
+      }
+
       const data = await resend.emails.send({
-        from: env.RESEND_FROM_EMAIL,
+        from: fromEmail,
         to: [siteConfig.mailSupport],
         reply_to: email,
         subject: `${siteConfig.name} - New Contact Form Message`,

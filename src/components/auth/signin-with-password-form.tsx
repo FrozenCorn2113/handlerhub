@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 import { DEFAULT_LOGIN_REDIRECT } from '@/lib/auth/routes'
 import {
@@ -31,7 +32,13 @@ import { toast } from 'sonner'
 
 export function SignInWithPasswordForm(): JSX.Element {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = React.useTransition()
+
+  const nextUrl =
+    searchParams.get('next') ||
+    searchParams.get('from') ||
+    DEFAULT_LOGIN_REDIRECT
 
   const form = useForm<SignInWithPasswordFormInput>({
     resolver: zodResolver(signInWithPasswordSchema),
@@ -70,7 +77,7 @@ export function SignInWithPasswordForm(): JSX.Element {
             break
           case 'success':
             toast.success('You are now signed in')
-            router.push(DEFAULT_LOGIN_REDIRECT)
+            router.push(nextUrl)
             break
           default:
             toast.error('Please try again')

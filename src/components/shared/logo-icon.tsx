@@ -9,7 +9,7 @@ interface IconLogoProps {
 export default function IconLogo({ className }: IconLogoProps) {
   return (
     <Image
-      src="/next_saas_logo.png"
+      src="/handler-hub-logo.png"
       width={40}
       height={40}
       className={className}

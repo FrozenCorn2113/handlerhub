@@ -1,0 +1,5 @@
+{
+  "name": "HandlerHub",
+  "description": "A professional marketplace for dog show excellence, connecting elite handlers with owners who demand the best.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}

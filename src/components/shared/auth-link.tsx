@@ -6,7 +6,13 @@ import { buttonVariants } from '../ui/button'
 
 interface AuthLinksProps {
   href: string
-  variant?: 'default' | 'outline'
+  variant?:
+    | 'default'
+    | 'outline'
+    | 'ghost'
+    | 'link'
+    | 'secondary'
+    | 'destructive'
   className?: string
   text: string
 }

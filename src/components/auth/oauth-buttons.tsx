@@ -28,7 +28,9 @@ interface LoadingState {
 }
 
 export function OAuthButtons(): JSX.Element {
-  const callbackUrl = useSearchParam('from')
+  const nextUrl = useSearchParam('next')
+  const fromUrl = useSearchParam('from')
+  const callbackUrl = nextUrl || fromUrl
   const initialLoadingValues = {
     google: false,
     github: false,

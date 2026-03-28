@@ -45,7 +45,7 @@ export function Sidebar() {
                   : 'translate-x-0 opacity-100'
               )}
             >
-              <span className="hidden font-urban text-base font-bold text-black dark:text-white sm:inline-block">
+              <span className="hidden font-urban text-base font-bold text-black sm:inline-block dark:text-white">
                 {siteConfig.name}
               </span>
             </h3>

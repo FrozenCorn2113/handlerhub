@@ -39,4 +39,5 @@ next-env.d.ts
 # email
 /.react-email/
 
-.contentlayer
+.contentlayer.env.local
+.contentlayer/

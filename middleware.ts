@@ -1,14 +1,46 @@
 import { NextRequest } from 'next/server'
 
-import authConfig from '@/lib/auth/auth.config.edge'
-import {
-  DEFAULT_LOGIN_REDIRECT,
-  apiAuthPrefix,
-  authRoutes,
-  publicRoutes,
-} from '@/lib/auth/routes'
-
 import NextAuth, { Session } from 'next-auth'
+import GitHubProvider from 'next-auth/providers/github'
+import Google from 'next-auth/providers/google'
+
+// All config inlined here -- @/ path alias imports break Vercel Edge bundling
+const authConfig = {
+  providers: [
+    Google({
+      id: 'google',
+      name: 'Google',
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    GitHubProvider({
+      id: 'github',
+      name: 'GitHub',
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+  ],
+}
+
+const publicRoutes = [
+  '/',
+  '/blog',
+  '/pricing',
+  '/handlers',
+  '/requests',
+  '/for-handlers',
+  '/onboarding',
+  '/contact',
+  '/help',
+  '/feedback',
+  '/legal',
+  '/learn',
+]
+const authRoutes = ['/login', '/register', '/auth-error']
+const apiAuthPrefix = '/api/auth'
+const DEFAULT_LOGIN_REDIRECT = '/dashboard'
 
 const { auth: middleware } = NextAuth(authConfig)
 

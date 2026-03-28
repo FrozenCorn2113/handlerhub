@@ -1,28 +1,8 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-import NextAuth, { Session } from 'next-auth'
-import GitHubProvider from 'next-auth/providers/github'
-import Google from 'next-auth/providers/google'
-
-// All config inlined here -- @/ path alias imports break Vercel Edge bundling
-const authConfig = {
-  providers: [
-    Google({
-      id: 'google',
-      name: 'Google',
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-    GitHubProvider({
-      id: 'github',
-      name: 'GitHub',
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-  ],
-}
+// Lightweight middleware -- no NextAuth import (causes __dirname Edge error).
+// Session check uses cookie presence only. Actual auth validation happens
+// server-side in route handlers / page components via auth().
 
 const publicRoutes = [
   '/',
@@ -37,56 +17,56 @@ const publicRoutes = [
   '/feedback',
   '/legal',
   '/learn',
+  '/role-select',
 ]
 const authRoutes = ['/login', '/register', '/auth-error']
 const apiAuthPrefix = '/api/auth'
 const DEFAULT_LOGIN_REDIRECT = '/dashboard'
 
-const { auth: middleware } = NextAuth(authConfig)
+export default function middleware(req: NextRequest) {
+  const { nextUrl } = req
 
-export default middleware(
-  (req: NextRequest & { auth: Session | null }): Response | void => {
-    const { nextUrl } = req
-    const isLoggedIn = !!req.auth
+  // Check for session token cookie (set by NextAuth)
+  const sessionToken =
+    req.cookies.get('__Secure-authjs.session-token') ??
+    req.cookies.get('authjs.session-token') ??
+    req.cookies.get('__Secure-next-auth.session-token') ??
+    req.cookies.get('next-auth.session-token')
+  const isLoggedIn = !!sessionToken
 
-    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
-    const isPublicRoute = publicRoutes.some((route) => {
-      if (route === '/') {
-        return nextUrl.pathname === route
-      } else {
-        return nextUrl.pathname.startsWith(route)
-      }
-    })
-
-    const isAuthRoute = authRoutes.includes(nextUrl.pathname)
-
-    if (isApiAuthRoute) return
-
-    if (isAuthRoute) {
-      if (isLoggedIn) {
-        return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
-      }
-      return
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
+  const isPublicRoute = publicRoutes.some((route) => {
+    if (route === '/') {
+      return nextUrl.pathname === route
+    } else {
+      return nextUrl.pathname.startsWith(route)
     }
+  })
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname)
 
-    if (!isLoggedIn && !isPublicRoute) {
-      let callbackUrl = nextUrl.pathname
-      if (nextUrl.search) {
-        callbackUrl += nextUrl.search
-      }
+  if (isApiAuthRoute) return NextResponse.next()
 
-      const encodedCallbackUrl = encodeURIComponent(callbackUrl)
-
-      return Response.redirect(
-        new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-      )
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
     }
-
-    return
+    return NextResponse.next()
   }
-)
 
-// Optionally, don't invoke Middleware on some paths
+  if (!isLoggedIn && !isPublicRoute) {
+    let callbackUrl = nextUrl.pathname
+    if (nextUrl.search) {
+      callbackUrl += nextUrl.search
+    }
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl)
+    return NextResponse.redirect(
+      new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    )
+  }
+
+  return NextResponse.next()
+}
+
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
 }

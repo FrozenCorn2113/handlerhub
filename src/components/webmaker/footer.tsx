@@ -1,14 +1,14 @@
 /* eslint-disable tailwindcss/classnames-order */
 import Link from 'next/link'
 
-export function StitchMarketingFooter() {
+export function WebmakerFooter() {
   return (
-    <footer className="bg-[#14472F] pb-10 pt-20">
+    <footer className="mt-20 bg-[#14472F] py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-12">
-        <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-4">
+        <div className="mb-12 grid grid-cols-2 gap-10 md:grid-cols-4">
           {/* Wordmark */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="mb-6 flex items-baseline gap-0">
+            <Link href="/" className="flex items-baseline gap-0">
               <span
                 className="text-2xl font-light tracking-tight text-[#F8F4EE]"
                 style={{ fontFamily: 'var(--font-display)' }}
@@ -31,10 +31,10 @@ export function StitchMarketingFooter() {
 
           {/* For Exhibitors */}
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
               For Exhibitors
             </h5>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li>
                 <Link
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
@@ -64,10 +64,10 @@ export function StitchMarketingFooter() {
 
           {/* For Handlers */}
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
               For Handlers
             </h5>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li>
                 <Link
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
@@ -97,10 +97,10 @@ export function StitchMarketingFooter() {
 
           {/* Resources */}
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
               Resources
             </h5>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               <li>
                 <Link
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"

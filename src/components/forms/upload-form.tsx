@@ -9,7 +9,7 @@ import { Icons } from '@/components/shared/icons'
 import { UserAvatar } from '@/components/shared/user-avatar'
 
 import { useUserStore } from '@/store/use-user-store'
-import { SquarePen } from 'lucide-react'
+import { PencilSimple } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 interface UploadFormProps {
@@ -126,7 +126,7 @@ export function UploadForm({ className }: UploadFormProps) {
           />
         )}
         <div className="absolute bottom-0 right-0 rounded-full bg-primary p-2 text-primary-foreground">
-          <SquarePen className="size-4" />
+          <PencilSimple className="size-4" />
         </div>
       </label>
       <input

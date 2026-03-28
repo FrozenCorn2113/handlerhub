@@ -5,19 +5,24 @@ import {
   ComponentType,
   DetailedHTMLProps,
   FC,
-  forwardRef,
   ForwardRefRenderFunction,
   HTMLAttributeAnchorTarget,
   InputHTMLAttributes,
   PropsWithChildren,
   SVGProps,
+  forwardRef,
   useMemo,
 } from 'react'
+
 import Link, { LinkProps } from 'next/link'
-import { Loader2, LucideProps } from 'lucide-react'
-import { always, cond, equals } from 'ramda'
 
 import { cn } from '@/lib/utils'
+
+import {
+  type IconProps as PhosphorIconProps,
+  SpinnerGap,
+} from '@phosphor-icons/react'
+import { always, cond, equals } from 'ramda'
 
 type HTMLButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -36,7 +41,7 @@ type ButtonProps<NativeProps = {}> = PropsWithChildren & {
   tokenArgs?: { [key: string]: any }
   href?: string
   target?: HTMLAttributeAnchorTarget
-  Icon?: ComponentType<SVGProps<SVGSVGElement> & LucideProps>
+  Icon?: ComponentType<SVGProps<SVGSVGElement> & PhosphorIconProps>
   iconPlacement?: 'left' | 'right'
   iconSize?: 'sm' | 'md'
   disabled?: boolean
@@ -156,7 +161,7 @@ export const Button: FC<ButtonProps<HTMLButtonProps | LinkProps>> = ({
       </span>
       {loading && variant !== 'tertiary' && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="size-8 animate-spin" />
+          <SpinnerGap className="size-8 animate-spin" />
         </div>
       )}
     </>

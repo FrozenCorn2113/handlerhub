@@ -8,7 +8,7 @@ import { useCollectEmailsModal } from '@/hooks/use-collect-emails-modal'
 
 import { Button } from '@/components/ui/button'
 
-import { XIcon } from 'lucide-react'
+import { X as XIcon } from '@phosphor-icons/react'
 
 export const CtaBanner = () => {
   const pathname = usePathname()

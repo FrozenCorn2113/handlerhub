@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 import { buttonVariants } from '@/components/ui/button'
 
-import { MessageSquareText } from 'lucide-react'
+import { ChatText } from '@phosphor-icons/react/dist/ssr'
 
 export default function ButtonShareFeedback() {
   return (
@@ -12,7 +12,7 @@ export default function ButtonShareFeedback() {
       href="/feedback"
       className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'px-4')}
     >
-      <MessageSquareText className="mr-2 size-4" />
+      <ChatText className="mr-2 size-4" />
       <p>Share a feedback</p>
     </Link>
   )

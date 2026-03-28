@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input, type InputProps } from '@/components/ui/input'
 
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeSlash } from '@phosphor-icons/react'
 
 const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => {
@@ -30,7 +30,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
           disabled={props.value === '' || props.disabled}
         >
           {showPassword ? (
-            <EyeOff className="size-4" aria-hidden="true" />
+            <EyeSlash className="size-4" aria-hidden="true" />
           ) : (
             <Eye className="size-4" aria-hidden="true" />
           )}

@@ -6,7 +6,7 @@ import { useClipboard } from '@/hooks/use-clipboard'
 
 import { Button } from '@/components/ui/button'
 
-import { CheckIcon, CopyIcon } from 'lucide-react'
+import { Check as CheckIcon, Copy as CopyIcon } from '@phosphor-icons/react'
 
 interface CopyActionsProps extends React.ComponentProps<'div'> {
   message: string

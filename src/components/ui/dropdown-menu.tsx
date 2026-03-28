@@ -1,10 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { Check, ChevronRight, Circle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
+
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+
+import { CaretRight, Check, Circle } from '@phosphor-icons/react'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -34,7 +36,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto size-4" />
+    <CaretRight className="ml-auto size-4" />
   </DropdownMenuPrimitive.SubTrigger>
 ))
 DropdownMenuSubTrigger.displayName =

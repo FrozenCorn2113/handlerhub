@@ -1,11 +1,11 @@
 import {
-  Bookmark,
-  LayoutGrid,
-  Settings,
-  SquarePen,
+  BookmarkSimple,
+  Gear,
+  PencilSimple,
+  SquaresFour,
   Tag,
   Users,
-} from 'lucide-react'
+} from '@phosphor-icons/react/dist/ssr'
 
 type Submenu = {
   href: string
@@ -37,7 +37,7 @@ export function getMenuList(pathname: string): Group[] {
           href: dashboardPrefixURL,
           label: 'Dashboard',
           active: pathname.includes(dashboardPrefixURL),
-          icon: LayoutGrid,
+          icon: SquaresFour,
           submenus: [],
         },
       ],
@@ -49,7 +49,7 @@ export function getMenuList(pathname: string): Group[] {
           href: '',
           label: 'Posts',
           active: pathname.includes(dashboardPrefixURL + '/posts'),
-          icon: SquarePen,
+          icon: PencilSimple,
           submenus: [
             {
               href: dashboardPrefixURL + '/posts',
@@ -67,7 +67,7 @@ export function getMenuList(pathname: string): Group[] {
           href: dashboardPrefixURL + '/categories',
           label: 'Categories',
           active: pathname.includes(dashboardPrefixURL + '/categories'),
-          icon: Bookmark,
+          icon: BookmarkSimple,
           submenus: [],
         },
         {
@@ -93,7 +93,7 @@ export function getMenuList(pathname: string): Group[] {
           href: dashboardPrefixURL + '/account',
           label: 'Account',
           active: pathname.includes(dashboardPrefixURL + '/account'),
-          icon: Settings,
+          icon: Gear,
           submenus: [],
         },
       ],

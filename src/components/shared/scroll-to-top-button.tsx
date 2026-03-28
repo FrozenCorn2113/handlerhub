@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { ChevronUp } from 'lucide-react'
+import { CaretUp } from '@phosphor-icons/react'
 
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -33,7 +33,7 @@ const ScrollToTopButton = () => {
       }`}
       onClick={scrollToTop}
     >
-      <ChevronUp className="text-primary  dark:text-primary" />
+      <CaretUp className="text-primary dark:text-primary" />
     </button>
   )
 }

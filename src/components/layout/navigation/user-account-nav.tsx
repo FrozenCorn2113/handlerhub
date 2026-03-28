@@ -17,13 +17,13 @@ import { UserAvatar } from '@/components/shared/user-avatar'
 
 import { useUserStore } from '@/store/use-user-store'
 import {
-  Cog,
   CreditCard,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  User2Icon,
-} from 'lucide-react'
+  Gear,
+  GearSix,
+  SignOut,
+  SquaresFour,
+  UserCircle,
+} from '@phosphor-icons/react'
 import type { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -78,7 +78,7 @@ export function UserAccountNav({ initialUser }: UserAccountNavProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/dashboard" className="flex items-center space-x-2.5">
-            <LayoutDashboard className="size-4" />
+            <SquaresFour className="size-4" />
             <p className="text-sm">Dashboard</p>
           </Link>
         </DropdownMenuItem>
@@ -105,7 +105,7 @@ export function UserAccountNav({ initialUser }: UserAccountNavProps) {
             href="/dashboard/users"
             className="flex items-center space-x-2.5"
           >
-            <User2Icon className="size-4" />
+            <UserCircle className="size-4" />
             <p className="text-sm">Users</p>
           </Link>
         </DropdownMenuItem>
@@ -114,19 +114,19 @@ export function UserAccountNav({ initialUser }: UserAccountNavProps) {
             href="/dashboard/settings"
             className="flex items-center space-x-2.5"
           >
-            <Settings className="size-4" />
+            <Gear className="size-4" />
             <p className="text-sm">Settings</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {(userRole === 'ADMIN' || userRole === 'EDITOR') && (
+        {userRole === 'ADMIN' && (
           <>
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link
                 href="/dashboard-admin"
                 className="flex items-center space-x-2.5"
               >
-                <Cog className="size-4" />
+                <GearSix className="size-4" />
                 <p className="text-sm">Admin dashboard</p>
               </Link>
             </DropdownMenuItem>
@@ -143,7 +143,7 @@ export function UserAccountNav({ initialUser }: UserAccountNavProps) {
           }}
         >
           <div className="flex items-center space-x-2.5">
-            <LogOut className="size-4" />
+            <SignOut className="size-4" />
             <p className="text-sm">Log out </p>
           </div>
         </DropdownMenuItem>

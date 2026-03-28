@@ -29,7 +29,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { ChevronDown, Dot, LucideIcon } from 'lucide-react'
+import {
+  CaretDown,
+  DotOutline,
+  type Icon as PhosphorIcon,
+} from '@phosphor-icons/react'
 
 type Submenu = {
   href: string
@@ -38,7 +42,7 @@ type Submenu = {
 }
 
 interface CollapseMenuButtonProps {
-  icon: LucideIcon
+  icon: PhosphorIcon
   label: string
   active: boolean
   submenus: Submenu[]
@@ -93,7 +97,7 @@ export function CollapseMenuButton({
                   : '-translate-x-96 opacity-0'
               )}
             >
-              <ChevronDown
+              <CaretDown
                 size={18}
                 className="transition-transform duration-200"
               />
@@ -111,7 +115,7 @@ export function CollapseMenuButton({
           >
             <Link href={href}>
               <span className="ml-2 mr-4">
-                <Dot size={18} />
+                <DotOutline size={18} />
               </span>
               <p
                 className={cn(

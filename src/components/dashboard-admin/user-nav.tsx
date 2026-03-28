@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { LayoutGrid, LogOut, User } from 'lucide-react'
+import { SignOut, SquaresFour, User } from '@phosphor-icons/react'
 
 export function UserNav() {
   return (
@@ -57,7 +57,7 @@ export function UserNav() {
         <DropdownMenuGroup>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/dashboard" className="flex items-center">
-              <LayoutGrid className="mr-3 size-4 text-muted-foreground" />
+              <SquaresFour className="mr-3 size-4 text-muted-foreground" />
               Dashboard
             </Link>
           </DropdownMenuItem>
@@ -70,7 +70,7 @@ export function UserNav() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
-          <LogOut className="mr-3 size-4 text-muted-foreground" />
+          <SignOut className="mr-3 size-4 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

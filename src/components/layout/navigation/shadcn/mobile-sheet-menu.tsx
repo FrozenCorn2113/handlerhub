@@ -24,7 +24,7 @@ import AuthLink from '@/components/shared/auth-link'
 import ButtonShareFeedback from '@/components/shared/button-share-feedback'
 import IconLogo from '@/components/shared/logo-icon'
 
-import { Menu } from 'lucide-react'
+import { List } from '@phosphor-icons/react'
 
 export default function MobileSheetMenu() {
   const [open, setOpen] = React.useState(false)
@@ -35,7 +35,7 @@ export default function MobileSheetMenu() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" className="mx-auto flex lg:hidden">
-            Menu <Menu className="ml-2 size-4" />
+            Menu <List className="ml-2 size-4" />
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>

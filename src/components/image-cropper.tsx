@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 
-import { CropIcon, Trash2Icon } from 'lucide-react'
+import { Crop as CropIcon, Trash } from '@phosphor-icons/react'
 import { FileWithPath } from 'react-dropzone'
 import ReactCrop, {
   type Crop,
@@ -180,7 +180,7 @@ export function ImageCropper({
               variant="secondary"
               onClick={() => setSelectedFile(null)}
             >
-              <Trash2Icon className="mr-2 size-4" />
+              <Trash className="mr-2 size-4" />
               Cancel
             </Button>
           </DialogClose>

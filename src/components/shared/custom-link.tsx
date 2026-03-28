@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 
-import { ExternalLink } from 'lucide-react'
+import { ArrowSquareOut } from '@phosphor-icons/react/dist/ssr'
 
 interface CustomLinkProps extends React.LinkHTMLAttributes<HTMLAnchorElement> {
   href: string
@@ -34,7 +34,7 @@ const CustomLink = ({
       {...rest}
     >
       {children}
-      <ExternalLink className=" ml-0.5 inline-block size-4" />
+      <ArrowSquareOut className="ml-0.5 inline-block size-4" />
     </Link>
   )
 }

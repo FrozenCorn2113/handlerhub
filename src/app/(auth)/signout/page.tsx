@@ -15,7 +15,7 @@ import { LogoutButton } from '@/components/auth/logout-button'
 import { Icons } from '@/components/shared/icons'
 import IconLogo from '@/components/shared/logo-icon'
 
-import { LogOut } from 'lucide-react'
+import { SignOut } from '@phosphor-icons/react/dist/ssr'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -45,11 +45,11 @@ export default async function SignInPage(): Promise<JSX.Element> {
       </Link>
       <div className="mx-auto mb-8 flex flex-col items-center">
         <IconLogo className="mb-2 size-16" />
-        <span className="mb-2 hidden font-urban text-xl font-bold text-black dark:text-white sm:inline-block">
+        <span className="mb-2 hidden font-urban text-xl font-bold text-black sm:inline-block dark:text-white">
           {siteConfig.name}
         </span>
       </div>
-      <Card className="max-sm:flex  max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
+      <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl">Logout</CardTitle>
@@ -61,7 +61,7 @@ export default async function SignInPage(): Promise<JSX.Element> {
         <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
           <LogoutButton>
             <Button>
-              <LogOut className="mr-2 size-4" />
+              <SignOut className="mr-2 size-4" />
               Logout
             </Button>
           </LogoutButton>

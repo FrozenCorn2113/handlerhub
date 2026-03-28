@@ -42,7 +42,7 @@ export default function PasswordReset(): JSX.Element {
       </Link>
       <div className="mx-auto mb-8 flex flex-col items-center">
         <IconLogo className="mb-2 size-16" />
-        <span className="mb-2 hidden font-urban text-xl font-bold text-black dark:text-white sm:inline-block">
+        <span className="mb-2 hidden font-urban text-xl font-bold text-black sm:inline-block dark:text-white">
           {siteConfig.name}
         </span>
       </div>

@@ -73,7 +73,7 @@ export default function CtaSubscribe() {
   }
 
   return (
-    <section className="dark:bg-opacity/50 w-full bg-gray-50 py-12 dark:bg-slate-900 dark:text-white md:py-24 lg:py-32 xl:py-48">
+    <section className="dark:bg-opacity/50 w-full bg-gray-50 py-12 md:py-24 lg:py-32 xl:py-48 dark:bg-slate-900 dark:text-white">
       <div className="container mx-auto max-w-3xl">
         <BlockTitle.Wrapper className="mb-10">
           <BlockTitle.Header elementType="p">
@@ -117,7 +117,7 @@ export default function CtaSubscribe() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full rounded-md border p-3  outline-none focus:border-indigo-600"
+              className="w-full rounded-md border p-3 outline-none focus:border-indigo-600"
               required
             />
             <Button
@@ -139,7 +139,7 @@ export default function CtaSubscribe() {
               {returnValues.message}
             </p>
           )}
-          <p className="mx-auto mt-3 text-center text-[15px] ">
+          <p className="mx-auto mt-3 text-center text-[15px]">
             No spam ever, we are care about the protection of your data. Read
             our{' '}
             <a

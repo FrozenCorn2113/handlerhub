@@ -24,7 +24,7 @@ const Plan: React.FC<PlanProps> = ({
   <div
     className={`relative flex w-full flex-col divide-y divide-gray-200 self-stretch rounded-xl bg-white shadow dark:divide-gray-800 dark:bg-gray-900 ${
       highlighted
-        ? 'ring-2 ring-gray-900 dark:ring-white lg:z-10 lg:scale-110'
+        ? 'ring-2 ring-gray-900 lg:z-10 lg:scale-110 dark:ring-white'
         : 'ring-1 ring-gray-200 dark:ring-gray-800'
     }`}
   >
@@ -36,13 +36,13 @@ const Plan: React.FC<PlanProps> = ({
       </div>
     )}
     <div className="flex flex-1 flex-col gap-y-6 rounded-xl p-8 sm:p-6 xl:p-10">
-      <h3 className="truncate text-2xl font-semibold text-gray-900 dark:text-white sm:text-3xl">
+      <h3 className="truncate text-2xl font-semibold text-gray-900 sm:text-3xl dark:text-white">
         {name}
       </h3>
-      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 sm:text-base">
+      <p className="mt-2 text-sm text-gray-500 sm:text-base dark:text-gray-400">
         {description}
       </p>
-      <p className="text-2xl font-semibold text-gray-900 dark:text-white sm:text-4xl">
+      <p className="text-2xl font-semibold text-gray-900 sm:text-4xl dark:text-white">
         {price}
       </p>
       <ul className="order-last flex-1 space-y-3 text-sm">

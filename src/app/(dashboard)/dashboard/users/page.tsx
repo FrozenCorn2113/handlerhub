@@ -146,13 +146,13 @@ export default async function StatusPage() {
           <table className="min-w-full align-middle text-sm dark:bg-gray-800">
             <thead className="dark:text-white">
               <tr className="bg-gray-50 dark:bg-gray-700">
-                <th className="hidden bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white md:table-cell">
+                <th className="hidden bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 md:table-cell dark:bg-gray-700 dark:text-white">
                   Avatar
                 </th>
                 <th className="bg-gray-100 p-3 text-left text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white">
                   Name
                 </th>
-                <th className="hidden bg-gray-100 p-3 text-left text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white md:table-cell">
+                <th className="hidden bg-gray-100 p-3 text-left text-sm font-semibold uppercase tracking-wider text-gray-700 md:table-cell dark:bg-gray-700 dark:text-white">
                   Email
                 </th>
                 <th className="bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white">

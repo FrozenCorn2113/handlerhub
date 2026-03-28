@@ -8,12 +8,12 @@ import { siteConfig } from '@/config/site'
 import { getCurrentUser } from '@/lib/session'
 import { cn } from '@/lib/utils'
 
-import { ModeToggle } from '@/components/layout/mode-toggle'
 import ChangelogButton from '@/components/shared/changelog-button'
 import { Icons } from '@/components/shared/icons'
 import IconLogo from '@/components/shared/logo-icon'
 
 import { SocialLink } from '@/root/types'
+import { Lock } from '@phosphor-icons/react/dist/ssr'
 
 export async function SiteFooter({
   className,
@@ -21,84 +21,165 @@ export async function SiteFooter({
   const user = await getCurrentUser()
   const footerSocialLinks: SocialLink[] = Object.entries(
     siteConfig.social?.links ?? {}
-  ).map(([key, value]) => ({
-    ...value,
-    icon: key as keyof typeof Icons,
-  }))
+  )
+    .filter(([, value]) => value != null)
+    .map(([key, value]) => ({
+      ...value!,
+      icon: key as keyof typeof Icons,
+    }))
   const footerMenuLinks = marketingConfig.footer.links
 
   return (
     <footer
-      className={
-        cn(className) +
-        ' mx-auto w-full bg-white px-4 pb-6 pt-16 text-gray-500 dark:bg-black md:px-8'
-      }
+      className={cn(
+        'border-t border-slate-200 bg-white pb-10 pt-20 text-slate-500',
+        className
+      )}
     >
-      <div className="container">
-        <div className="max-w-lg sm:mx-auto sm:text-center">
-          <div className="mx-auto mb-8 flex flex-col items-center">
-            <IconLogo className="mb-2 size-16" />
-            <span className="mb-6 hidden font-urban text-xl font-bold text-black dark:text-white sm:inline-block">
-              {siteConfig.name}
-            </span>
-            <ul className="flex items-center space-x-4">
-              {footerSocialLinks.map((link, id) => (
-                <li className="mx-2 inline-block" key={id || link.href}>
-                  <Link href={link.href} target="_blank">
-                    <span className="sr-only">{link.label}</span>
-                    {React.createElement(Icons[link.icon || 'plus'], {
-                      height: 22,
-                      width: 22,
-                      className: 'text-gray-600 dark:text-gray-400',
-                      'aria-hidden': 'true',
-                    })}
-                  </Link>
-                </li>
+      <div className="mx-auto max-w-7xl px-6 lg:px-12">
+        <div className="mb-20 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
+          <div className="col-span-2">
+            <div className="mb-6 flex items-center gap-3 text-primary">
+              <IconLogo className="size-10" />
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+                {siteConfig.name}
+              </h2>
+            </div>
+            <p className="mb-8 max-w-xs text-slate-500">
+              {siteConfig.shortDescription ?? siteConfig.description}
+            </p>
+            <div className="flex gap-4">
+              {footerSocialLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  className="flex size-10 items-center justify-center rounded-full bg-slate-100 transition-all hover:bg-primary hover:text-white"
+                >
+                  <span className="sr-only">{link.label}</span>
+                  {React.createElement(Icons[link.icon || 'plus'], {
+                    height: 18,
+                    width: 18,
+                    className: 'text-current',
+                    'aria-hidden': 'true',
+                  })}
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
-          <p className="mt-2 text-[15px] leading-relaxed">
-            {siteConfig.description}
-          </p>
-        </div>
-        <ul className="mt-8 items-center justify-center space-y-5 sm:flex sm:space-x-4 sm:space-y-0">
-          {footerMenuLinks.map((item, id) => (
-            <li className=" hover:text-gray-800" key={id}>
-              <a key={id} href={item.href} target={item.target ? '_blank' : ''}>
-                {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8 items-center justify-between sm:flex">
-          <div className="mt-4 sm:mt-0">
-            All rights reserved. © {new Date().getFullYear()} {siteConfig.name}
-            .
-          </div>
-          <div className="mt-6 sm:mt-0">
-            <ul className="flex items-center space-x-4">
-              {user && (
-                <>
-                  <li>
-                    <Link href="/dashboard">
-                      <span className="sr-only">Dashboard</span>
-                      {React.createElement(Icons.user, {
-                        height: 24,
-                        width: 24,
-                        className: 'text-gray-600 dark:text-gray-400',
-                        'aria-hidden': 'true',
-                      })}
-                    </Link>
-                  </li>
-                  <li>
-                    <ChangelogButton />
-                  </li>
-                </>
-              )}
+
+          <div>
+            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-slate-900">
+              Platform
+            </h5>
+            <ul className="space-y-4">
               <li>
-                <ModeToggle />
+                <Link
+                  className="transition-colors hover:text-primary"
+                  href="/handlers"
+                >
+                  Find a Handler
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="transition-colors hover:text-primary"
+                  href="/for-handlers"
+                >
+                  For Handlers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="transition-colors hover:text-primary"
+                  href="/contact"
+                >
+                  Contact
+                </Link>
               </li>
             </ul>
+          </div>
+
+          <div>
+            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-slate-900">
+              Company
+            </h5>
+            <ul className="space-y-4">
+              <li>
+                <Link
+                  className="transition-colors hover:text-primary"
+                  href="/#how-it-works"
+                >
+                  How it Works
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="transition-colors hover:text-primary"
+                  href="/feedback"
+                >
+                  Feedback
+                </Link>
+              </li>
+              <li>
+                <a
+                  className="transition-colors hover:text-primary"
+                  href={footerMenuLinks[0]?.href ?? '#'}
+                  target="_blank"
+                >
+                  Public Roadmap
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-slate-900">
+              Legal
+            </h5>
+            <ul className="space-y-4">
+              {footerMenuLinks
+                .filter((l) => !l.target)
+                .map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      className="transition-colors hover:text-primary"
+                      href={item.href}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-between gap-6 border-t border-slate-200 pt-10 md:flex-row">
+          <p className="text-sm text-slate-400">
+            © {new Date().getFullYear()} {siteConfig.name} Inc. All rights
+            reserved.
+          </p>
+          <div className="flex items-center gap-8">
+            <span className="flex items-center gap-2 text-xs font-bold text-slate-400">
+              <Lock size={14} />
+              Secure SSL Encryption
+            </span>
+            {user && (
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/dashboard"
+                  className="text-slate-500 hover:text-primary"
+                >
+                  <span className="sr-only">Dashboard</span>
+                  {React.createElement(Icons.user, {
+                    height: 20,
+                    width: 20,
+                    'aria-hidden': 'true',
+                  })}
+                </Link>
+                <ChangelogButton />
+              </div>
+            )}
           </div>
         </div>
       </div>

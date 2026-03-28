@@ -1,17 +1,16 @@
-import { Inter as FontSans, Urbanist } from 'next/font/google'
-import localFont from 'next/font/local'
+import { Cormorant_Garamond, Inter as FontSans } from 'next/font/google'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 })
 
-export const fontUrban = Urbanist({
+export const fontSerif = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-urban',
+  weight: ['300', '400', '600'],
+  variable: '--font-serif',
 })
 
-export const fontHeading = localFont({
-  src: './CalSans-SemiBold.woff2',
-  variable: '--font-heading',
-})
+// Aliases for backward compatibility with existing component classNames
+export const fontUrban = fontSans
+export const fontHeading = fontSerif

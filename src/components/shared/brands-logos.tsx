@@ -8,7 +8,7 @@ export default function BrandLogos() {
       {logosCompaniesColorData.map((logo, index) => (
         <div
           key={index}
-          className="flex w-full items-center justify-center rounded-lg bg-gray-100 p-4 dark:bg-slate-800 md:p-7"
+          className="flex w-full items-center justify-center rounded-lg bg-gray-100 p-4 md:p-7 dark:bg-slate-800"
         >
           <Image
             src={logo.src}

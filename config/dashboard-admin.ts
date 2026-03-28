@@ -1,16 +1,16 @@
+import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import {
-  BadgeDollarSign,
-  CircleUserRound,
-  LayoutDashboard,
-  LucideIcon,
-  Settings,
-  WalletCards,
-} from 'lucide-react'
+  CurrencyDollar,
+  Gear,
+  SquaresFour,
+  UserCircle,
+  Wallet,
+} from '@phosphor-icons/react/dist/ssr'
 
 export interface ISidebarItem {
   name: string
   path: string
-  icon: LucideIcon
+  icon: PhosphorIcon
   items?: ISubItem[]
 }
 
@@ -23,27 +23,27 @@ export const dashboardAdminMenuitems: ISidebarItem[] = [
   {
     name: 'Dashboard',
     path: '/dashboard-admin',
-    icon: LayoutDashboard,
+    icon: SquaresFour,
   },
   {
     name: 'Transactions',
     path: '/dashboard-admin/transactions',
-    icon: BadgeDollarSign,
+    icon: CurrencyDollar,
   },
   {
     name: 'Payments',
     path: '/dashboard-admin/payments',
-    icon: WalletCards,
+    icon: Wallet,
   },
   {
     name: 'Users',
     path: '/dashboard-admin/users',
-    icon: CircleUserRound,
+    icon: UserCircle,
   },
   {
     name: 'Settings',
     path: '/dashboard-admin/settings',
-    icon: Settings,
+    icon: Gear,
     items: [
       {
         name: 'General',

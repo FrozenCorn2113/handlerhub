@@ -15,7 +15,7 @@ const ShareFeedbackModal = () => {
   const user = useCurrentUser()
   return (
     <Dialog open={true} onOpenChange={() => router.back()}>
-      <DialogContent className="border-0 bg-white text-transparent dark:bg-black lg:w-[700px]">
+      <DialogContent className="border-0 bg-white text-transparent lg:w-[700px] dark:bg-black">
         <Card className="bg-light-gray-800 dark:bg-dark-gray-800 border-light-gray-700 dark:border-dark-gray-700 border lg:w-full">
           <CardHeader className="text-2xl">
             <BlockTitle.Wrapper>

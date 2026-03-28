@@ -5,51 +5,31 @@ import { absoluteUrl } from '@/lib/utils'
 const defaultUrl = absoluteUrl('')
 
 export const siteConfig: SiteConfig = {
-  name: 'Next SaaS Template',
+  name: 'HandlerHub',
   description:
-    'Empowering your SaaS startup journey with a meticulously crafted Next.js boilerplate and starter kit for fully-functional websites and apps.',
+    'Connect with professional dog show handlers. Find, book, and manage handler services for your next dog show with ease.',
   shortDescription:
-    'Empowering your SaaS startup journey with a meticulously crafted Next.js boilerplate',
+    'The professional marketplace connecting dog show handlers with exhibitors',
   url: defaultUrl,
-  mailSupport: 'nextsaastemplate@gmail.com',
-  address: '123 Code Street, Suite 404, Devtown, CA 98765',
+  mailSupport: 'support@handlerhub.com',
+  address: 'HandlerHub - Professional Handler Services',
   ogImage: `${defaultUrl}/og.jpg`,
   social: {
     links: {
       twitter: {
         label: 'Twitter',
         icon: 'twitter',
-        href: 'https://twitter.com/johanguse',
-      },
-      github: {
-        label: 'GitHub',
-        icon: 'github',
-        href: 'https://twitter.com/johanguse',
-      },
-      linkedin: {
-        label: 'LinkedIn',
-        icon: 'linkedin',
-        href: 'https://twitter.com/johanguse',
-      },
-      youtube: {
-        label: 'YouTube',
-        icon: 'youtube',
-        href: 'https://twitter.com/johanguse',
+        href: '',
       },
       instagram: {
         label: 'Instagram',
         icon: 'instagram',
-        href: 'https://twitter.com/johanguse',
+        href: '',
       },
       facebook: {
         label: 'Facebook',
         icon: 'facebook',
-        href: 'https://twitter.com/johanguse',
-      },
-      tiktok: {
-        label: 'Tiktok',
-        icon: 'tiktok',
-        href: 'https://twitter.com/johanguse',
+        href: '',
       },
     },
   },

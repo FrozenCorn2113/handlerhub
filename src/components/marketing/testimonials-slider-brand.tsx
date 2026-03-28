@@ -5,7 +5,7 @@ export default function TestimonialSliderBrand() {
         <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900">
           <div className="flex-auto p-4 md:p-6">
             <svg
-              className="h-auto w-20 text-gray-700 dark:text-gray-300 sm:w-24"
+              className="h-auto w-20 text-gray-700 sm:w-24 dark:text-gray-300"
               width="140"
               height="47"
               viewBox="0 0 140 47"
@@ -58,7 +58,7 @@ export default function TestimonialSliderBrand() {
               ></path>
             </svg>
 
-            <p className="mt-3 text-base text-gray-800 dark:text-white sm:mt-6 md:text-xl">
+            <p className="mt-3 text-base text-gray-800 sm:mt-6 md:text-xl dark:text-white">
               <em>
                 &quot;I&apos;m absolutely floored by the level of care and
                 attention to detail the team at HS have put into this theme and
@@ -68,7 +68,7 @@ export default function TestimonialSliderBrand() {
           </div>
 
           <div className="rounded-b-xl p-4 md:px-6">
-            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 sm:text-base">
+            <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">
               Nicole Grazioso
             </h3>
             <p className="text-sm text-gray-500">
@@ -80,7 +80,7 @@ export default function TestimonialSliderBrand() {
         <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900">
           <div className="flex-auto p-4 md:p-6">
             <svg
-              className="h-auto w-20 text-gray-700 dark:text-gray-300 sm:w-24"
+              className="h-auto w-20 text-gray-700 sm:w-24 dark:text-gray-300"
               width="200"
               height="67"
               viewBox="0 0 200 67"
@@ -93,7 +93,7 @@ export default function TestimonialSliderBrand() {
               ></path>
             </svg>
 
-            <p className="mt-3 text-base text-gray-800 dark:text-white sm:mt-6 md:text-xl">
+            <p className="mt-3 text-base text-gray-800 sm:mt-6 md:text-xl dark:text-white">
               <em>
                 &quot;With Preline, we&apos;re able to easily track our
                 performance in full detail. It&apos;s become an essential tool
@@ -103,7 +103,7 @@ export default function TestimonialSliderBrand() {
           </div>
 
           <div className="rounded-b-xl p-4 md:px-6">
-            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 sm:text-base">
+            <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">
               Josh Tyson
             </h3>
             <p className="text-sm text-gray-500">Product Manager | Capsule</p>
@@ -113,7 +113,7 @@ export default function TestimonialSliderBrand() {
         <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-slate-900">
           <div className="flex-auto p-4 md:p-6">
             <svg
-              className="h-auto w-20 text-gray-700 dark:text-gray-300 sm:w-24"
+              className="h-auto w-20 text-gray-700 sm:w-24 dark:text-gray-300"
               width="140"
               height="47"
               viewBox="0 0 140 47"
@@ -214,7 +214,7 @@ export default function TestimonialSliderBrand() {
               </defs>
             </svg>
 
-            <p className="mt-3 text-base text-gray-800 dark:text-white sm:mt-6 md:text-xl">
+            <p className="mt-3 text-base text-gray-800 sm:mt-6 md:text-xl dark:text-white">
               <em>
                 &quot;In September, I will be using this theme for 2 years. I
                 went through multiple updates and changes and I&apos;m very glad
@@ -224,7 +224,7 @@ export default function TestimonialSliderBrand() {
           </div>
 
           <div className="rounded-b-xl p-4 md:px-6">
-            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 sm:text-base">
+            <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">
               Luisa
             </h3>
             <p className="text-sm text-gray-500">

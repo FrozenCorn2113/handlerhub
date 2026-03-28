@@ -12,10 +12,12 @@ import { SocialLink } from '@/root/types'
 export default function CtaSocialMedia() {
   const footerSocialLinks: SocialLink[] = Object.entries(
     siteConfig.social?.links ?? {}
-  ).map(([key, value]) => ({
-    ...value,
-    icon: key as keyof typeof Icons,
-  }))
+  )
+    .filter(([, value]) => value != null)
+    .map(([key, value]) => ({
+      ...value!,
+      icon: key as keyof typeof Icons,
+    }))
   const filteredFooterSocialLinks = footerSocialLinks.filter(
     (link) =>
       link.icon === 'twitter' ||
@@ -30,7 +32,7 @@ export default function CtaSocialMedia() {
             Stay in the loop
           </BlockTitle.Header>
           <p
-            className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl"
+            className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl dark:text-slate-100"
             id="nx-is-fast"
           >
             NST is growing fast, stay in the loop!

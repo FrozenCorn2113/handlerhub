@@ -17,7 +17,7 @@ import {
 
 import { CollapseMenuButton } from '@/components/dashboard-admin/collapse-menu-button'
 
-import { Ellipsis, LogOut } from 'lucide-react'
+import { DotsThree, SignOut } from '@phosphor-icons/react'
 
 interface MenuProps {
   isOpen: boolean | undefined
@@ -42,7 +42,7 @@ export function Menu({ isOpen }: MenuProps) {
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger className="w-full">
                       <div className="flex w-full items-center justify-center">
-                        <Ellipsis className="size-5" />
+                        <DotsThree className="size-5" />
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="right">
@@ -116,7 +116,7 @@ export function Menu({ isOpen }: MenuProps) {
                     className="mt-5 h-10 w-full justify-center"
                   >
                     <span className={cn(isOpen === false ? '' : 'mr-4')}>
-                      <LogOut size={18} />
+                      <SignOut size={18} />
                     </span>
                     <p
                       className={cn(

@@ -7,7 +7,6 @@ module.exports = {
     './src/**/*.{jsx,tsx}',
     './content/**/*.{md,mdx}',
   ],
-  darkMode: ['class'],
   future: {
     hoverOnlyWhenSupported: true,
   },
@@ -16,7 +15,7 @@ module.exports = {
       center: true,
       padding: '1rem',
       screens: {
-        '2xl': '1400px',
+        '2xl': '1440px',
       },
     },
     extend: {
@@ -53,6 +52,22 @@ module.exports = {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        // HandlerHub brand colors
+        'ring-cream': '#F8F4EE',
+        'light-sand': '#F0EAE0',
+        sand: '#E8E0D4',
+        tan: '#D4CFC4',
+        'ringside-black': '#1C1208',
+        'warm-brown': '#4A3E2E',
+        'warm-gray': '#7A6E5E',
+        'paddock-green': '#1F6B4A',
+        forest: '#14472F',
+        sage: '#D4EFE0',
+        'show-orange': '#D4621A',
+        'pale-peach': '#F5E0CC',
+        'pastel-sky': '#C2E4F5',
+        'pastel-ribbon': '#F5EFA0',
+        'pastel-mint': '#B8EDD0',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -83,9 +98,12 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', ...fontFamily.sans],
-        urban: ['var(--font-urban)', ...fontFamily.sans],
-        heading: ['var(--font-heading)', ...fontFamily.sans],
+        sans: ['var(--font-body)', ...fontFamily.sans],
+        display: ['var(--font-display)', ...fontFamily.serif],
+        serif: ['var(--font-display)', ...fontFamily.serif],
+        body: ['var(--font-body)', ...fontFamily.sans],
+        urban: ['var(--font-body)', ...fontFamily.sans],
+        heading: ['var(--font-display)', ...fontFamily.serif],
       },
       keyframes: {
         'accordion-down': {

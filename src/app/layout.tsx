@@ -11,11 +11,10 @@ import { Toaster } from '@/components/ui/toaster'
 import { ModalProvider } from '@/components/modals/modal-provider'
 import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
-import HWComponent from '@/components/thirdparty/headwayapp'
 
 import '@/styles/globals.css'
 
-import { fontHeading, fontSans, fontUrban } from '@/assets/fonts'
+import { fontSans, fontSerif } from '@/assets/fonts'
 import { env } from '@/root/env.mjs'
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -28,10 +27,7 @@ interface RootLayoutProps {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'cyan' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#1F6B4A' }],
 }
 
 export const metadata: Metadata = {
@@ -41,18 +37,19 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    'Next.js',
-    'React',
-    'Tailwind CSS',
-    'Server Components',
-    'Radix UI',
+    'dog show handler',
+    'professional handler',
+    'AKC handler',
+    'dog show marketplace',
+    'handler directory',
+    'exhibitor services',
   ],
   authors: [
     {
-      name: 'SaasTemplate',
+      name: 'HandlerHub',
     },
   ],
-  creator: 'SaasTemplate',
+  creator: 'HandlerHub',
   metadataBase: new URL(siteConfig.url),
   openGraph: {
     type: 'website',
@@ -67,7 +64,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     images: [siteConfig.ogImage],
-    creator: '@SaasTemplate',
+    creator: '@handlerhub',
   },
   icons: {
     icon: '/favicons/favicon.ico',
@@ -92,14 +89,13 @@ export default function RootLayout({ children, modal }: RootLayoutProps) {
         className={cn(
           'isolate min-h-screen bg-background font-sans antialiased',
           fontSans.variable,
-          fontUrban.variable,
-          fontHeading.variable
+          fontSerif.variable
         )}
       >
         <Providers
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          forcedTheme="light"
           disableTransitionOnChange
         >
           {children}
@@ -111,7 +107,6 @@ export default function RootLayout({ children, modal }: RootLayoutProps) {
           <Toaster richColors closeButton position="top-center" />
           <ModalProvider />
           <TailwindIndicator />
-          <HWComponent />
         </Providers>
       </body>
     </html>

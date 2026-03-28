@@ -64,7 +64,7 @@ export type SiteConfig = {
   ogImage: string
   mailSupport: string
   social: {
-    links: Record<keyof Icons, SocialLink>
+    links: Partial<Record<string, SocialLink>>
   }
 }
 

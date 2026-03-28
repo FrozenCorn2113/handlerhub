@@ -84,14 +84,7 @@ export function StitchMarketingFooter() {
                   Browse Requests
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/pricing"
-                >
-                  Pricing
-                </Link>
-              </li>
+              {/* Pricing link hidden during free launch period */}
             </ul>
           </div>
 

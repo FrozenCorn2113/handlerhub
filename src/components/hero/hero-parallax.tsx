@@ -105,38 +105,23 @@ export const Header = () => {
   return (
     <div className="relative left-0 top-0 mx-auto w-full max-w-7xl px-4 py-20 md:py-40">
       <BlockTitle.Wrapper>
-        <BlockTitle.Header elementType="h1">Pre Sale</BlockTitle.Header>
+        <BlockTitle.Header elementType="h1">HandlerHub</BlockTitle.Header>
 
         <BlockTitle.Title elementType="h2">
-          Launching Your SaaS Success Story with{' '}
+          The Professional Marketplace for{' '}
           <span className="relative bg-gradient-to-r from-indigo-500 to-purple-500/80 bg-clip-text font-extrabold text-transparent">
-            Next SaaS Template - Demo version
+            Dog Show Handlers
           </span>
         </BlockTitle.Title>
 
         <BlockTitle.Description>
-          Explore our comprehensive FAQ to find quick answers to common
-          inquiries. If you need further assistance, don&apos;t hesitate to
-          contact us for personalized help.
+          Connect with experienced handlers, groomers, and show professionals.
+          Find the right team for your next competition.
         </BlockTitle.Description>
 
         <BlockTitle.Background />
 
         <BlockTitle.Separator />
-        <div className="mx-auto my-6 flex w-full justify-center">
-          <a
-            href="https://www.producthunt.com/posts/next-saas-template?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-next&#0045;saas&#0045;template"
-            target="_blank"
-          >
-            <img
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=464422&theme=light"
-              alt="Next&#0032;SaaS&#0032;Template - Launching&#0032;your&#0032;SaaS&#0032;success&#0032;story | Product Hunt"
-              style={{ width: '250px', height: '54px' }}
-              width="250"
-              height="54"
-            />
-          </a>
-        </div>
       </BlockTitle.Wrapper>
     </div>
   )

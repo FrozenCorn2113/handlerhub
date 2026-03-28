@@ -15,13 +15,13 @@ export default function NotFoundPage() {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
           />
         </svg>
       ),
-      title: 'Resources',
-      desc: 'Lorem Ipsum is simply dummy text of the printing',
-      href: '/contact',
+      title: 'Find Handlers',
+      desc: 'Browse our directory of professional dog show handlers by breed and region.',
+      href: '/handlers',
     },
     {
       icon: (
@@ -40,9 +40,9 @@ export default function NotFoundPage() {
           />
         </svg>
       ),
-      title: 'Guides',
-      desc: 'Lorem Ipsum is simply dummy text of the printing',
-      href: '/contact',
+      title: 'Help & FAQ',
+      desc: 'Find answers to common questions about HandlerHub.',
+      href: '/help',
     },
     {
       icon: (
@@ -61,8 +61,8 @@ export default function NotFoundPage() {
           />
         </svg>
       ),
-      title: 'Support',
-      desc: 'Lorem Ipsum is simply dummy text of the printing',
+      title: 'Contact Support',
+      desc: 'Get in touch with our team for help with your account.',
       href: '/contact',
     },
   ]
@@ -72,9 +72,7 @@ export default function NotFoundPage() {
       <div className="mx-auto flex h-screen max-w-screen-xl items-center justify-start px-4 md:px-8">
         <div className="mx-auto max-w-lg text-gray-600">
           <div className="space-y-10 text-center">
-            <h1 className="font-semibold text-indigo-600 dark:text-indigo-500">
-              404 Error
-            </h1>
+            <h1 className="font-semibold text-primary">404 Error</h1>
             <p className="text-4xl font-semibold text-gray-800 sm:text-5xl dark:text-white">
               Page not found
             </p>
@@ -83,7 +81,7 @@ export default function NotFoundPage() {
               removed.
             </p>
             <div>
-              <Link href="/" className="text-indigo-600 dark:text-indigo-500">
+              <Link href="/" className="text-primary hover:underline">
                 Back to Home page
               </Link>
             </div>
@@ -92,7 +90,7 @@ export default function NotFoundPage() {
             <ul className="divide-y">
               {navigations.map((item, idx) => (
                 <li key={idx} className="flex gap-x-4 py-6">
-                  <div className="flex size-14 flex-none items-center justify-center rounded-full bg-indigo-50">
+                  <div className="flex size-14 flex-none items-center justify-center rounded-full bg-primary/10">
                     {item.icon}
                   </div>
                   <div className="space-y-1">
@@ -104,7 +102,7 @@ export default function NotFoundPage() {
                     </p>
                     <a
                       href={item.href}
-                      className="inline-flex items-center gap-x-1 text-sm font-medium text-indigo-950 duration-150 hover:text-indigo-400 dark:text-indigo-500"
+                      className="inline-flex items-center gap-x-1 text-sm font-medium text-primary duration-150 hover:text-primary/80"
                     >
                       Learn more
                       <svg

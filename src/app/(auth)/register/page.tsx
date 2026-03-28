@@ -21,6 +21,7 @@ import {
 import { OAuthButtons } from '@/components/auth/oauth-buttons'
 import { SignInWithEmailForm } from '@/components/auth/signin-with-email-form'
 import { BlockTitle } from '@/components/layout/main-title'
+import { FoundingHandlerBanner } from '@/components/marketing/founding-handler-banner'
 import { Icons } from '@/components/shared/icons'
 import IconLogo from '@/components/shared/logo-icon'
 
@@ -30,9 +31,28 @@ export const metadata: Metadata = {
   description: 'Sign up for an account',
 }
 
-export default async function SignUpPage(): Promise<JSX.Element> {
+interface SignUpPageProps {
+  searchParams?: {
+    next?: string
+    from?: string
+  }
+}
+
+function safeNext(nextValue: unknown): string | null {
+  if (typeof nextValue !== 'string') return null
+  if (!nextValue.startsWith('/')) return null
+  return nextValue
+}
+
+export default async function SignUpPage({
+  searchParams,
+}: SignUpPageProps): Promise<JSX.Element> {
   const session = await auth()
-  if (session) redirect(DEFAULT_LOGIN_REDIRECT)
+  const nextUrl =
+    safeNext(searchParams?.next) ??
+    safeNext(searchParams?.from) ??
+    '/role-select'
+  if (session) redirect(nextUrl)
 
   return (
     <div className="size-screen container flex flex-col items-center justify-center">
@@ -48,7 +68,7 @@ export default async function SignUpPage(): Promise<JSX.Element> {
           Back
         </Link>
         <Link
-          href="/login"
+          href={`/login?next=${encodeURIComponent(nextUrl)}`}
           className={cn(
             buttonVariants({ variant: 'ghost' }),
             'absolute right-4 top-4 md:right-8 md:top-8'
@@ -59,9 +79,12 @@ export default async function SignUpPage(): Promise<JSX.Element> {
       </div>
       <div className="mx-auto mb-8 flex flex-col items-center">
         <IconLogo className="mb-2 size-16" />
-        <span className="mb-2 hidden font-urban text-xl font-bold text-black dark:text-white sm:inline-block">
+        <span className="mb-2 hidden font-urban text-xl font-bold text-black sm:inline-block dark:text-white">
           {siteConfig.name}
         </span>
+      </div>
+      <div className="mb-6 max-w-2xl">
+        <FoundingHandlerBanner variant="compact" showCTA={false} />
       </div>
       <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
         <CardHeader className="space-y-1">
@@ -78,7 +101,8 @@ export default async function SignUpPage(): Promise<JSX.Element> {
             </Link>
           </div>
           <CardDescription>
-            Choose your preferred sign up method
+            Join as an exhibitor or handler - Choose your preferred sign up
+            method
           </CardDescription>
         </CardHeader>
         <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
@@ -101,7 +125,7 @@ export default async function SignUpPage(): Promise<JSX.Element> {
               <span> Already have an account? </span>
               <Link
                 aria-label="Sign in"
-                href="/login"
+                href={`/login?next=${encodeURIComponent(nextUrl)}`}
                 className="font-bold tracking-wide text-primary underline-offset-4 transition-all hover:underline"
               >
                 Sign in

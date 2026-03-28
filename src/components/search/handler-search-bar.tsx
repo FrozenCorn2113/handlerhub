@@ -116,29 +116,7 @@ export function HandlerSearchBar({
             </div>
           </div>
 
-          {/* Handler Level */}
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm">
-              Handler Level
-            </label>
-            <div className="relative">
-              <Trophy className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-              <Select value={handlerLevel} onValueChange={setHandlerLevel}>
-                <SelectTrigger className="h-11 pl-10 text-sm">
-                  <SelectValue placeholder="Any level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any level</SelectItem>
-                  <SelectItem value="new">New Handler</SelectItem>
-                  <SelectItem value="verified">Verified Handler</SelectItem>
-                  <SelectItem value="professional">
-                    Professional Handler
-                  </SelectItem>
-                  <SelectItem value="elite">Elite Handler</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          {/* Handler Level filter hidden during launch */}
 
           {/* Search Button */}
           <Button

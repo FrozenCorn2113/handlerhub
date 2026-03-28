@@ -82,33 +82,9 @@ export function UserAccountNav({ initialUser }: UserAccountNavProps) {
             <p className="text-sm">Dashboard</p>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link
-            href="/dashboard/billing"
-            className="flex items-center space-x-2.5"
-          >
-            <CreditCard className="size-4" />
-            <p className="text-sm">Billing</p>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link
-            href="/dashboard/analitycs"
-            className="flex items-center space-x-2.5"
-          >
-            <Icons.barChart className="size-4" />
-            <p className="text-sm">Analitycs</p>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
-          <Link
-            href="/dashboard/users"
-            className="flex items-center space-x-2.5"
-          >
-            <UserCircle className="size-4" />
-            <p className="text-sm">Users</p>
-          </Link>
-        </DropdownMenuItem>
+        {/* Billing hidden - no payment processing yet */}
+        {/* Analytics hidden - not active */}
+        {/* Users hidden - admin only */}
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link
             href="/dashboard/settings"

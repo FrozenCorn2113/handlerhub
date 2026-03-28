@@ -87,13 +87,7 @@ export async function FeaturedHandlers() {
                       </div>
                     )}
 
-                    {/* Handler Level Badge */}
-                    <div className="absolute left-3 top-3">
-                      <HandlerLevelBadge
-                        level={profile.handlerLevel}
-                        size="md"
-                      />
-                    </div>
+                    {/* Handler Level Badge - hidden during launch */}
 
                     {profile.featured && (
                       <div className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-slate-800 shadow-sm">

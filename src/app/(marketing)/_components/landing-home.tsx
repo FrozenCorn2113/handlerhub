@@ -1,284 +1,453 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 import {
-  BellRinging,
-  CalendarBlank,
-  CurrencyDollar,
+  Binoculars,
+  ChatCircle,
+  ClipboardText,
+  Handshake,
   MagnifyingGlass,
-  Medal,
+  MapPin,
   PawPrint,
-  Scroll,
-  Shield,
-  ShieldCheck,
-  Star,
+  Sparkle,
+  Target,
+  UserCirclePlus,
+  UsersThree,
 } from '@phosphor-icons/react/dist/ssr'
+
+/* ------------------------------------------------------------------ */
+/*  Section 1 - Hero                                                   */
+/* ------------------------------------------------------------------ */
+function HeroSection() {
+  return (
+    <section
+      className="bg-[#F8F4EE]"
+      style={{ padding: 'var(--section-py-xl) 0' }}
+    >
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1
+            className="mb-8 font-display font-light text-[#1C1208]"
+            style={{
+              fontSize: 'var(--fs-display)',
+              lineHeight: 0.95,
+              letterSpacing: '-0.04em',
+            }}
+          >
+            Find your handler.
+            <br />
+            Grow your business.
+          </h1>
+
+          <p
+            className="mx-auto mb-12 max-w-[560px] font-body text-[#4A3E2E]"
+            style={{ fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}
+          >
+            Whether you&apos;re looking for a handler for your next show or
+            building your handling career, HandlerHub connects you with the
+            right people.
+          </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link href="/handlers" className="btn-primary">
+              Find a Handler
+            </Link>
+            <Link href="/for-handlers" className="btn-secondary">
+              List Your Services
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 2 - How It Works (Two Tracks)                              */
+/* ------------------------------------------------------------------ */
+
+interface StepProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+}
+
+function StepCard({ icon, title, description }: StepProps) {
+  return (
+    <div className="flex items-start gap-4">
+      <div
+        className="flex shrink-0 items-center justify-center rounded-[10px] bg-sage"
+        style={{ width: 56, height: 56 }}
+      >
+        {icon}
+      </div>
+      <div>
+        <h4
+          className="mb-1 font-body text-base font-semibold text-[#1C1208]"
+          style={{ lineHeight: 1.4, letterSpacing: 0 }}
+        >
+          {title}
+        </h4>
+        <p className="text-sm text-[#4A3E2E]" style={{ lineHeight: 1.6 }}>
+          {description}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function HowItWorksSection() {
+  return (
+    <section
+      className="bg-[#F8F4EE]"
+      style={{ padding: 'var(--section-py-md) 0' }}
+    >
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        <h2
+          className="mb-16 text-center font-display font-light text-[#1C1208]"
+          style={{
+            fontSize: 'var(--fs-h2)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          How HandlerHub Works
+        </h2>
+
+        <div className="grid gap-16 lg:grid-cols-2">
+          {/* For Exhibitors */}
+          <div>
+            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.12em] text-paddock-green">
+              For Exhibitors
+            </p>
+            <div className="flex flex-col gap-8">
+              <StepCard
+                icon={
+                  <MagnifyingGlass
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Browse handler profiles"
+                description="Find handlers by breed specialty, region, and pricing. Every profile shows real experience and fee schedules."
+              />
+              <StepCard
+                icon={
+                  <ClipboardText
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Post a request"
+                description="Describe the services you need, the breed, and the show dates. Handlers come to you."
+              />
+              <StepCard
+                icon={
+                  <ChatCircle
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Message and hire with confidence"
+                description="Communicate directly with handlers. No middlemen, no platform fees on your arrangement."
+              />
+            </div>
+          </div>
+
+          {/* For Handlers */}
+          <div>
+            <p className="mb-8 text-xs font-semibold uppercase tracking-[0.12em] text-paddock-green">
+              For Handlers
+            </p>
+            <div className="flex flex-col gap-8">
+              <StepCard
+                icon={
+                  <UserCirclePlus
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Create your professional profile"
+                description="Showcase your breed specialties, credentials, and fee schedule. One link to share everywhere."
+              />
+              <StepCard
+                icon={
+                  <Binoculars
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Browse open requests"
+                description="See what exhibitors are looking for. Filter by breed, region, and service type."
+              />
+              <StepCard
+                icon={
+                  <Handshake
+                    size={40}
+                    weight="light"
+                    className="text-paddock-green"
+                  />
+                }
+                title="Respond and grow your client base"
+                description="Reach exhibitors you would never meet through word of mouth alone. Build your reputation on the platform."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 - Request Board Teaser                                   */
+/* ------------------------------------------------------------------ */
+
+const mockRequests = [
+  {
+    title: 'Standard Poodle handler needed - Springfield Cluster, April 12-14',
+    breed: 'Standard Poodle',
+    service: 'Show Handling',
+    region: 'Midwest',
+    posted: '2 hours ago',
+  },
+  {
+    title: 'Grooming services for Golden Retriever - Westminster area',
+    breed: 'Golden Retriever',
+    service: 'Grooming',
+    region: 'Northeast',
+    posted: '5 hours ago',
+  },
+  {
+    title:
+      'Looking for campaign handler - Labrador Retriever, Southeast circuit',
+    breed: 'Labrador Retriever',
+    service: 'Campaign Handling',
+    region: 'Southeast',
+    posted: '1 day ago',
+  },
+]
+
+function RequestBoardSection() {
+  return (
+    <section
+      className="bg-[#F0EAE0]"
+      style={{ padding: 'var(--section-py-md) 0' }}
+    >
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        <h2
+          className="mb-4 text-center font-display font-light text-[#1C1208]"
+          style={{
+            fontSize: 'var(--fs-h2)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          See what exhibitors are looking for
+        </h2>
+        <p
+          className="mx-auto mb-12 max-w-[480px] text-center text-[#4A3E2E]"
+          style={{ fontSize: '16px', lineHeight: 1.7 }}
+        >
+          The request board is where exhibitors post what they need. Handlers
+          browse and respond.
+        </p>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {mockRequests.map((req) => (
+            <div key={req.title} className="card-hh">
+              <h4
+                className="mb-4 font-body text-base font-semibold text-[#1C1208]"
+                style={{ lineHeight: 1.4, letterSpacing: 0 }}
+              >
+                {req.title}
+              </h4>
+              <div className="mb-4 flex flex-wrap gap-2">
+                <span className="chip chip-breed">
+                  <PawPrint size={12} weight="bold" />
+                  {req.breed}
+                </span>
+                <span className="chip chip-verified">
+                  <Sparkle size={12} weight="bold" />
+                  {req.service}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-[#7A6E5E]">
+                <span className="flex items-center gap-1">
+                  <MapPin size={14} weight="bold" />
+                  {req.region}
+                </span>
+                <span>{req.posted}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link href="/requests" className="btn-secondary">
+            Browse All Requests
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 4 - Why HandlerHub                                         */
+/* ------------------------------------------------------------------ */
+
+const valueProps = [
+  {
+    icon: <Target size={28} weight="light" className="text-paddock-green" />,
+    title: 'Built for the show world',
+    description:
+      'Not a generic pet marketplace. We understand circuits, breed specialties, and campaign management.',
+  },
+  {
+    icon: <Sparkle size={28} weight="light" className="text-paddock-green" />,
+    title: 'Transparent pricing',
+    description:
+      'Handlers set their own fee schedules. No hidden costs, no platform markups.',
+  },
+  {
+    icon: (
+      <UsersThree size={28} weight="light" className="text-paddock-green" />
+    ),
+    title: 'Every handler welcome',
+    description:
+      'From PHA professionals to aspiring handlers at their first show. The request board is your on-ramp.',
+  },
+]
+
+function WhySection() {
+  return (
+    <section
+      className="bg-[#F8F4EE]"
+      style={{ padding: 'var(--section-py-md) 0' }}
+    >
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        <h2
+          className="mb-16 text-center font-display font-light text-[#1C1208]"
+          style={{
+            fontSize: 'var(--fs-h2)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          Why HandlerHub
+        </h2>
+
+        <div className="grid gap-10 md:grid-cols-3">
+          {valueProps.map((vp) => (
+            <div key={vp.title} className="text-center">
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-[10px] bg-sage">
+                {vp.icon}
+              </div>
+              <h4
+                className="mb-2 font-body text-lg font-semibold text-[#1C1208]"
+                style={{ lineHeight: 1.3, letterSpacing: 0 }}
+              >
+                {vp.title}
+              </h4>
+              <p
+                className="mx-auto max-w-xs text-sm text-[#4A3E2E]"
+                style={{ lineHeight: 1.7 }}
+              >
+                {vp.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 5 - Founding CTA                                           */
+/* ------------------------------------------------------------------ */
+
+function FoundingCtaSection() {
+  return (
+    <section
+      className="bg-paddock-green"
+      style={{ padding: 'var(--section-py-lg) 0' }}
+    >
+      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        <h2
+          className="mb-12 text-center font-display font-light text-[#F8F4EE]"
+          style={{
+            fontSize: 'var(--fs-h2)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          Join the Founding 100
+        </h2>
+
+        <div className="grid gap-12 lg:grid-cols-2">
+          {/* For Handlers */}
+          <div className="rounded-2xl border border-white/15 bg-white/10 p-10">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-sage">
+              For Handlers
+            </p>
+            <p
+              className="mb-8 text-[#F8F4EE]"
+              style={{ fontSize: '18px', lineHeight: 1.7 }}
+            >
+              Be among the first handlers on HandlerHub. Create your profile
+              today and start getting discovered by exhibitors.
+            </p>
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center rounded-full bg-[#F8F4EE] px-7 py-3.5 text-sm font-medium text-paddock-green transition-colors hover:bg-white"
+            >
+              Create Your Profile
+            </Link>
+          </div>
+
+          {/* For Exhibitors */}
+          <div className="rounded-2xl border border-white/15 bg-white/10 p-10">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-sage">
+              For Exhibitors
+            </p>
+            <p
+              className="mb-8 text-[#F8F4EE]"
+              style={{ fontSize: '18px', lineHeight: 1.7 }}
+            >
+              Looking for a handler? Post your first request and let the right
+              professionals come to you.
+            </p>
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center rounded-full border-[1.5px] border-[#F8F4EE] bg-transparent px-7 py-3.5 text-sm font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
+            >
+              Post a Request
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Composed landing page                                              */
+/* ------------------------------------------------------------------ */
 
 export default function LandingHome() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative w-full overflow-hidden py-12 lg:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <div className="relative z-10 grid items-center gap-12 lg:grid-cols-2">
-            <div className="max-w-2xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex size-2 rounded-full bg-primary" />
-                </span>
-                New: Verified Specialty Handlers
-              </div>
-
-              <h1 className="mb-6 font-serif text-5xl leading-tight text-foreground md:text-6xl lg:text-7xl">
-                Professional dog handling, without the{' '}
-                <span className="italic text-primary">chaos</span>.
-              </h1>
-
-              <p className="mb-10 text-lg leading-relaxed text-muted-foreground md:text-xl">
-                Find verified, breed-specific handlers for your next show in
-                minutes. Skip the noisy Facebook groups and connect with the
-                industry&apos;s best talent.
-              </p>
-
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/handlers"
-                  className="inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-primary-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
-                >
-                  Find a Handler
-                  <MagnifyingGlass size={22} />
-                </Link>
-
-                <Link
-                  href="/for-handlers"
-                  className="inline-flex h-14 items-center justify-center rounded-lg border border-slate-200 bg-background px-8 text-lg font-bold text-foreground transition-colors hover:bg-muted"
-                >
-                  Become a Handler
-                </Link>
-              </div>
-            </div>
-
-            <div className="relative hidden lg:block">
-              <div className="group relative aspect-square overflow-hidden rounded-2xl bg-slate-200 shadow-2xl">
-                <Image
-                  alt="Professional dog handler at show"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB27lNRCgmjiiTv0g_YlATZMWLDDJulSx5sR6swWb7kjUrpx_LUMzHpqOOMDWuCaNfuew6hjM9lSvEfZUi35G1KpF7RX5AFbEFX-ITmhLm233P61eMAea453ZgleE5l4C2qwOQ-a_TPuu4rAqf4Pd7r14zyXLeknA1f5zNL2nKaKgDhacZucp2puzWVLcf6vk5Qr5aiVwBYt3rt4ej0bUZkJqB8wAO7Bx1p9FDFuY2YUTg-RGF-ej8hoWEXIlrLT5PFviprVdx1Kg"
-                  fill
-                  sizes="(min-width: 1024px) 520px, 0px"
-                  className="object-cover grayscale-[0.2] transition-all duration-700 group-hover:grayscale-0"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-
-                <div className="absolute inset-x-6 bottom-6 rounded-xl bg-white/95 p-6 shadow-xl backdrop-blur">
-                  <div className="flex items-center gap-4">
-                    <div className="relative size-12 overflow-hidden rounded-full bg-slate-300">
-                      <Image
-                        alt="Handler portrait"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRONK-IhEutRCGNZkXQgeT-UMTcMQ7WQ6NTBZbjO_i7kVDCu1tvE6V6EAXLluDDnVVKXHZXZtve1HctfwORjWvNvGuRgjEkkmYwxc44gcaJwopSJojveEX3yzaSKujLrkU9qcSvi1Uhv4dZDyVDGdfJP82qKR9ua8-dt64a1vgviZgr9YTc10NhApZCv39oKHE_AILWgbXUtGZvjJxCycwClTX8Cwl2Vy6odxqpCCMEZMAFKtThTHnHiMiiSs5H6NpsesZYi7syg"
-                        fill
-                        sizes="48px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-bold text-foreground">Marcus Thorne</p>
-                      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                        AKC Registered Handler
-                      </p>
-                    </div>
-                    <div className="ml-auto flex text-yellow-500">
-                      <Star size={14} weight="fill" />
-                      <Star size={14} weight="fill" />
-                      <Star size={14} weight="fill" />
-                      <Star size={14} weight="fill" />
-                      <Star size={14} weight="fill" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust bar */}
-      <section className="border-y border-slate-200 bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-12">
-          <div className="grid grid-cols-1 gap-12 text-center md:grid-cols-3 md:text-left">
-            <div className="flex flex-col items-center gap-2 md:items-start">
-              <div className="mb-1 flex items-center gap-3 text-primary">
-                <ShieldCheck size={30} />
-                <span className="text-3xl font-black tracking-tight text-foreground">
-                  500+
-                </span>
-              </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                Verified Handlers
-              </p>
-              <p className="text-xs text-slate-400">
-                Every handler passes a rigorous experience check.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-2 md:items-start md:border-x md:border-slate-200 md:px-12">
-              <div className="mb-1 flex items-center gap-3 text-primary">
-                <PawPrint size={30} />
-                <span className="text-3xl font-black tracking-tight text-foreground">
-                  100+
-                </span>
-              </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                AKC Breeds
-              </p>
-              <p className="text-xs text-slate-400">
-                Specialized expertise across all seven show groups.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-2 md:items-start">
-              <div className="mb-1 flex items-center gap-3 text-primary">
-                <Star size={30} weight="fill" />
-                <span className="text-3xl font-black tracking-tight text-foreground">
-                  4.9/5
-                </span>
-              </div>
-              <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                Average Rating
-              </p>
-              <p className="text-xs text-slate-400">
-                Consistent quality performance and client care.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how-it-works" className="overflow-hidden bg-muted/30 py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <div className="mb-16 max-w-3xl">
-            <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-primary">
-              The Process
-            </h2>
-            <h3 className="font-serif text-4xl leading-tight text-foreground md:text-5xl">
-              Booking a professional handler has never been easier
-            </h3>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="group relative rounded-2xl border border-slate-200 bg-background p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl">
-              <div className="mb-8 flex size-16 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <MagnifyingGlass size={30} />
-              </div>
-              <div className="absolute right-8 top-8 -z-10 text-6xl font-black text-slate-100 transition-colors group-hover:text-primary/5">
-                01
-              </div>
-              <h4 className="mb-4 text-xl font-bold text-foreground">
-                Search by Breed &amp; Date
-              </h4>
-              <p className="leading-relaxed text-muted-foreground">
-                Input your show location and dog&apos;s breed to see available
-                talent specifically vetted for your category.
-              </p>
-            </div>
-
-            <div className="group relative rounded-2xl border border-slate-200 bg-background p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl">
-              <div className="mb-8 flex size-16 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <Medal size={30} />
-              </div>
-              <div className="absolute right-8 top-8 -z-10 text-6xl font-black text-slate-100 transition-colors group-hover:text-primary/5">
-                02
-              </div>
-              <h4 className="mb-4 text-xl font-bold text-foreground">
-                Evaluate Experience
-              </h4>
-              <p className="leading-relaxed text-muted-foreground">
-                View verified portfolios, win records, and specialty breed
-                experience at a glance. No more guessing.
-              </p>
-            </div>
-
-            <div className="group relative rounded-2xl border border-slate-200 bg-background p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-xl">
-              <div className="mb-8 flex size-16 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <Shield size={30} />
-              </div>
-              <div className="absolute right-8 top-8 -z-10 text-6xl font-black text-slate-100 transition-colors group-hover:text-primary/5">
-                03
-              </div>
-              <h4 className="mb-4 text-xl font-bold text-foreground">
-                Book with Confidence
-              </h4>
-              <p className="leading-relaxed text-muted-foreground">
-                Secure payments and clear communication in one place, protected
-                by our booking guarantee and insurance.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-12">
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-primary p-8 md:p-16 lg:p-24">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-blue-600 to-indigo-700 opacity-90" />
-            <div className="absolute right-0 top-0 size-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-
-            <div className="relative z-10 grid items-center gap-16 lg:grid-cols-2">
-              <div>
-                <h2 className="mb-8 font-serif text-4xl leading-tight text-white md:text-5xl">
-                  Ready to show your dog&apos;s true potential?
-                </h2>
-                <p className="mb-12 max-w-lg text-lg leading-relaxed text-white/80">
-                  Join thousands of owners who trust HandlerHub to find the
-                  perfect professional partners for their canine athletes.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link
-                    href="/handlers"
-                    className="rounded-xl bg-white px-10 py-5 font-black text-primary transition-all hover:shadow-2xl"
-                  >
-                    Browse Handlers Now
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="rounded-xl border-2 border-white/30 bg-transparent px-10 py-5 font-bold text-white transition-all hover:border-white"
-                  >
-                    Contact Support
-                  </Link>
-                </div>
-              </div>
-
-              <div className="hidden justify-center lg:flex">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                      <CalendarBlank size={30} className="mb-2 text-white" />
-                      <p className="font-bold text-white">Auto-Sync Schedule</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                      <CurrencyDollar size={30} className="mb-2 text-white" />
-                      <p className="font-bold text-white">Secure Escrow</p>
-                    </div>
-                  </div>
-                  <div className="mt-8 space-y-4">
-                    <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                      <Scroll size={30} className="mb-2 text-white" />
-                      <p className="font-bold text-white">E-Contracts</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                      <BellRinging size={30} className="mb-2 text-white" />
-                      <p className="font-bold text-white">Real-time Alerts</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
+      <HowItWorksSection />
+      <RequestBoardSection />
+      <WhySection />
+      <FoundingCtaSection />
     </>
   )
 }

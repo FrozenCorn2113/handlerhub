@@ -1,43 +1,434 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { prisma } from '@/lib/db'
+import {
+  calculateProfileCompleteness,
+  getIncompleteFields,
+} from '@/lib/profile-completeness'
 import { getCurrentUser } from '@/lib/session'
 
 import { Button } from '@/components/ui/button-ui'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
-import { EmptyPlaceholder } from '@/components/demo/empty-placeholder'
+import { DashboardRequestList } from '@/components/requests/dashboard-request-list'
 
 export const metadata = {
   title: 'Dashboard',
 }
 
+export const dynamic = 'force-dynamic'
+
+async function HandlerDashboard({ userId }: { userId: string }) {
+  let profile: Awaited<ReturnType<typeof prisma.handlerProfile.findUnique>> =
+    null
+  let completeness = 0
+  let incompleteFields: ReturnType<typeof getIncompleteFields> = []
+  let recentConversations: Array<{
+    id: string
+    messages: Array<{
+      content: string
+      sender: { id: string; name: string | null } | null
+    }>
+  }> = []
+  let matchingRequests: Array<{
+    id: string
+    title: string
+    serviceType: string
+    breed: string | null
+    region: string | null
+    createdAt: string
+    _count: { responses: number }
+  }> = []
+
+  try {
+    profile = await prisma.handlerProfile.findUnique({
+      where: { userId },
+    })
+
+    if (profile) {
+      completeness = calculateProfileCompleteness(profile)
+      incompleteFields = getIncompleteFields(profile).slice(0, 5)
+    }
+
+    // Recent messages
+    const convos = await prisma.conversation.findMany({
+      where: { participantIds: { has: userId } },
+      orderBy: { lastMessageAt: 'desc' },
+      take: 5,
+      include: {
+        messages: {
+          orderBy: { sentAt: 'desc' },
+          take: 1,
+          include: {
+            sender: { select: { id: true, name: true } },
+          },
+        },
+      },
+    })
+    recentConversations = convos
+
+    // Open requests matching handler profile
+    if (profile) {
+      const orFilters: Array<Record<string, unknown>> = []
+      if (profile.breeds.length > 0) {
+        orFilters.push({ breed: { in: profile.breeds } })
+      }
+      if (profile.regions.length > 0) {
+        orFilters.push({ region: { in: profile.regions } })
+      }
+
+      const where: Record<string, unknown> = { status: 'OPEN' }
+      if (orFilters.length > 0) {
+        where.OR = orFilters
+      }
+
+      const dbRequests = await prisma.serviceRequest.findMany({
+        where,
+        select: {
+          id: true,
+          title: true,
+          serviceType: true,
+          breed: true,
+          region: true,
+          createdAt: true,
+          _count: { select: { responses: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+      })
+
+      matchingRequests = dbRequests.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      }))
+    }
+  } catch {
+    // Silently fail if DB unavailable
+  }
+
+  return (
+    <>
+      {/* Profile completion banner */}
+      {completeness < 80 && (
+        <Card className="border-paddock-green/30 bg-sage/20">
+          <CardContent className="flex items-center justify-between p-4">
+            <div>
+              <p className="font-semibold text-ringside-black">
+                Complete your profile to go live
+              </p>
+              <p className="text-sm text-warm-gray">
+                Your profile is {completeness}% complete. Exhibitors are more
+                likely to book handlers with complete profiles.
+              </p>
+              {incompleteFields.length > 0 && (
+                <p className="mt-1 text-xs text-warm-gray">
+                  Missing: {incompleteFields.map((f) => f.label).join(', ')}
+                </p>
+              )}
+            </div>
+            <Link href="/dashboard/profile">
+              <Button variant="primary">Complete Profile</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Profile completeness bar */}
+      {profile && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Completeness</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <div className="h-3 w-full overflow-hidden rounded-full bg-sand">
+                  <div
+                    className="h-3 rounded-full bg-paddock-green transition-all duration-500"
+                    style={{ width: `${completeness}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-sm font-semibold text-ringside-black">
+                {completeness}%
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Recent Messages */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Messages</CardTitle>
+            <CardDescription>Your latest conversations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {recentConversations.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No messages yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentConversations.map((conv) => {
+                  const lastMsg = conv.messages[0]
+                  return (
+                    <Link
+                      key={conv.id}
+                      href="/dashboard/messages"
+                      className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+                    >
+                      <p className="text-sm font-medium">
+                        {lastMsg?.sender?.name || 'Unknown'}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {lastMsg?.content || 'No messages'}
+                      </p>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Open Requests */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Open Requests</CardTitle>
+                <CardDescription>
+                  Requests matching your profile
+                </CardDescription>
+              </div>
+              <Link
+                href="/requests"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                View all
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {!profile ? (
+              <div className="rounded-md bg-muted p-4 text-center">
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Complete your profile to see matching requests from
+                  exhibitors.
+                </p>
+                <Link
+                  href="/dashboard/profile"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  Complete Your Profile
+                </Link>
+              </div>
+            ) : matchingRequests.length > 0 ? (
+              <DashboardRequestList requests={matchingRequests} />
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No matching requests right now.{' '}
+                <Link href="/requests" className="text-paddock-green underline">
+                  Browse all requests
+                </Link>
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  )
+}
+
+async function ExhibitorDashboard({ userId }: { userId: string }) {
+  let myRequests: Array<{
+    id: string
+    title: string
+    status: string
+    _count: { responses: number }
+  }> = []
+  let bookingRequests: Array<{
+    id: string
+    status: string
+    showName: string
+    dogBreed: string
+    handler: { name: string | null; image: string | null } | null
+  }> = []
+
+  try {
+    myRequests = await prisma.serviceRequest.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        _count: { select: { responses: true } },
+      },
+    })
+
+    bookingRequests = await prisma.bookingRequest.findMany({
+      where: { exhibitorId: userId },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        status: true,
+        showName: true,
+        dogBreed: true,
+        handler: { select: { name: true, image: true } },
+      },
+    })
+  } catch {
+    // Silently fail
+  }
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {/* My Requests */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Requests</CardTitle>
+          <CardDescription>Service requests you have posted</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {myRequests.length === 0 ? (
+            <div className="text-center">
+              <p className="mb-3 text-sm text-muted-foreground">
+                You have not posted any requests yet.
+              </p>
+              <Link href="/handlers">
+                <Button variant="primary">Find Handlers</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {myRequests.map((req) => (
+                <div key={req.id} className="rounded-lg border p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">{req.title}</p>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        req.status === 'OPEN'
+                          ? 'bg-paddock-green/10 text-paddock-green'
+                          : 'bg-sand text-warm-gray'
+                      }`}
+                    >
+                      {req.status}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {req._count.responses} response
+                    {req._count.responses !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* My Bookings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Bookings</CardTitle>
+          <CardDescription>Booking requests you have sent</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {bookingRequests.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No bookings yet.{' '}
+              <Link href="/handlers" className="text-paddock-green underline">
+                Browse handlers
+              </Link>
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {bookingRequests.map((booking) => (
+                <Link
+                  key={booking.id}
+                  href="/dashboard/bookings"
+                  className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">
+                      {booking.handler?.name || 'Handler'}
+                    </p>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        booking.status === 'ACCEPTED'
+                          ? 'bg-paddock-green/10 text-paddock-green'
+                          : booking.status === 'DECLINED'
+                            ? 'bg-red-50 text-red-600'
+                            : 'bg-sand text-warm-gray'
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {booking.showName} - {booking.dogBreed}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser()
-  const userRole = user?.role
 
   if (!user) {
     redirect('/login')
   }
 
+  const userRole = user.role
+
   return (
     <DashboardShell>
-      <DashboardHeader heading="Panel" text="Create and manage content.">
-        {(userRole === 'ADMIN' || userRole === 'EDITOR') && (
+      <DashboardHeader
+        heading="Dashboard"
+        text={
+          userRole === 'HANDLER'
+            ? 'Manage your handler profile and bookings.'
+            : userRole === 'EXHIBITOR'
+              ? 'Find handlers and manage your requests.'
+              : 'Welcome to HandlerHub.'
+        }
+      >
+        {userRole === 'ADMIN' && (
           <Button variant="tertiary" href="/dashboard-admin">
             Go to admin dashboard
           </Button>
         )}
       </DashboardHeader>
 
-      <EmptyPlaceholder>
-        <EmptyPlaceholder.Icon name="post" />
-        <EmptyPlaceholder.Title>No content created</EmptyPlaceholder.Title>
-        <EmptyPlaceholder.Description>
-          You don&apos;t have any content yet. Start creating content.
-        </EmptyPlaceholder.Description>
-        <Button variant="secondary">Fake button</Button>
-      </EmptyPlaceholder>
+      {userRole === 'HANDLER' && <HandlerDashboard userId={user.id!} />}
+      {userRole === 'EXHIBITOR' && <ExhibitorDashboard userId={user.id!} />}
+
+      {userRole === 'ADMIN' && (
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-muted-foreground">
+              Use the admin dashboard for site management.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </DashboardShell>
   )
 }

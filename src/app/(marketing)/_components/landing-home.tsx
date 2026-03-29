@@ -97,10 +97,10 @@ function ScrollReveal({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] }}
     >
       {children}
     </motion.div>
@@ -133,7 +133,7 @@ function WaveDivider({
         xmlns="http://www.w3.org/2000/svg"
         className="block w-full"
         preserveAspectRatio="none"
-        style={{ height: 'clamp(60px, 8vw, 120px)' }}
+        style={{ height: 'clamp(30px, 4vw, 60px)' }}
       >
         <path
           d="M0,0 L1440,0 L1440,40 C1200,110 900,120 720,80 C540,40 240,10 0,70 L0,0 Z"
@@ -181,7 +181,7 @@ function HeroSection() {
       >
         {/* Brand badge - logo only, not the h1 */}
         <motion.img
-          src="/handler-hub-logo-option-4.png"
+          src="/handler-hub-logo-option-2.png"
           alt="HandlerHub"
           className="mb-8 h-24 w-24 object-contain lg:h-32 lg:w-32"
           initial={{ opacity: 0, scale: 0.7 }}
@@ -650,7 +650,7 @@ function FoundingCtaSection() {
         <ScrollReveal>
           <div className="flex flex-col items-center text-center">
             <motion.img
-              src="/handler-hub-logo-option-4.png"
+              src="/handler-hub-logo-option-2.png"
               alt="HandlerHub"
               className="mb-8 h-20 w-20 object-contain"
               whileInView={{ rotate: [0, -5, 5, 0] }}
@@ -709,7 +709,6 @@ export default function LandingHome() {
       <HeroSection />
       <WaveDivider topColor="#1F6B4A" bottomColor="#F8F4EE" />
       <HowItWorksSection />
-      <WaveDivider topColor="#F8F4EE" bottomColor="#F8F4EE" flip />
       <RequestBoardSection />
       <WaveDivider topColor="#F8F4EE" bottomColor="#ffffff" />
       <WhySection />

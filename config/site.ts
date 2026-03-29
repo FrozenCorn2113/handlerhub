@@ -5,7 +5,7 @@ import { absoluteUrl } from '@/lib/utils'
 const defaultUrl = absoluteUrl('')
 
 /** Public URL path for the primary HandlerHub logo mark. */
-export const siteLogoSrc = '/handler-hub-logo-option-4.png'
+export const siteLogoSrc = '/handler-hub-logo-new.png'
 
 export const siteConfig: SiteConfig = {
   name: 'HandlerHub',

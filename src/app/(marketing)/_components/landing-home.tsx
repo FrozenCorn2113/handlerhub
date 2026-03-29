@@ -13,7 +13,7 @@ import {
   Trophy,
   UsersThree,
 } from '@phosphor-icons/react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 /* ------------------------------------------------------------------ */
 /*  Breed emoji helper                                                  */
@@ -148,12 +148,30 @@ function WaveDivider({
 /*  Section 1 — Hero                                                   */
 /* ------------------------------------------------------------------ */
 function HeroSection() {
-  const { scrollY } = useScroll()
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3])
-  const heroY = useTransform(scrollY, [0, 400], [0, 60])
-
   return (
     <section className="hero-section relative min-h-[100svh] overflow-hidden">
+      {/* CSS entrance animations */}
+      <style>{`
+        @keyframes hero-fade-up {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes hero-scale-in {
+          from { opacity: 0; transform: scale(0.7); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes hero-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(8px); }
+        }
+        .hero-logo { animation: hero-scale-in 0.6s ease-out 0.2s both; }
+        .hero-h1 { animation: hero-fade-up 0.7s ease-out 0.4s both; }
+        .hero-sub { animation: hero-fade-up 0.6s ease-out 0.6s both; }
+        .hero-cta { animation: hero-fade-up 0.6s ease-out 0.8s both; }
+        .hero-scroll { animation: hero-fade-up 0.6s ease-out 1.2s both; }
+        .hero-scroll-inner { animation: hero-bounce 2s ease-in-out infinite; }
+      `}</style>
+
       {/* Full-bleed background */}
       <div className="absolute inset-0 z-0">
         <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#14472F] via-[#1a5438] to-[#237a54]">
@@ -175,63 +193,47 @@ function HeroSection() {
       <FloatingPaw size={28} top="70%" left="88%" delay={0.8} duration={6.5} />
       <FloatingPaw size={36} top="40%" left="92%" delay={1.8} duration={7.5} />
 
-      <motion.div
-        className="relative z-[1] flex min-h-[100svh] flex-col items-center justify-center px-6 text-center"
-        style={{ opacity: heroOpacity, y: heroY }}
-      >
+      <div className="relative z-[1] flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
         {/* Brand badge - logo only, not the h1 */}
-        <motion.img
+        <img
           src="/handler-hub-logo-option-2.png"
           alt="HandlerHub"
-          className="mb-8 h-24 w-24 object-contain lg:h-32 lg:w-32"
-          initial={{ opacity: 0, scale: 0.7 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
+          className="hero-logo mb-8 h-24 w-24 object-contain lg:h-32 lg:w-32"
         />
 
         {/* Tagline as the primary headline */}
-        <motion.h1
-          className="mb-6 font-display text-white"
+        <h1
+          className="hero-h1 mb-6 font-display text-white"
           style={{
             fontSize: 'clamp(2.5rem, 2rem + 5vw, 5.5rem)',
             lineHeight: 1.05,
             letterSpacing: '-0.03em',
             fontWeight: 700,
           }}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.7 }}
         >
           <Sparkle className="mr-2 align-top" size="text-2xl lg:text-3xl" />
           Where great dogs
           <br />
           meet great handlers
           <Sparkle className="ml-2 align-top" size="text-2xl lg:text-3xl" />
-        </motion.h1>
+        </h1>
 
         {/* Supporting text */}
-        <motion.p
-          className="mb-10 max-w-lg font-display text-white/60"
+        <p
+          className="hero-sub mb-10 max-w-lg font-display text-white/60"
           style={{
             fontSize: 'clamp(1rem, 0.85rem + 0.8vw, 1.25rem)',
             lineHeight: 1.5,
             letterSpacing: '-0.01em',
             fontWeight: 400,
           }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
         >
           HandlerHub is the dog show community&apos;s home base. Find handlers,
           post requests, and connect with your people.
-        </motion.p>
+        </p>
 
         {/* Single CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
+        <div className="hero-cta">
           <Link
             href="/handlers"
             className="group inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-5 font-display text-lg font-bold text-[#14472F] transition-all hover:-translate-y-1 hover:shadow-2xl"
@@ -243,27 +245,18 @@ function HeroSection() {
               className="transition-transform group-hover:translate-x-1"
             />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          <motion.div
-            className="flex flex-col items-center gap-2"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          >
+        <div className="hero-scroll absolute bottom-10 left-1/2 -translate-x-1/2">
+          <div className="hero-scroll-inner flex flex-col items-center gap-2">
             <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/40">
               Scroll
             </span>
             <div className="h-8 w-[1px] bg-gradient-to-b from-white/40 to-transparent" />
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </div>
+        </div>
+      </div>
     </section>
   )
 }

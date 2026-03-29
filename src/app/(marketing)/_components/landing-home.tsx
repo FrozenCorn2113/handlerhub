@@ -79,6 +79,23 @@ function HeroSection() {
             location, or show circuit.
           </p>
 
+          {/* CTAs */}
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/handlers"
+              className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+            >
+              Find a Handler
+              <ArrowRight size={18} weight="bold" />
+            </Link>
+            <Link
+              href="/for-handlers"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-[#14472F] px-8 py-4 font-display text-base font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:bg-[#14472F]/5"
+            >
+              Become a Founding Handler
+            </Link>
+          </div>
+
           {/* Popular breed pills */}
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-sm font-semibold text-gray-500">

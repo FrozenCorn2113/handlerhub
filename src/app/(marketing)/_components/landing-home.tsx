@@ -498,8 +498,8 @@ function FoundingCtaSection() {
               className="mb-8 text-[#F8F4EE]"
               style={{ fontSize: '18px', lineHeight: 1.7 }}
             >
-              Need a handler for your next show? Post what you're looking for
-              and the right people will find you.
+              Need a handler for your next show? Post what you&apos;re looking
+              for and the right people will find you.
             </p>
             <Link
               href="/register"

@@ -41,18 +41,18 @@ function HeroSection() {
                 letterSpacing: '-0.04em',
               }}
             >
-              Find your handler.
+              Where great dogs
               <br />
-              Grow your business.
+              meet great handlers.
             </h1>
 
             <p
               className="mx-auto mb-12 max-w-[560px] font-body text-[#4A3E2E] lg:mx-0"
               style={{ fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}
             >
-              Whether you&apos;re looking for a handler for your next show or
-              building your handling career, HandlerHub connects you with the
-              right people.
+              The dog show world runs on relationships. HandlerHub makes it easy
+              to find your next handler, pick up new clients, or connect with
+              people who actually get it.
             </p>
 
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
@@ -147,7 +147,7 @@ function HowItWorksSection() {
             letterSpacing: '-0.02em',
           }}
         >
-          How HandlerHub Works
+          Here&apos;s how it works
         </h2>
 
         <div className="grid gap-16 lg:grid-cols-2">
@@ -166,7 +166,7 @@ function HowItWorksSection() {
                   />
                 }
                 title="Browse handler profiles"
-                description="Find handlers by breed specialty, region, and pricing. Every profile shows real experience and fee schedules."
+                description="Search by breed, region, or show circuit. See real experience, specialties, and what they charge."
               />
               <StepCard
                 icon={
@@ -176,8 +176,8 @@ function HowItWorksSection() {
                     className="text-paddock-green"
                   />
                 }
-                title="Post a request"
-                description="Describe the services you need, the breed, and the show dates. Handlers come to you."
+                title="Post what you need"
+                description="Drop your breed, show dates, and what you're looking for. The right handlers will find you."
               />
               <StepCard
                 icon={
@@ -187,8 +187,8 @@ function HowItWorksSection() {
                     className="text-paddock-green"
                   />
                 }
-                title="Message and hire with confidence"
-                description="Communicate directly with handlers. No middlemen, no platform fees on your arrangement."
+                title="Connect directly"
+                description="Message handlers, work out the details, done. No middlemen, no platform fees."
               />
             </div>
           </div>
@@ -207,8 +207,8 @@ function HowItWorksSection() {
                     className="text-paddock-green"
                   />
                 }
-                title="Create your professional profile"
-                description="Showcase your breed specialties, credentials, and fee schedule. One link to share everywhere."
+                title="Show off your wins"
+                description="Build a profile with your breed specialties, credentials, and fees. One link you can share everywhere."
               />
               <StepCard
                 icon={
@@ -218,8 +218,8 @@ function HowItWorksSection() {
                     className="text-paddock-green"
                   />
                 }
-                title="Browse open requests"
-                description="See what exhibitors are looking for. Filter by breed, region, and service type."
+                title="See who needs you"
+                description="Browse what exhibitors are posting. Filter by breed, region, and the kind of work you want."
               />
               <StepCard
                 icon={
@@ -229,8 +229,8 @@ function HowItWorksSection() {
                     className="text-paddock-green"
                   />
                 }
-                title="Respond and grow your client base"
-                description="Reach exhibitors you would never meet through word of mouth alone. Build your reputation on the platform."
+                title="Pick up new clients"
+                description="Reach exhibitors you'd never meet through word of mouth alone. More dogs, more rings, more wins."
               />
             </div>
           </div>
@@ -284,14 +284,13 @@ function RequestBoardSection() {
             letterSpacing: '-0.02em',
           }}
         >
-          See what exhibitors are looking for
+          Fresh off the request board
         </h2>
         <p
           className="mx-auto mb-12 max-w-[480px] text-center text-[#4A3E2E]"
           style={{ fontSize: '16px', lineHeight: 1.7 }}
         >
-          The request board is where exhibitors post what they need. Handlers
-          browse and respond.
+          Exhibitors post what they need, handlers jump in. Simple as that.
         </p>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -343,43 +342,43 @@ const valueProps = [
     icon: (
       <UsersThree size={32} weight="light" className="text-paddock-green" />
     ),
-    title: 'Community',
+    title: 'Your people',
     description:
-      'Connect with fellow exhibitors and handlers. Share knowledge, build relationships, grow together.',
+      'Finally, a place where everyone speaks dog show. Connect with handlers and exhibitors who get it.',
   },
   {
     icon: (
       <CalendarBlank size={32} weight="light" className="text-paddock-green" />
     ),
-    title: 'Events',
+    title: 'Show calendar',
     description:
-      'Find shows, circuits, and specialties near you. Never miss an opportunity to compete.',
+      'Find shows, circuits, and specialties near you. Never miss a ring time again.',
   },
   {
     icon: (
       <GraduationCap size={32} weight="light" className="text-paddock-green" />
     ),
-    title: 'Mentorship',
+    title: 'Learn the ropes',
     description:
-      'Learn from experienced professionals. Get guidance on handling, grooming, and show strategy.',
+      'New to the ring? Get guidance from experienced handlers on stacking, gaiting, and show strategy.',
   },
   {
     icon: <Books size={32} weight="light" className="text-paddock-green" />,
-    title: 'Resources',
+    title: 'Breed know-how',
     description:
-      'Access breed-specific guides, fee benchmarks, and industry knowledge in one place.',
+      'Breed-specific tips, fee benchmarks, and the kind of info that used to take years ringside to learn.',
   },
   {
     icon: <Graph size={32} weight="light" className="text-paddock-green" />,
-    title: 'Network',
+    title: 'Beyond word of mouth',
     description:
-      'Expand your professional circle beyond word of mouth. Reach exhibitors and handlers nationwide.',
+      'The show world is small but spread out. Meet handlers and exhibitors you would never cross paths with otherwise.',
   },
   {
     icon: <TrendUp size={32} weight="light" className="text-paddock-green" />,
-    title: 'Growth',
+    title: 'More rings, more wins',
     description:
-      'Build your reputation on the platform. Track your wins, grow your client base, advance your career.',
+      'Track your results, build your reputation, and get in front of exhibitors who are looking for exactly what you do.',
   },
 ]
 
@@ -398,7 +397,7 @@ function WhySection() {
             letterSpacing: '-0.02em',
           }}
         >
-          Why HandlerHub
+          Built for the ring
         </h2>
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -479,8 +478,8 @@ function FoundingCtaSection() {
               className="mb-8 text-[#F8F4EE]"
               style={{ fontSize: '18px', lineHeight: 1.7 }}
             >
-              Be among the first handlers on HandlerHub. Create your profile
-              today and start getting discovered by exhibitors.
+              Be one of the first handlers on HandlerHub. Set up your profile
+              and let exhibitors come to you.
             </p>
             <Link
               href="/register"
@@ -499,8 +498,8 @@ function FoundingCtaSection() {
               className="mb-8 text-[#F8F4EE]"
               style={{ fontSize: '18px', lineHeight: 1.7 }}
             >
-              Looking for a handler? Post your first request and let the right
-              professionals come to you.
+              Need a handler for your next show? Post what you're looking for
+              and the right people will find you.
             </p>
             <Link
               href="/register"

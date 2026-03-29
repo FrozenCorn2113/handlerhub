@@ -15,6 +15,10 @@ import { List, X } from '@phosphor-icons/react'
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export function WebmakerNavbar() {
@@ -84,6 +88,12 @@ export function WebmakerNavbar() {
               </Link>
               <Link
                 className="text-[#1C1208] transition-colors hover:text-paddock-green"
+                href="/events"
+              >
+                Events
+              </Link>
+              <Link
+                className="text-[#1C1208] transition-colors hover:text-paddock-green"
                 href="/dashboard/messages"
               >
                 Messages
@@ -135,6 +145,13 @@ export function WebmakerNavbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               Find Handlers
+            </Link>
+            <Link
+              className="text-sm font-medium text-[#1C1208] transition-colors hover:text-paddock-green"
+              href="/events"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Events
             </Link>
             <Link
               className="text-sm font-medium text-[#1C1208] transition-colors hover:text-paddock-green"

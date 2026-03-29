@@ -1,8 +1,10 @@
 import { MetadataRoute } from 'next'
-import { allPosts } from 'contentlayer/generated'
 
 import { marketingConfig } from '@/config/marketing'
+
 import { absoluteUrl, formatDateToISO } from '@/lib/utils'
+
+import { allPosts } from 'contentlayer/generated'
 
 const baseUrl = absoluteUrl('')
 
@@ -20,6 +22,15 @@ const postsSitemap: MetadataRoute.Sitemap = allPosts.map((post) => ({
   lastModified: formatDateToISO(new Date(post.date)),
 }))
 
+const eventRoutes: MetadataRoute.Sitemap = [
+  {
+    url: `${baseUrl}/events`,
+    lastModified: todayDateISO,
+    changeFrequency: 'daily',
+    priority: 0.9,
+  },
+]
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...routes, ...postsSitemap]
+  return [...routes, ...postsSitemap, ...eventRoutes]
 }

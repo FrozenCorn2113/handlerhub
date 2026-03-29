@@ -462,3 +462,99 @@ model RequestResponse {
   @@index([conversationId])
   @@map("request_responses")
 }
+
+// ──────────────────────────────────────────────
+// AKC Events Feature
+// ──────────────────────────────────────────────
+
+model Venue {
+  id               String   @id @default(cuid())
+  name             String
+  normalizedName   String   // lowercased, stripped for matching
+  address          String
+  normalizedAddress String  // lowercased, standardized for "also at this venue"
+  city             String
+  state            String
+  latitude         Float?
+  longitude        Float?
+  indoorOutdoor    String?  // "Indoors", "Outdoors", or null
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  events Event[]
+
+  @@unique([normalizedAddress])
+  @@index([state])
+  @@index([city, state])
+  @@index([latitude, longitude])
+  @@map("venues")
+}
+
+enum EventType {
+  ALL_BREED        // AB
+  LIMITED_BREED     // LB
+  SPECIALTY         // S
+  PARENT_SPECIALTY  // PS
+  DESIGNATED_SPECIALTY // DS
+  JUNIOR_SHOWMANSHIP // JSHW
+  SWEEPSTAKES       // SWPC
+  OTHER
+}
+
+enum EntryStatus {
+  NOT_YET_OPEN
+  OPEN
+  CLOSING_SOON
+  CLOSED
+}
+
+model Event {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+
+  // AKC data
+  clubName     String
+  eventNumber  String
+  eventType    EventType
+  eventTypeRaw String    // Original code from CSV (S, AB, LB, etc.)
+  startDate    DateTime
+  startDay     String?   // "Monday", "Tuesday", etc.
+
+  // Entry info
+  entryAcceptanceMethod String?
+  entryLimit            String?
+  openingDay            String?
+  openingDateTime       DateTime?
+  closingDay            String?
+  closingDateTime       DateTime?
+  timeZone              String?
+  entryStatus           EntryStatus @default(OPEN)
+  entryFee              String?
+
+  // Contacts
+  superintendentName    String?
+  superintendentPhone   String?
+  superintendentEmail   String?
+  eventChairName        String?
+  eventChairPhone       String?
+  eventChairEmail       String?
+
+  // Breeds
+  eligibleBreeds        String?
+
+  // Venue relation
+  venueId      String
+  venue        Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([startDate])
+  @@index([eventType])
+  @@index([entryStatus])
+  @@index([clubName])
+  @@index([startDate, eventType])
+  @@map("events")
+}

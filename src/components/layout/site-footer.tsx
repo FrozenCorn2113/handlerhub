@@ -32,52 +32,33 @@ export async function SiteFooter({
 
   return (
     <footer
-      className={cn(
-        'border-t border-white/10 bg-[#14472F] pb-10 pt-20 text-[#F8F4EE]/70',
-        className
-      )}
+      className={cn('border-t border-gray-100 bg-white pb-10 pt-16', className)}
     >
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-        {/* Wordmark */}
-        <div className="mb-16 border-b border-white/10 pb-16 text-center">
-          <Image
-            src="/images/brand/footer-wordmark.png"
-            alt="HandlerHub"
-            width={480}
-            height={120}
-            className="mx-auto max-w-[280px] sm:max-w-[480px]"
-            style={{
-              width: '100%',
-              height: 'auto',
-              opacity: 0.9,
-            }}
-          />
-        </div>
-
-        <div className="mb-20 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
+      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+        <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
           <div className="col-span-2">
-            <div className="mb-6 flex items-center gap-3 text-[#F8F4EE]">
-              <IconLogo className="size-10" />
+            <div className="mb-4 flex items-center gap-3">
+              <IconLogo className="size-8" />
               <h2
-                className="text-2xl tracking-tight text-[#F8F4EE]"
+                className="text-xl tracking-tight text-gray-900"
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontWeight: 300,
+                  fontWeight: 700,
                 }}
               >
                 {siteConfig.name}
               </h2>
             </div>
-            <p className="mb-8 max-w-xs text-[#F8F4EE]/70">
+            <p className="mb-6 max-w-xs text-sm text-gray-500">
               {siteConfig.shortDescription ?? siteConfig.description}
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {footerSocialLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   target="_blank"
-                  className="flex size-10 items-center justify-center rounded-full bg-white/10 text-[#F8F4EE]/70 transition-all hover:bg-white/20 hover:text-white"
+                  className="flex size-9 items-center justify-center rounded-lg bg-gray-50 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
                 >
                   <span className="sr-only">{link.label}</span>
                   {React.createElement(Icons[link.icon || 'plus'], {
@@ -92,13 +73,13 @@ export async function SiteFooter({
           </div>
 
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-900">
               Platform
             </h5>
             <ul className="space-y-4">
               <li>
                 <Link
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href="/handlers"
                 >
                   Find a Handler
@@ -106,7 +87,7 @@ export async function SiteFooter({
               </li>
               <li>
                 <Link
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href="/for-handlers"
                 >
                   For Handlers
@@ -114,7 +95,7 @@ export async function SiteFooter({
               </li>
               <li>
                 <Link
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href="/contact"
                 >
                   Contact
@@ -124,13 +105,13 @@ export async function SiteFooter({
           </div>
 
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-900">
               Company
             </h5>
             <ul className="space-y-4">
               <li>
                 <Link
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href="/#how-it-works"
                 >
                   How it Works
@@ -138,7 +119,7 @@ export async function SiteFooter({
               </li>
               <li>
                 <Link
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href="/feedback"
                 >
                   Feedback
@@ -146,7 +127,7 @@ export async function SiteFooter({
               </li>
               <li>
                 <a
-                  className="transition-colors hover:text-[#F8F4EE]"
+                  className="text-gray-500 transition-colors hover:text-gray-900"
                   href={footerMenuLinks[0]?.href ?? '#'}
                   target="_blank"
                 >
@@ -157,7 +138,7 @@ export async function SiteFooter({
           </div>
 
           <div>
-            <h5 className="mb-6 text-xs font-bold uppercase tracking-wider text-[#F8F4EE]">
+            <h5 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-900">
               Legal
             </h5>
             <ul className="space-y-4">
@@ -166,7 +147,7 @@ export async function SiteFooter({
                 .map((item) => (
                   <li key={item.href}>
                     <Link
-                      className="transition-colors hover:text-[#F8F4EE]"
+                      className="text-gray-500 transition-colors hover:text-gray-900"
                       href={item.href}
                     >
                       {item.name}
@@ -177,13 +158,13 @@ export async function SiteFooter({
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-10 md:flex-row">
-          <p className="text-sm text-[#F8F4EE]/50">
+        <div className="flex flex-col items-center justify-between gap-6 border-t border-gray-100 pt-8 md:flex-row">
+          <p className="text-sm text-gray-400">
             &copy; {new Date().getFullYear()} {siteConfig.name} Inc. All rights
             reserved.
           </p>
           <div className="flex items-center gap-8">
-            <span className="flex items-center gap-2 text-xs font-bold text-[#F8F4EE]/50">
+            <span className="flex items-center gap-2 text-xs text-gray-400">
               <Lock size={14} />
               Secure SSL Encryption
             </span>
@@ -191,7 +172,7 @@ export async function SiteFooter({
               <div className="flex items-center gap-4">
                 <Link
                   href="/dashboard"
-                  className="text-[#F8F4EE]/70 hover:text-[#F8F4EE]"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   <span className="sr-only">Dashboard</span>
                   {React.createElement(Icons.user, {

@@ -1,13 +1,13 @@
-import { Cormorant_Garamond, Inter as FontSans } from 'next/font/google'
+import { DM_Sans, Inter as FontSans } from 'next/font/google'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 })
 
-export const fontSerif = Cormorant_Garamond({
+export const fontSerif = DM_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-serif',
 })
 

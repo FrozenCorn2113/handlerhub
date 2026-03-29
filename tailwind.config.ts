@@ -99,11 +99,11 @@ module.exports = {
       },
       fontFamily: {
         sans: ['var(--font-body)', ...fontFamily.sans],
-        display: ['var(--font-display)', ...fontFamily.serif],
-        serif: ['var(--font-display)', ...fontFamily.serif],
+        display: ['var(--font-display)', ...fontFamily.sans],
+        serif: ['var(--font-display)', ...fontFamily.sans],
         body: ['var(--font-body)', ...fontFamily.sans],
         urban: ['var(--font-body)', ...fontFamily.sans],
-        heading: ['var(--font-display)', ...fontFamily.serif],
+        heading: ['var(--font-display)', ...fontFamily.sans],
       },
       keyframes: {
         'accordion-down': {

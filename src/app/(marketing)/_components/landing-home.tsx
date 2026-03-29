@@ -174,7 +174,7 @@ function HeroSection() {
       <div className="relative z-[1] flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
         {/* Brand badge - logo only, not the h1 */}
         <img
-          src="/handler-hub-logo-option-2.png"
+          src="/handler-hub-logo.png"
           alt="HandlerHub"
           className="hero-logo mb-8 h-24 w-24 object-contain lg:h-32 lg:w-32"
         />
@@ -621,7 +621,7 @@ function FoundingCtaSection() {
         <ScrollReveal>
           <div className="flex flex-col items-center text-center">
             <motion.img
-              src="/handler-hub-logo-option-2.png"
+              src="/handler-hub-logo.png"
               alt="HandlerHub"
               className="mb-8 h-20 w-20 object-contain"
               whileInView={{ rotate: [0, -5, 5, 0] }}

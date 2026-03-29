@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { siteLogoSrc } from '@/config/site'
@@ -41,124 +42,71 @@ function ScrollReveal({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Featured handler card (placeholder)                                */
-/* ------------------------------------------------------------------ */
-function FeaturedHandlerCard() {
-  return (
-    <div className="card-hh flex flex-col gap-4 p-6">
-      {/* Top row: photo + name */}
-      <div className="flex items-start gap-4">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-tan bg-light-sand">
-          <span className="font-display text-xl text-warm-gray">S</span>
-        </div>
-        <div className="min-w-0">
-          <h3 className="truncate font-display text-xl font-light text-ringside-black">
-            Sarah Mitchell
-          </h3>
-          <span className="mt-1 inline-block rounded-full bg-sage px-2.5 py-0.5 font-body text-sm font-semibold uppercase tracking-wide text-paddock-green">
-            Campaign
-          </span>
-        </div>
-      </div>
-
-      {/* Breed specialty chips */}
-      <div className="flex flex-wrap gap-1.5">
-        {['Standard Poodle', 'Golden Retriever', 'Bichon Frise'].map(
-          (breed) => (
-            <span
-              key={breed}
-              className="chip-breed rounded-full px-2.5 py-1 font-body text-sm"
-            >
-              {breed}
-            </span>
-          )
-        )}
-      </div>
-
-      {/* Region */}
-      <div className="flex flex-wrap gap-1.5">
-        <span className="flex items-center gap-1 rounded-full bg-light-sand px-2.5 py-1 font-body text-sm text-gray-700">
-          <MapPin className="h-3 w-3" />
-          Northeast
-        </span>
-        <span className="flex items-center gap-1 rounded-full bg-light-sand px-2.5 py-1 font-body text-sm text-gray-700">
-          <MapPin className="h-3 w-3" />
-          Mid-Atlantic
-        </span>
-      </div>
-
-      {/* Bottom row */}
-      <div className="mt-auto flex items-center justify-between border-t border-tan/50 pt-2">
-        <div className="flex gap-1.5">
-          <span className="chip-verified rounded-full px-2 py-0.5 font-body text-xs font-semibold uppercase">
-            AKC
-          </span>
-          <span className="chip-verified rounded-full px-2 py-0.5 font-body text-xs font-semibold uppercase">
-            UKC
-          </span>
-        </div>
-        <span className="font-body text-base font-semibold text-ringside-black">
-          From $150/show
-        </span>
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Section 1 - Hero (Profile-first)                                   */
+/*  Section 1 - Hero (centered)                                        */
 /* ------------------------------------------------------------------ */
 function HeroSection() {
+  const popularBreeds = [
+    { label: 'Standard Poodle', query: 'Standard Poodle' },
+    { label: 'Golden Retriever', query: 'Golden Retriever' },
+    { label: 'German Shepherd', query: 'German Shepherd' },
+    { label: 'Westminster', query: 'Westminster' },
+  ]
+
   return (
-    <section className="relative overflow-hidden bg-white pb-16 pt-12 lg:pb-24 lg:pt-20">
+    <section className="bg-white pb-0 pt-12 lg:pt-20">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Left: copy + CTAs */}
-          <div>
-            <p className="hero-label mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-              The dog show community&apos;s home base
-            </p>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+            The dog show community&apos;s home base
+          </p>
 
-            <h1
-              className="hero-h1 mb-6 font-display text-[#14472F]"
-              style={{
-                fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
-                lineHeight: 1.08,
-                letterSpacing: '-0.03em',
-                fontWeight: 700,
-              }}
-            >
-              Where great dogs
-              <br />
-              meet great handlers
-            </h1>
+          <h1
+            className="mb-6 font-display text-[#14472F]"
+            style={{
+              fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
+              lineHeight: 1.08,
+              letterSpacing: '-0.03em',
+              fontWeight: 700,
+            }}
+          >
+            Where great dogs
+            <br />
+            meet great handlers
+          </h1>
 
-            <p className="hero-sub mb-10 max-w-lg text-lg leading-relaxed text-gray-600">
-              A place for handlers and exhibitors to find each other.
-            </p>
+          <p className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-600">
+            Find the perfect handler for your breed. Search by specialty,
+            location, or show circuit.
+          </p>
 
-            <div className="flex flex-wrap gap-4">
+          {/* Popular breed pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-sm font-semibold text-gray-500">
+              Popular:
+            </span>
+            {popularBreeds.map((breed) => (
               <Link
-                href="/handlers"
-                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                key={breed.query}
+                href={`/handlers?q=${encodeURIComponent(breed.query)}`}
+                className="rounded-full border border-gray-300 px-4 py-1.5 text-sm text-gray-700 transition-colors hover:border-[#14472F] hover:text-[#14472F]"
               >
-                Browse Handlers
-                <ArrowRight size={18} weight="bold" />
+                {breed.label}
               </Link>
-              <Link
-                href="/for-handlers"
-                className="inline-flex items-center gap-2 rounded-full border-2 border-[#14472F] px-8 py-4 font-display text-base font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:bg-[#14472F]/5"
-              >
-                List Your Services
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: featured handler card */}
-          <div className="mx-auto w-full max-w-md lg:mx-0">
-            <FeaturedHandlerCard />
+            ))}
           </div>
         </div>
+      </div>
+
+      {/* Dog lineup banner */}
+      <div className="mt-12 flex justify-center lg:mt-16">
+        <Image
+          src="/images/dog-lineup.png"
+          alt="Dog lineup banner"
+          width={1200}
+          height={400}
+          className="w-full max-w-[1200px] object-contain"
+          priority
+        />
       </div>
     </section>
   )

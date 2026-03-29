@@ -8,19 +8,26 @@ export function StitchMarketingFooter() {
         <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-4">
           {/* Wordmark */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="mb-6 flex items-baseline gap-0">
-              <span
-                className="text-2xl font-light tracking-tight text-[#F8F4EE]"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
-                Handler
-              </span>
-              <span
-                className="relative text-xl font-semibold tracking-wide text-[#F8F4EE]"
-                style={{ fontFamily: 'var(--font-body)' }}
-              >
-                Hub
-                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#F8F4EE]/60" />
+            <Link href="/" className="mb-6 flex items-center gap-2.5">
+              <img
+                src="/handler-hub-logo.png"
+                alt="HandlerHub logo"
+                className="h-8 w-8 object-contain brightness-0 invert"
+              />
+              <span className="flex items-baseline gap-0">
+                <span
+                  className="text-2xl font-light tracking-tight text-[#F8F4EE]"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  Handler
+                </span>
+                <span
+                  className="relative text-xl font-semibold tracking-wide text-[#F8F4EE]"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  Hub
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#F8F4EE]/60" />
+                </span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-[#F8F4EE]/70">

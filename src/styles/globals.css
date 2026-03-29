@@ -79,7 +79,7 @@
     --shadow-float: 0 8px 40px rgba(28, 18, 8, 0.14);
 
     /* shadcn/ui compatibility (mapped to brand tokens) */
-    --background: 36 33% 95%;
+    --background: 0 0% 100%;
     --foreground: 30 38% 8%;
     --card: 0 0% 100%;
     --card-foreground: 30 38% 8%;
@@ -265,6 +265,15 @@ html {
 
   .how-it-works-section {
     background-color: #fafafa;
+  }
+
+  /* Larger touch targets for all interactive buttons */
+  .btn-primary,
+  .btn-secondary {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 14px 28px;
+    font-size: 1rem;
   }
 }
 

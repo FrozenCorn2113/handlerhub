@@ -1,17 +1,14 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 import {
   ArrowRight,
   CalendarBlank,
   ChatCircle,
-  Crown,
   Dog,
   Handshake,
   MagnifyingGlass,
   MapPin,
   PawPrint,
-  Sparkle,
   Star,
   Trophy,
   UserCirclePlus,
@@ -19,110 +16,64 @@ import {
 } from '@phosphor-icons/react/dist/ssr'
 
 /* ------------------------------------------------------------------ */
-/*  Section 1 - Hero (dark green, bold, Fiverr-style)                  */
+/*  Section 1 - Hero (split layout, single CTA, image placeholder)     */
 /* ------------------------------------------------------------------ */
 function HeroSection() {
   return (
     <section className="hero-section relative overflow-hidden">
-      <div className="relative z-[1] mx-auto max-w-[1200px] px-6 py-20 lg:px-8 lg:py-32">
-        <div className="mx-auto max-w-[720px] text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm">
-            <PawPrint size={16} weight="fill" />
-            The dog show community, connected
-          </div>
+      <div className="relative z-[1] mx-auto max-w-[1200px] px-6 py-20 lg:px-8 lg:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left: text */}
+          <div>
+            <h1
+              className="mb-6 font-display text-white"
+              style={{
+                fontSize: 'clamp(2.75rem, 2rem + 4vw, 5rem)',
+                lineHeight: 1.05,
+                letterSpacing: '-0.03em',
+                fontWeight: 700,
+              }}
+            >
+              Find the perfect
+              <br />
+              handler for your dog
+            </h1>
 
-          <h1
-            className="mb-6 font-display text-white"
-            style={{
-              fontSize: 'var(--fs-display)',
-              lineHeight: 1.08,
-              letterSpacing: '-0.03em',
-              fontWeight: 700,
-            }}
-          >
-            Where great dogs
-            <br />
-            meet great handlers
-          </h1>
+            <p className="mb-10 max-w-[480px] text-lg leading-relaxed text-white/80">
+              The marketplace where dog show exhibitors connect with
+              professional handlers. Post what you need, find who you trust.
+            </p>
 
-          <p className="mx-auto mb-10 max-w-[520px] text-lg leading-relaxed text-white/75">
-            Find your next handler, pick up new clients, or connect with people
-            who actually speak dog show.
-          </p>
-
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/handlers"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-[15px] font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-[17px] font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-xl"
             >
               Find a Handler
-              <ArrowRight size={18} weight="bold" />
-            </Link>
-            <Link
-              href="/for-handlers"
-              className="inline-flex items-center gap-2 rounded-xl border-[1.5px] border-white/30 px-6 py-3.5 text-[15px] font-semibold text-white transition-all hover:border-white/60 hover:bg-white/10"
-            >
-              List Your Services
+              <ArrowRight size={20} weight="bold" />
             </Link>
           </div>
-        </div>
 
-        {/* Floating cards */}
-        <div className="mt-16 hidden items-end justify-center gap-5 lg:flex">
-          <FloatingCard
-            color="bg-[#f0fdf4]"
-            icon={<Trophy size={20} weight="fill" className="text-[#16a34a]" />}
-            label="Best in Show"
-            sublabel="Springfield Cluster 2026"
-          />
-          <FloatingCard
-            color="bg-[#fef3c7]"
-            icon={<Star size={20} weight="fill" className="text-[#d97706]" />}
-            label="Top Rated Handler"
-            sublabel="4.9 stars, 47 reviews"
-          />
-          <FloatingCard
-            color="bg-[#ede9fe]"
-            icon={
-              <UsersThree size={20} weight="fill" className="text-[#7c3aed]" />
-            }
-            label="500+ Handlers"
-            sublabel="and growing every week"
-          />
+          {/* Right: image placeholder */}
+          <div className="hidden lg:block">
+            <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border-2 border-dashed border-white/30 bg-white/10 backdrop-blur-sm">
+              <div className="text-center">
+                <div className="mb-3 text-4xl text-white/40">
+                  <PawPrint size={48} weight="duotone" className="mx-auto" />
+                </div>
+                <p className="text-sm font-medium text-white/50">
+                  Your hero image here
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   )
 }
 
-function FloatingCard({
-  color,
-  icon,
-  label,
-  sublabel,
-}: {
-  color: string
-  icon: React.ReactNode
-  label: string
-  sublabel: string
-}) {
-  return (
-    <div
-      className={`flex items-center gap-3 rounded-2xl ${color} px-5 py-4 shadow-lg`}
-    >
-      <div className="flex size-10 items-center justify-center rounded-xl bg-white shadow-sm">
-        {icon}
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-gray-900">{label}</p>
-        <p className="text-xs text-gray-500">{sublabel}</p>
-      </div>
-    </div>
-  )
-}
-
 /* ------------------------------------------------------------------ */
-/*  Section 2 - How It Works (two-track, clean cards)                  */
+/*  Section 2 - How It Works (big headers, vertical steps)             */
 /* ------------------------------------------------------------------ */
 
 interface StepProps {
@@ -132,20 +83,21 @@ interface StepProps {
   description: string
 }
 
-function StepCard({ number, icon, title, description }: StepProps) {
+function StepRow({ number, icon, title, description }: StepProps) {
   return (
-    <div className="flex items-start gap-4">
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#f0fdf4] text-[#1F6B4A]">
-        {icon}
+    <div className="flex items-start gap-5">
+      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[#f0fdf4]">
+        <span className="font-display text-2xl font-bold text-[#1F6B4A]">
+          {number}
+        </span>
       </div>
       <div>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">
-          Step {number}
-        </p>
-        <h4 className="mb-1 font-display text-base font-semibold text-gray-900">
+        <h4 className="mb-1 font-display text-lg font-semibold text-gray-900">
           {title}
         </h4>
-        <p className="text-sm leading-relaxed text-gray-500">{description}</p>
+        <p className="text-[15px] leading-relaxed text-gray-500">
+          {description}
+        </p>
       </div>
     </div>
   )
@@ -153,9 +105,13 @@ function StepCard({ number, icon, title, description }: StepProps) {
 
 function HowItWorksSection() {
   return (
-    <section className="how-it-works-section" style={{ padding: '5rem 0' }}>
+    <section
+      id="how-it-works"
+      className="bg-white"
+      style={{ padding: '5rem 0' }}
+    >
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mb-12 text-center">
+        <div className="mb-16 text-center">
           <h2
             className="mb-3 font-display text-gray-900"
             style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
@@ -168,27 +124,32 @@ function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* For Exhibitors */}
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-[#f0fdf4] px-3 py-1.5 text-xs font-semibold text-[#1F6B4A]">
-              <Dog size={14} weight="bold" />
-              For Exhibitors
-            </div>
+        <div className="grid gap-16 lg:grid-cols-2 lg:gap-20">
+          {/* I need a handler */}
+          <div>
+            <h3
+              className="mb-8 font-display text-gray-900"
+              style={{
+                fontSize: 'clamp(1.5rem, 1.2rem + 1vw, 2rem)',
+                fontWeight: 700,
+              }}
+            >
+              I need a handler
+            </h3>
             <div className="flex flex-col gap-8">
-              <StepCard
+              <StepRow
                 number={1}
                 icon={<MagnifyingGlass size={24} weight="bold" />}
                 title="Browse handler profiles"
                 description="Search by breed, region, or show circuit. See real experience, specialties, and what they charge."
               />
-              <StepCard
+              <StepRow
                 number={2}
                 icon={<PawPrint size={24} weight="bold" />}
                 title="Post what you need"
                 description="Drop your breed, show dates, and what you're looking for. The right handlers will find you."
               />
-              <StepCard
+              <StepRow
                 number={3}
                 icon={<ChatCircle size={24} weight="bold" />}
                 title="Connect directly"
@@ -197,26 +158,31 @@ function HowItWorksSection() {
             </div>
           </div>
 
-          {/* For Handlers */}
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-[#fef3c7] px-3 py-1.5 text-xs font-semibold text-[#92400e]">
-              <Crown size={14} weight="bold" />
-              For Handlers
-            </div>
+          {/* I am a handler */}
+          <div>
+            <h3
+              className="mb-8 font-display text-gray-900"
+              style={{
+                fontSize: 'clamp(1.5rem, 1.2rem + 1vw, 2rem)',
+                fontWeight: 700,
+              }}
+            >
+              I am a handler
+            </h3>
             <div className="flex flex-col gap-8">
-              <StepCard
+              <StepRow
                 number={1}
                 icon={<UserCirclePlus size={24} weight="bold" />}
                 title="Show off your wins"
                 description="Build a profile with your breed specialties, credentials, and fees. One link you can share everywhere."
               />
-              <StepCard
+              <StepRow
                 number={2}
                 icon={<MagnifyingGlass size={24} weight="bold" />}
                 title="See who needs you"
                 description="Browse what exhibitors are posting. Filter by breed, region, and the kind of work you want."
               />
-              <StepCard
+              <StepRow
                 number={3}
                 icon={<Handshake size={24} weight="bold" />}
                 title="Pick up new clients"
@@ -231,7 +197,7 @@ function HowItWorksSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 3 - Request Board (Fiverr-style cards)                     */
+/*  Section 3 - Request Board (Fiverr-style cards with image areas)    */
 /* ------------------------------------------------------------------ */
 
 const mockRequests = [
@@ -242,7 +208,7 @@ const mockRequests = [
     service: 'Show Handling',
     region: 'Midwest',
     posted: '2 hours ago',
-    color: 'bg-[#f0fdf4]',
+    placeholderColor: 'bg-gradient-to-br from-[#d4efe0] to-[#b8edd0]',
   },
   {
     title: 'Grooming for Golden Retriever',
@@ -251,7 +217,7 @@ const mockRequests = [
     service: 'Grooming',
     region: 'Northeast',
     posted: '5 hours ago',
-    color: 'bg-[#ede9fe]',
+    placeholderColor: 'bg-gradient-to-br from-[#e0e7ff] to-[#c7d2fe]',
   },
   {
     title: 'Campaign handler wanted',
@@ -260,51 +226,56 @@ const mockRequests = [
     service: 'Campaign',
     region: 'Southeast',
     posted: '1 day ago',
-    color: 'bg-[#fef3c7]',
+    placeholderColor: 'bg-gradient-to-br from-[#fef3c7] to-[#fde68a]',
   },
 ]
 
 function RequestBoardSection() {
   return (
-    <section style={{ padding: '5rem 0' }}>
+    <section className="bg-[#fafafa]" style={{ padding: '5rem 0' }}>
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <h2
-              className="mb-2 font-display text-gray-900"
-              style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
-            >
-              Fresh off the request board
-            </h2>
-            <p className="max-w-md text-gray-500">
-              Exhibitors post what they need, handlers jump in. Simple as that.
-            </p>
-          </div>
-          <Link
-            href="/requests"
-            className="hidden items-center gap-1 text-sm font-semibold text-[#1F6B4A] transition-colors hover:text-[#14472F] sm:inline-flex"
+        <div className="mb-10">
+          <h2
+            className="mb-3 font-display text-gray-900"
+            style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
           >
-            View all
-            <ArrowRight size={16} weight="bold" />
-          </Link>
+            Fresh off the request board
+          </h2>
+          <p className="max-w-md text-gray-500">
+            Exhibitors post what they need, handlers jump in. Simple as that.
+          </p>
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {mockRequests.map((req) => (
             <div
               key={req.title}
               className="group overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all hover:-translate-y-1 hover:border-gray-200 hover:shadow-lg"
             >
-              {/* Colored accent bar */}
-              <div className={`${req.color} px-6 py-4`}>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-gray-700">
-                    {req.service}
-                  </span>
-                  <span className="text-xs text-gray-500">{req.posted}</span>
+              {/* Image / breed photo placeholder */}
+              <div
+                className={`${req.placeholderColor} flex h-44 items-center justify-center`}
+              >
+                <div className="text-center">
+                  <Dog
+                    size={36}
+                    weight="duotone"
+                    className="mx-auto text-gray-500/40"
+                  />
+                  <p className="mt-1 text-xs font-medium text-gray-500/50">
+                    {req.breed} photo
+                  </p>
                 </div>
               </div>
-              <div className="p-6">
+
+              {/* Card content */}
+              <div className="p-5">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="rounded-full bg-[#f0fdf4] px-3 py-1 text-xs font-semibold text-[#1F6B4A]">
+                    {req.service}
+                  </span>
+                  <span className="text-xs text-gray-400">{req.posted}</span>
+                </div>
                 <h4 className="mb-1 font-display text-base font-semibold text-gray-900">
                   {req.title}
                 </h4>
@@ -324,13 +295,13 @@ function RequestBoardSection() {
           ))}
         </div>
 
-        <div className="mt-8 text-center sm:hidden">
+        <div className="mt-10 text-center">
           <Link
             href="/requests"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[#1F6B4A]"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1F6B4A] px-8 py-3.5 text-[15px] font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#14472F] hover:shadow-md"
           >
             View all requests
-            <ArrowRight size={16} weight="bold" />
+            <ArrowRight size={18} weight="bold" />
           </Link>
         </div>
       </div>
@@ -339,12 +310,12 @@ function RequestBoardSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 4 - Built for the Ring (value props, Fiverr-style cards)   */
+/*  Section 4 - Built for the Ring (2-col, horizontal layout)          */
 /* ------------------------------------------------------------------ */
 
 const valueProps = [
   {
-    icon: <UsersThree size={24} weight="duotone" />,
+    icon: <UsersThree size={32} weight="duotone" />,
     title: 'Your people',
     description:
       'A place where everyone speaks dog show. Connect with handlers and exhibitors who get it.',
@@ -352,7 +323,7 @@ const valueProps = [
     iconColor: 'text-[#16a34a]',
   },
   {
-    icon: <CalendarBlank size={24} weight="duotone" />,
+    icon: <CalendarBlank size={32} weight="duotone" />,
     title: 'Show calendar',
     description:
       'Find shows, circuits, and specialties near you. Never miss a ring time again.',
@@ -360,7 +331,7 @@ const valueProps = [
     iconColor: 'text-[#7c3aed]',
   },
   {
-    icon: <Trophy size={24} weight="duotone" />,
+    icon: <Trophy size={32} weight="duotone" />,
     title: 'Learn the ropes',
     description:
       'New to the ring? Get guidance from experienced handlers on stacking, gaiting, and show strategy.',
@@ -368,7 +339,7 @@ const valueProps = [
     iconColor: 'text-[#d97706]',
   },
   {
-    icon: <Dog size={24} weight="duotone" />,
+    icon: <Dog size={32} weight="duotone" />,
     title: 'Breed know-how',
     description:
       'Breed-specific tips, fee benchmarks, and the kind of info that used to take years ringside to learn.',
@@ -376,15 +347,15 @@ const valueProps = [
     iconColor: 'text-[#db2777]',
   },
   {
-    icon: <Handshake size={24} weight="duotone" />,
+    icon: <Handshake size={32} weight="duotone" />,
     title: 'Beyond word of mouth',
     description:
-      'The show world is small but spread out. Meet handlers and exhibitors you&apos;d never cross paths with otherwise.',
+      'The show world is small but spread out. Meet handlers and exhibitors you would never cross paths with otherwise.',
     color: 'bg-[#e0f2fe]',
     iconColor: 'text-[#0284c7]',
   },
   {
-    icon: <Star size={24} weight="duotone" />,
+    icon: <Star size={32} weight="duotone" />,
     title: 'More rings, more wins',
     description:
       'Track your results, build your reputation, and get in front of exhibitors looking for exactly what you do.',
@@ -395,9 +366,9 @@ const valueProps = [
 
 function WhySection() {
   return (
-    <section className="bg-[#fafafa]" style={{ padding: '5rem 0' }}>
+    <section className="bg-white" style={{ padding: '5rem 0' }}>
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mb-12 text-center">
+        <div className="mb-14 text-center">
           <h2
             className="mb-3 font-display text-gray-900"
             style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
@@ -409,23 +380,25 @@ function WhySection() {
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2">
           {valueProps.map((vp) => (
             <div
               key={vp.title}
-              className="group rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:-translate-y-1 hover:border-gray-200 hover:shadow-md"
+              className="flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-6 transition-all hover:border-gray-200 hover:shadow-sm"
             >
               <div
-                className={`mb-4 inline-flex size-12 items-center justify-center rounded-2xl ${vp.color} ${vp.iconColor}`}
+                className={`flex size-16 shrink-0 items-center justify-center rounded-2xl ${vp.color} ${vp.iconColor}`}
               >
                 {vp.icon}
               </div>
-              <h4 className="mb-2 font-display text-[15px] font-semibold text-gray-900">
-                {vp.title}
-              </h4>
-              <p className="text-sm leading-relaxed text-gray-500">
-                {vp.description}
-              </p>
+              <div>
+                <h4 className="mb-2 font-display text-[17px] font-bold text-gray-900">
+                  {vp.title}
+                </h4>
+                <p className="text-[15px] leading-relaxed text-gray-500">
+                  {vp.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -435,7 +408,7 @@ function WhySection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 5 - Founding CTA                                           */
+/*  Section 5 - Founding CTA (single message, single button)           */
 /* ------------------------------------------------------------------ */
 
 function FoundingCtaSection() {
@@ -444,11 +417,6 @@ function FoundingCtaSection() {
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#14472F] to-[#1F6B4A]">
           <div className="px-8 py-16 text-center lg:px-16 lg:py-20">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white/90">
-              <Sparkle size={16} weight="fill" />
-              Early access
-            </div>
-
             <h2
               className="mb-4 font-display text-white"
               style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
@@ -460,23 +428,15 @@ function FoundingCtaSection() {
               early, shape the platform, and be the first name exhibitors see.
             </p>
 
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-[15px] font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
-              >
-                Create Your Profile
-                <ArrowRight size={18} weight="bold" />
-              </Link>
-              <Link
-                href="/register"
-                className="inline-flex items-center gap-2 rounded-xl border-[1.5px] border-white/30 px-7 py-3.5 text-[15px] font-semibold text-white transition-all hover:border-white/60 hover:bg-white/10"
-              >
-                Post a Request
-              </Link>
-            </div>
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-[17px] font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-xl"
+            >
+              Create your free profile
+              <ArrowRight size={20} weight="bold" />
+            </Link>
 
-            <div className="mx-auto mt-12 flex max-w-md flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-white/50">
+            <div className="mx-auto mt-10 flex max-w-sm flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/50">
               <span className="flex items-center gap-2">
                 <PawPrint size={14} weight="fill" />
                 Free to join
@@ -484,10 +444,6 @@ function FoundingCtaSection() {
               <span className="flex items-center gap-2">
                 <Star size={14} weight="fill" />
                 No platform fees
-              </span>
-              <span className="flex items-center gap-2">
-                <Trophy size={14} weight="fill" />
-                Founding member badge
               </span>
             </div>
           </div>

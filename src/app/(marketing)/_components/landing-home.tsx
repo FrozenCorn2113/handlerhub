@@ -1,79 +1,84 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 import Link from 'next/link'
 
 import {
   ArrowRight,
   CalendarBlank,
-  ChatCircle,
   Dog,
   Handshake,
-  MagnifyingGlass,
   MapPin,
   PawPrint,
   Star,
   Trophy,
-  UserCirclePlus,
   UsersThree,
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 /* ------------------------------------------------------------------ */
-/*  Intro Loader — brand reveal, then slide-up to show page            */
+/*  Breed emoji helper                                                  */
 /* ------------------------------------------------------------------ */
-function IntroLoader({ onComplete }: { onComplete: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(onComplete, 2200)
-    return () => clearTimeout(timer)
-  }, [onComplete])
+const breedEmoji: Record<string, string> = {
+  'Standard Poodle': '\uD83E\uDDA9',
+  'Golden Retriever': '\uD83D\uDC15',
+  'Labrador Retriever': '\uD83D\uDC36',
+}
 
+/* ------------------------------------------------------------------ */
+/*  Floating paw accent (decorative, drifting animation)               */
+/* ------------------------------------------------------------------ */
+function FloatingPaw({
+  size,
+  top,
+  left,
+  delay,
+  duration = 6,
+}: {
+  size: number
+  top: string
+  left: string
+  delay: number
+  duration?: number
+}) {
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{
-        background:
-          'linear-gradient(135deg, #14472F 0%, #1F6B4A 60%, #237a54 100%)',
+      className="pointer-events-none absolute text-white/[0.06]"
+      style={{ top, left }}
+      initial={{ opacity: 0, y: 0, rotate: -10 }}
+      animate={{ opacity: 1, y: [0, -18, 0], rotate: [-10, 8, -10] }}
+      transition={{
+        delay,
+        duration,
+        repeat: Infinity,
+        ease: 'easeInOut',
       }}
-      exit={{ y: '-100%' }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
     >
-      <motion.div
-        className="flex flex-col items-center gap-6"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        <motion.img
-          src="/handler-hub-logo-option-4.png"
-          alt="HandlerHub"
-          className="h-28 w-28 object-contain"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        />
-        <motion.div
-          className="flex items-baseline gap-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-        >
-          <span className="font-display text-4xl font-light tracking-tight text-white">
-            Handler
-          </span>
-          <span className="font-body text-3xl font-semibold tracking-wide text-white">
-            Hub
-          </span>
-        </motion.div>
-        <motion.div
-          className="h-[2px] bg-white/40"
-          initial={{ width: 0 }}
-          animate={{ width: 120 }}
-          transition={{ delay: 1.0, duration: 0.8, ease: 'easeInOut' }}
-        />
-      </motion.div>
+      <PawPrint size={size} weight="fill" />
     </motion.div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sparkle decoration                                                  */
+/* ------------------------------------------------------------------ */
+function Sparkle({
+  className = '',
+  size = 'text-sm',
+  color = 'text-[#F5EFA0]',
+}: {
+  className?: string
+  size?: string
+  color?: string
+}) {
+  return (
+    <motion.span
+      className={`inline-block select-none ${size} ${color} ${className}`}
+      animate={{ opacity: [0.4, 1, 0.4], scale: [0.9, 1.1, 0.9] }}
+      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+      aria-hidden="true"
+    >
+      &#10022;
+    </motion.span>
   )
 }
 
@@ -140,19 +145,18 @@ function WaveDivider({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 1 — Hero (full-bleed, brand-first)                         */
+/*  Section 1 — Hero                                                   */
 /* ------------------------------------------------------------------ */
-function HeroSection({ loaded }: { loaded: boolean }) {
+function HeroSection() {
   const { scrollY } = useScroll()
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3])
   const heroY = useTransform(scrollY, [0, 400], [0, 60])
 
   return (
     <section className="hero-section relative min-h-[100svh] overflow-hidden">
-      {/* Full-bleed background image placeholder */}
+      {/* Full-bleed background */}
       <div className="absolute inset-0 z-0">
         <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#14472F] via-[#1a5438] to-[#237a54]">
-          {/* Brett: replace this div with a real <Image> of a dog show scene */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -164,56 +168,68 @@ function HeroSection({ loaded }: { loaded: boolean }) {
         </div>
       </div>
 
+      {/* Floating paw accents */}
+      <FloatingPaw size={48} top="15%" left="8%" delay={0.5} />
+      <FloatingPaw size={32} top="25%" left="85%" delay={1.2} duration={7} />
+      <FloatingPaw size={40} top="65%" left="12%" delay={2.0} duration={8} />
+      <FloatingPaw size={28} top="70%" left="88%" delay={0.8} duration={6.5} />
+      <FloatingPaw size={36} top="40%" left="92%" delay={1.8} duration={7.5} />
+
       <motion.div
         className="relative z-[1] flex min-h-[100svh] flex-col items-center justify-center px-6 text-center"
         style={{ opacity: heroOpacity, y: heroY }}
       >
-        {/* Brand badge */}
+        {/* Brand badge - logo only, not the h1 */}
         <motion.img
           src="/handler-hub-logo-option-4.png"
           alt="HandlerHub"
           className="mb-8 h-24 w-24 object-contain lg:h-32 lg:w-32"
           initial={{ opacity: 0, scale: 0.7 }}
-          animate={loaded ? { opacity: 1, scale: 1 } : {}}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
         />
 
-        {/* Brand name — hero-level */}
+        {/* Tagline as the primary headline */}
         <motion.h1
-          className="mb-2 font-display text-white"
+          className="mb-6 font-display text-white"
           style={{
-            fontSize: 'clamp(3.5rem, 3rem + 5vw, 7rem)',
-            lineHeight: 0.95,
-            letterSpacing: '-0.04em',
+            fontSize: 'clamp(2.5rem, 2rem + 5vw, 5.5rem)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.03em',
             fontWeight: 700,
           }}
           initial={{ opacity: 0, y: 30 }}
-          animate={loaded ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.7 }}
         >
-          HandlerHub
+          <Sparkle className="mr-2 align-top" size="text-2xl lg:text-3xl" />
+          Where great dogs
+          <br />
+          meet great handlers
+          <Sparkle className="ml-2 align-top" size="text-2xl lg:text-3xl" />
         </motion.h1>
 
-        {/* Tagline */}
+        {/* Supporting text */}
         <motion.p
-          className="mb-10 max-w-lg font-display text-white/70"
+          className="mb-10 max-w-lg font-display text-white/60"
           style={{
-            fontSize: 'clamp(1.1rem, 0.9rem + 1vw, 1.5rem)',
-            lineHeight: 1.4,
+            fontSize: 'clamp(1rem, 0.85rem + 0.8vw, 1.25rem)',
+            lineHeight: 1.5,
             letterSpacing: '-0.01em',
-            fontWeight: 500,
+            fontWeight: 400,
           }}
           initial={{ opacity: 0, y: 20 }}
-          animate={loaded ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          Where great dogs meet great handlers
+          HandlerHub is the dog show community&apos;s home base. Find handlers,
+          post requests, and connect with your people.
         </motion.p>
 
         {/* Single CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={loaded ? { opacity: 1, y: 0 } : {}}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
           <Link
@@ -233,7 +249,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
         <motion.div
           className="absolute bottom-10 left-1/2 -translate-x-1/2"
           initial={{ opacity: 0 }}
-          animate={loaded ? { opacity: 1 } : {}}
+          animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
         >
           <motion.div
@@ -253,7 +269,7 @@ function HeroSection({ loaded }: { loaded: boolean }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 2 — How It Works (inset background, scroll animations)     */
+/*  Section 2 — How It Works                                           */
 /* ------------------------------------------------------------------ */
 
 function StepItem({
@@ -270,9 +286,13 @@ function StepItem({
   return (
     <ScrollReveal delay={delay}>
       <div className="flex items-start gap-5">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#14472F] font-display text-xl font-bold text-white">
-          {number}
-        </div>
+        <motion.div
+          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#14472F] text-white"
+          whileHover={{ scale: 1.1, rotate: -8 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+        >
+          <PawPrint size={22} weight="fill" />
+        </motion.div>
         <div>
           <h4 className="mb-1 font-display text-lg font-bold text-[#14472F]">
             {title}
@@ -288,7 +308,10 @@ function StepItem({
 
 function HowItWorksSection() {
   return (
-    <section className="relative bg-white py-6 lg:py-10">
+    <section
+      className="relative py-6 lg:py-10"
+      style={{ background: '#F8F4EE' }}
+    >
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         {/* Inset background container */}
         <div
@@ -307,7 +330,9 @@ function HowItWorksSection() {
                 className="font-display text-[#14472F]"
                 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
               >
+                <Sparkle className="mr-2" color="text-[#D4621A]" />
                 Here&apos;s how it works
+                <Sparkle className="ml-2" color="text-[#D4621A]" />
               </h2>
             </div>
           </ScrollReveal>
@@ -407,17 +432,17 @@ const mockRequests = [
     service: 'Campaign',
     region: 'Southeast',
     posted: '1 day ago',
-    accentColor: '#7c3aed',
+    accentColor: '#D4621A',
   },
 ]
 
 function RequestBoardSection() {
   return (
-    <section className="bg-white" style={{ padding: '5rem 0' }}>
+    <section style={{ padding: '5rem 0', background: '#F8F4EE' }}>
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-12">
-            <span className="mb-4 inline-block font-display text-sm font-bold uppercase tracking-[0.15em] text-[#1F6B4A]">
+            <span className="mb-4 inline-block font-display text-sm font-bold uppercase tracking-[0.15em] text-[#D4621A]">
               Live requests
             </span>
             <h2
@@ -425,6 +450,7 @@ function RequestBoardSection() {
               style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
             >
               Fresh off the request board
+              <Sparkle className="ml-3 align-middle" color="text-[#D4621A]" />
             </h2>
             <p className="max-w-md text-[#14472F]/50">
               Exhibitors post what they need, handlers jump in. Simple as that.
@@ -435,54 +461,60 @@ function RequestBoardSection() {
         <div className="grid gap-6 md:grid-cols-3">
           {mockRequests.map((req, i) => (
             <ScrollReveal key={req.title} delay={i * 0.1}>
-              <div className="group h-full overflow-hidden rounded-2xl border border-gray-100 bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
-                {/* Image placeholder with accent stripe */}
-                <div className="relative flex h-44 items-center justify-center bg-[#f8f6f3]">
-                  <div
-                    className="absolute left-0 top-0 h-1 w-full"
-                    style={{ background: req.accentColor }}
-                  />
-                  <div className="text-center">
-                    <Dog
-                      size={40}
-                      weight="duotone"
-                      className="mx-auto text-[#14472F]/15"
-                    />
-                    <p className="mt-2 text-xs font-medium text-[#14472F]/30">
-                      {req.breed} photo
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="mb-3 flex items-center justify-between">
-                    <span
-                      className="rounded-full px-3 py-1 text-xs font-bold text-white"
+              <Link href="/requests" className="block h-full">
+                <motion.div
+                  className="group h-full overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow duration-300 hover:shadow-xl"
+                  whileHover={{ y: -8, rotate: 0.5 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  {/* Image placeholder with accent stripe */}
+                  <div className="relative flex h-44 items-center justify-center bg-[#f8f6f3]">
+                    <div
+                      className="absolute left-0 top-0 h-1 w-full"
                       style={{ background: req.accentColor }}
-                    >
-                      {req.service}
-                    </span>
-                    <span className="text-xs text-[#14472F]/40">
-                      {req.posted}
-                    </span>
+                    />
+                    <div className="text-center">
+                      <span className="text-4xl" aria-hidden="true">
+                        {breedEmoji[req.breed] || '\uD83D\uDC3E'}
+                      </span>
+                      <p className="mt-2 text-xs font-medium text-[#14472F]/30">
+                        {req.breed}
+                      </p>
+                    </div>
                   </div>
-                  <h4 className="mb-1 font-display text-base font-bold text-[#14472F]">
-                    {req.title}
-                  </h4>
-                  <p className="mb-4 text-sm text-[#14472F]/50">{req.event}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#14472F]/50">
-                      <PawPrint size={12} weight="bold" />
-                      {req.breed}
-                    </span>
-                    <span className="text-[#14472F]/20">·</span>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#14472F]/50">
-                      <MapPin size={12} weight="bold" />
-                      {req.region}
-                    </span>
+
+                  <div className="p-6">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span
+                        className="rounded-full px-3 py-1 text-xs font-bold text-white"
+                        style={{ background: req.accentColor }}
+                      >
+                        {req.service}
+                      </span>
+                      <span className="text-xs text-[#14472F]/40">
+                        {req.posted}
+                      </span>
+                    </div>
+                    <h4 className="mb-1 font-display text-base font-bold text-[#14472F]">
+                      {req.title}
+                    </h4>
+                    <p className="mb-4 text-sm text-[#14472F]/50">
+                      {req.event}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#14472F]/50">
+                        <PawPrint size={12} weight="bold" />
+                        {req.breed}
+                      </span>
+                      <span className="text-[#14472F]/20">&middot;</span>
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#14472F]/50">
+                        <MapPin size={12} weight="bold" />
+                        {req.region}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+              </Link>
             </ScrollReveal>
           ))}
         </div>
@@ -508,7 +540,7 @@ function RequestBoardSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 4 — Built for the Ring (inset, icon rows)                  */
+/*  Section 4 — Built for the Ring                                     */
 /* ------------------------------------------------------------------ */
 
 const valueProps = [
@@ -571,7 +603,9 @@ function WhySection() {
                 className="font-display text-white"
                 style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
               >
+                <Sparkle className="mr-2" />
                 Built for the ring
+                <Sparkle className="ml-2" />
               </h2>
             </div>
           </ScrollReveal>
@@ -579,7 +613,11 @@ function WhySection() {
           <div className="mx-auto grid max-w-4xl gap-10 sm:grid-cols-2 lg:gap-x-16 lg:gap-y-12">
             {valueProps.map((vp, i) => (
               <ScrollReveal key={vp.title} delay={i * 0.08}>
-                <div className="flex items-start gap-4">
+                <motion.div
+                  className="flex items-start gap-4"
+                  whileHover={{ x: 4 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
                   <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/80">
                     {vp.icon}
                   </div>
@@ -591,7 +629,7 @@ function WhySection() {
                       {vp.description}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               </ScrollReveal>
             ))}
           </div>
@@ -602,12 +640,12 @@ function WhySection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 5 — Founding CTA (full-width, confident)                   */
+/*  Section 5 — Founding CTA                                           */
 /* ------------------------------------------------------------------ */
 
 function FoundingCtaSection() {
   return (
-    <section className="bg-white" style={{ padding: '5rem 0 6rem' }}>
+    <section style={{ padding: '5rem 0 6rem', background: '#F8F4EE' }}>
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="flex flex-col items-center text-center">
@@ -623,7 +661,9 @@ function FoundingCtaSection() {
               className="mb-4 font-display text-[#14472F]"
               style={{ fontSize: 'var(--fs-h2)', fontWeight: 700 }}
             >
+              <Sparkle className="mr-2" color="text-[#D4621A]" />
               Join the Founding 100
+              <Sparkle className="ml-2" color="text-[#D4621A]" />
             </h2>
             <p className="mx-auto mb-10 max-w-lg text-lg leading-relaxed text-[#14472F]/50">
               We&apos;re building HandlerHub with our first members. Get in
@@ -664,29 +704,17 @@ function FoundingCtaSection() {
 /* ------------------------------------------------------------------ */
 
 export default function LandingHome() {
-  const [loading, setLoading] = useState(true)
-  const [loaded, setLoaded] = useState(false)
-
-  const handleLoaderComplete = () => {
-    setLoading(false)
-    // Small delay so exit animation plays before content animates
-    setTimeout(() => setLoaded(true), 100)
-  }
-
   return (
-    <>
-      <AnimatePresence mode="wait">
-        {loading && <IntroLoader onComplete={handleLoaderComplete} />}
-      </AnimatePresence>
-
-      <div>
-        <HeroSection loaded={loaded} />
-        <WaveDivider topColor="#1F6B4A" bottomColor="#ffffff" />
-        <HowItWorksSection />
-        <RequestBoardSection />
-        <WhySection />
-        <FoundingCtaSection />
-      </div>
-    </>
+    <div>
+      <HeroSection />
+      <WaveDivider topColor="#1F6B4A" bottomColor="#F8F4EE" />
+      <HowItWorksSection />
+      <WaveDivider topColor="#F8F4EE" bottomColor="#F8F4EE" flip />
+      <RequestBoardSection />
+      <WaveDivider topColor="#F8F4EE" bottomColor="#ffffff" />
+      <WhySection />
+      <WaveDivider topColor="#ffffff" bottomColor="#F8F4EE" flip />
+      <FoundingCtaSection />
+    </div>
   )
 }

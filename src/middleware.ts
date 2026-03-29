@@ -18,6 +18,7 @@ const publicRoutes = [
   '/legal',
   '/learn',
   '/role-select',
+  '/our-story',
 ]
 const authRoutes = ['/login', '/register', '/auth-error']
 const apiAuthPrefix = '/api/auth'
@@ -68,5 +69,7 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|images|favicons|.*\\.png$|.*\\.jpg$|.*\\.svg$|favicon.ico).*)',
+  ],
 }

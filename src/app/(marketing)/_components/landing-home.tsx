@@ -1,18 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+
+import { siteLogoSrc } from '@/config/site'
 
 import {
   ArrowRight,
+  Handshake,
   MagnifyingGlass,
   MapPin,
   PawPrint,
-  Scissors,
   Star,
-  Trophy,
   UsersThree,
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
@@ -43,101 +41,124 @@ function ScrollReveal({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Hero search bar                                                    */
+/*  Featured handler card (placeholder)                                */
 /* ------------------------------------------------------------------ */
-function HeroSearch() {
-  const router = useRouter()
-  const [query, setQuery] = useState('')
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    router.push(`/handlers${query ? `?q=${encodeURIComponent(query)}` : ''}`)
-  }
-
+function FeaturedHandlerCard() {
   return (
-    <form onSubmit={handleSearch} className="w-full max-w-2xl">
-      <div className="flex items-center rounded-full border border-gray-200 bg-white shadow-lg transition-shadow focus-within:border-[#14472F]/30 focus-within:shadow-xl">
-        <MagnifyingGlass size={20} className="ml-5 shrink-0 text-gray-400" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder='Try "Golden Retriever handler in Ontario"'
-          className="flex-1 bg-transparent px-4 py-4 text-[15px] outline-none placeholder:text-gray-400"
-        />
-        <button
-          type="submit"
-          className="mr-1.5 rounded-full bg-[#14472F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1a5438]"
-        >
-          Search
-        </button>
+    <div className="card-hh flex flex-col gap-4 p-6">
+      {/* Top row: photo + name */}
+      <div className="flex items-start gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-tan bg-light-sand">
+          <span className="font-display text-xl text-warm-gray">S</span>
+        </div>
+        <div className="min-w-0">
+          <h3 className="truncate font-display text-xl font-light text-ringside-black">
+            Sarah Mitchell
+          </h3>
+          <span className="mt-1 inline-block rounded-full bg-sage px-2.5 py-0.5 font-body text-sm font-semibold uppercase tracking-wide text-paddock-green">
+            Campaign
+          </span>
+        </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-        <span className="font-medium text-gray-400">Popular:</span>
-        {[
-          'Standard Poodle',
-          'Golden Retriever',
-          'German Shepherd',
-          'Westminster',
-        ].map((tag) => (
-          <Link
-            key={tag}
-            href={`/handlers?q=${encodeURIComponent(tag)}`}
-            className="rounded-full border border-gray-200 px-3 py-1 text-xs font-medium text-gray-500 transition-colors hover:border-[#14472F] hover:text-[#14472F]"
-          >
-            {tag}
-          </Link>
-        ))}
+      {/* Breed specialty chips */}
+      <div className="flex flex-wrap gap-1.5">
+        {['Standard Poodle', 'Golden Retriever', 'Bichon Frise'].map(
+          (breed) => (
+            <span
+              key={breed}
+              className="chip-breed rounded-full px-2.5 py-1 font-body text-sm"
+            >
+              {breed}
+            </span>
+          )
+        )}
       </div>
-    </form>
+
+      {/* Region */}
+      <div className="flex flex-wrap gap-1.5">
+        <span className="flex items-center gap-1 rounded-full bg-light-sand px-2.5 py-1 font-body text-sm text-gray-700">
+          <MapPin className="h-3 w-3" />
+          Northeast
+        </span>
+        <span className="flex items-center gap-1 rounded-full bg-light-sand px-2.5 py-1 font-body text-sm text-gray-700">
+          <MapPin className="h-3 w-3" />
+          Mid-Atlantic
+        </span>
+      </div>
+
+      {/* Bottom row */}
+      <div className="mt-auto flex items-center justify-between border-t border-tan/50 pt-2">
+        <div className="flex gap-1.5">
+          <span className="chip-verified rounded-full px-2 py-0.5 font-body text-xs font-semibold uppercase">
+            AKC
+          </span>
+          <span className="chip-verified rounded-full px-2 py-0.5 font-body text-xs font-semibold uppercase">
+            UKC
+          </span>
+        </div>
+        <span className="font-body text-base font-semibold text-ringside-black">
+          From $150/show
+        </span>
+      </div>
+    </div>
   )
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 1 - Hero                                                   */
+/*  Section 1 - Hero (Profile-first)                                   */
 /* ------------------------------------------------------------------ */
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-white pb-0 pt-12 lg:pt-20">
+    <section className="relative overflow-hidden bg-white pb-16 pt-12 lg:pb-24 lg:pt-20">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="hero-label mb-4 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-            The dog show community&apos;s home base
-          </p>
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left: copy + CTAs */}
+          <div>
+            <p className="hero-label mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              The dog show community&apos;s home base
+            </p>
 
-          <h1
-            className="hero-h1 mb-6 font-display text-[#14472F]"
-            style={{
-              fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
-              lineHeight: 1.08,
-              letterSpacing: '-0.03em',
-              fontWeight: 700,
-            }}
-          >
-            Where great dogs
-            <br />
-            meet great handlers
-          </h1>
+            <h1
+              className="hero-h1 mb-6 font-display text-[#14472F]"
+              style={{
+                fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
+                lineHeight: 1.08,
+                letterSpacing: '-0.03em',
+                fontWeight: 700,
+              }}
+            >
+              Where great dogs
+              <br />
+              meet great handlers
+            </h1>
 
-          <p className="hero-sub mx-auto mb-10 max-w-lg text-lg leading-relaxed text-gray-500">
-            Find the perfect handler for your breed. Search by specialty,
-            location, or show circuit.
-          </p>
+            <p className="hero-sub mb-10 max-w-lg text-lg leading-relaxed text-gray-600">
+              A place for handlers and exhibitors to find each other.
+            </p>
 
-          <div className="hero-cta mx-auto max-w-2xl">
-            <HeroSearch />
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/handlers"
+                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+              >
+                Browse Handlers
+                <ArrowRight size={18} weight="bold" />
+              </Link>
+              <Link
+                href="/for-handlers"
+                className="inline-flex items-center gap-2 rounded-full border-2 border-[#14472F] px-8 py-4 font-display text-base font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:bg-[#14472F]/5"
+              >
+                List Your Services
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: featured handler card */}
+          <div className="mx-auto w-full max-w-md lg:mx-0">
+            <FeaturedHandlerCard />
           </div>
         </div>
-      </div>
-
-      {/* Dog lineup at bottom of hero */}
-      <div className="hero-dogs relative mt-16 flex justify-center lg:mt-20">
-        <img
-          src="/images/dog-lineup.png"
-          alt="Various dog breeds"
-          className="h-auto w-full max-w-[900px] object-contain"
-        />
       </div>
     </section>
   )
@@ -197,7 +218,9 @@ function ServiceSection() {
                 <h3 className="mt-4 font-display text-lg font-bold text-[#14472F] group-hover:text-[#1F6B4A]">
                   {svc.title}
                 </h3>
-                <p className="mt-1 text-sm text-gray-500">{svc.description}</p>
+                <p className="mt-1 text-base text-gray-600">
+                  {svc.description}
+                </p>
               </Link>
             </ScrollReveal>
           ))}
@@ -222,22 +245,9 @@ function PhotoBreakSection() {
         <div className="absolute inset-0 bg-[#14472F]/70" />
         <div className="relative z-10 flex h-full items-center justify-center px-6 text-center">
           <div>
-            <h2
-              className="mb-4 font-display text-white"
-              style={{
-                fontSize: 'clamp(1.75rem, 1.2rem + 2.5vw, 3rem)',
-                fontWeight: 700,
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              Built by dog show people,
-              <br />
-              for dog show people
-            </h2>
-            <p className="mx-auto max-w-md text-white/70">
-              No tech bros guessing what exhibitors need. HandlerHub was built
-              from years inside the ring.
+            <p className="mx-auto max-w-xl text-xl leading-relaxed text-white lg:text-2xl">
+              The dog show community deserves a place where finding the right
+              handler is simple, transparent, and open to everyone.
             </p>
           </div>
         </div>
@@ -267,10 +277,10 @@ function HowItWorksSection() {
     },
     {
       number: '03',
-      title: 'Win',
+      title: 'Compete',
       description:
-        'Your dog, the right handler, the ring. More entries, more wins, less stress.',
-      icon: <Trophy size={28} weight="duotone" />,
+        'Your dog, the right handler, the ring. More entries, more opportunities, less stress.',
+      icon: <Handshake size={28} weight="duotone" />,
     },
   ]
 
@@ -279,7 +289,10 @@ function HowItWorksSection() {
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-16 text-center">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+            <p className="mb-2 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              For Exhibitors
+            </p>
+            <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-gray-600">
               How it works
             </p>
             <h2
@@ -301,13 +314,13 @@ function HowItWorksSection() {
                 <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#14472F]/5 text-[#14472F]">
                   {step.icon}
                 </div>
-                <span className="mb-2 block font-display text-xs font-bold uppercase tracking-widest text-[#D4621A]">
+                <span className="mb-2 block font-display text-sm font-bold uppercase tracking-widest text-[#D4621A]">
                   Step {step.number}
                 </span>
                 <h3 className="mb-3 font-display text-xl font-bold text-[#14472F]">
                   {step.title}
                 </h3>
-                <p className="text-[15px] leading-relaxed text-gray-500">
+                <p className="text-base leading-relaxed text-gray-600">
                   {step.description}
                 </p>
               </div>
@@ -329,7 +342,6 @@ const mockRequests = [
     breed: 'Standard Poodle',
     service: 'Show Handling',
     region: 'Midwest',
-    posted: '2 hours ago',
   },
   {
     title: 'Grooming for Golden Retriever',
@@ -337,7 +349,6 @@ const mockRequests = [
     breed: 'Golden Retriever',
     service: 'Grooming',
     region: 'Northeast',
-    posted: '5 hours ago',
   },
   {
     title: 'Campaign handler wanted',
@@ -345,7 +356,6 @@ const mockRequests = [
     breed: 'Labrador Retriever',
     service: 'Campaign',
     region: 'Southeast',
-    posted: '1 day ago',
   },
 ]
 
@@ -356,7 +366,7 @@ function RequestBoardSection() {
         <ScrollReveal>
           <div className="mb-12 flex items-end justify-between">
             <div>
-              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
                 Request board
               </p>
               <h2
@@ -371,7 +381,7 @@ function RequestBoardSection() {
             </div>
             <Link
               href="/requests"
-              className="hidden items-center gap-2 text-sm font-semibold text-[#14472F] transition-colors hover:text-[#1F6B4A] sm:flex"
+              className="hidden items-center gap-2 text-base font-semibold text-[#14472F] transition-colors hover:text-[#1F6B4A] sm:flex"
             >
               View all
               <ArrowRight size={16} weight="bold" />
@@ -385,24 +395,26 @@ function RequestBoardSection() {
               <Link href="/requests" className="group block">
                 <div className="rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-gray-200 hover:shadow-lg">
                   <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-[#14472F] px-3 py-1 text-xs font-semibold text-white">
+                    <span className="rounded-full bg-[#14472F] px-3 py-1 text-sm font-semibold text-white">
                       {req.service}
                     </span>
-                    <span className="text-xs text-gray-400">{req.posted}</span>
+                    <span className="rounded-full border border-[#D4621A]/30 bg-[#D4621A]/10 px-2.5 py-0.5 text-sm font-medium text-[#D4621A]">
+                      Example
+                    </span>
                   </div>
 
                   <h4 className="mb-1 font-display text-base font-bold text-[#14472F]">
                     {req.title}
                   </h4>
-                  <p className="mb-4 text-sm text-gray-500">{req.event}</p>
+                  <p className="mb-4 text-base text-gray-600">{req.event}</p>
 
-                  <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
-                      <PawPrint size={12} weight="bold" />
+                      <PawPrint size={14} weight="bold" />
                       {req.breed}
                     </span>
                     <span className="flex items-center gap-1">
-                      <MapPin size={12} weight="bold" />
+                      <MapPin size={14} weight="bold" />
                       {req.region}
                     </span>
                   </div>
@@ -416,7 +428,7 @@ function RequestBoardSection() {
           <div className="mt-8 text-center sm:hidden">
             <Link
               href="/requests"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#14472F]"
+              className="inline-flex items-center gap-2 text-base font-semibold text-[#14472F]"
             >
               View all requests
               <ArrowRight size={16} weight="bold" />
@@ -436,8 +448,11 @@ function FoundingCtaSection() {
     <section className="bg-[#14472F] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
+          <p className="mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+            For Handlers
+          </p>
           <img
-            src="/handler-hub-logo.png"
+            src={siteLogoSrc}
             alt="HandlerHub"
             className="mx-auto mb-8 h-20 w-20 rounded-2xl object-contain"
           />
@@ -451,7 +466,7 @@ function FoundingCtaSection() {
           >
             Join the Founding 100
           </h2>
-          <p className="mx-auto mb-10 max-w-lg text-lg leading-relaxed text-white/60">
+          <p className="mx-auto mb-10 max-w-lg text-lg leading-relaxed text-white/80">
             We&apos;re building HandlerHub with our first members. Get in early,
             shape the platform, and be the first name exhibitors see.
           </p>
@@ -468,7 +483,7 @@ function FoundingCtaSection() {
             />
           </Link>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-white/40">
+          <div className="mt-8 flex items-center justify-center gap-6 text-base text-white/70">
             <span className="flex items-center gap-2">
               <Star size={14} weight="fill" />
               Free to join

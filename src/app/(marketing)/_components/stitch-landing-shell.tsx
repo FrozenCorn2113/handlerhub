@@ -11,6 +11,10 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/classnames-order */
+
 export function StitchLandingShell({
   children,
 }: {
@@ -21,52 +25,52 @@ export function StitchLandingShell({
   return (
     <div className="bg-white font-body text-[#1C1208] antialiased">
       <header className="sticky top-0 z-50 w-full bg-[#14472F]">
-        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
+        <div className="mx-auto flex h-[140px] max-w-7xl items-center justify-between px-6 lg:px-12">
           <Link
             href="/"
-            className="flex items-center gap-3"
+            className="flex shrink-0 items-center gap-3"
             aria-label="HandlerHub home"
           >
             <img
-              src="/handler-hub-logo-new.png"
+              src="/handler-hub-logo.svg"
               alt="HandlerHub"
-              className="h-10 w-auto shrink-0 object-contain"
+              className="-my-16 h-56 w-auto shrink-0 object-contain"
             />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
             <Link
-              className="rounded-lg px-3 py-2 text-base font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
+              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
               href="/handlers"
             >
               Find Handlers
             </Link>
             <Link
-              className="rounded-lg px-3 py-2 text-base font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
+              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
               href="/requests"
             >
               Request Board
             </Link>
             <Link
-              className="rounded-lg px-3 py-2 text-base font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
-              href="/for-handlers"
+              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
+              href="/our-story"
             >
-              For Handlers
+              Our Story
             </Link>
           </nav>
 
           <div className="flex items-center gap-3">
             <Link
-              className="hidden rounded-lg px-4 py-2.5 text-base font-medium text-[#F5F0E8] transition-colors hover:bg-white/10 sm:block"
+              className="hidden rounded-lg px-4 py-2.5 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10 sm:block"
               href="/login"
             >
               Sign In
             </Link>
             <Link
-              className="hidden rounded-xl bg-[#D4621A] px-6 py-3 text-base font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#b85416] hover:shadow-md sm:block"
-              href="/for-handlers"
+              className="hidden rounded-xl bg-[#D4621A] px-6 py-3 text-lg font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#b85416] hover:shadow-md sm:block"
+              href="/register"
             >
-              List Your Services
+              Join
             </Link>
             <button
               className="flex items-center justify-center md:hidden"
@@ -102,10 +106,10 @@ export function StitchLandingShell({
               </Link>
               <Link
                 className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
-                href="/for-handlers"
+                href="/our-story"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                For Handlers
+                Our Story
               </Link>
               <Link
                 className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
@@ -116,10 +120,10 @@ export function StitchLandingShell({
               </Link>
               <Link
                 className="mt-2 inline-block rounded-xl bg-[#D4621A] px-6 py-3 text-center text-base font-semibold text-white transition-all hover:bg-[#b85416]"
-                href="/for-handlers"
+                href="/register"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                List Your Services
+                Join
               </Link>
             </nav>
           </div>

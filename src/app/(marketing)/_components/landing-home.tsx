@@ -150,28 +150,6 @@ function WaveDivider({
 function HeroSection() {
   return (
     <section className="hero-section relative min-h-[100svh] overflow-hidden">
-      {/* CSS entrance animations */}
-      <style>{`
-        @keyframes hero-fade-up {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes hero-scale-in {
-          from { opacity: 0; transform: scale(0.7); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes hero-bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(8px); }
-        }
-        .hero-logo { animation: hero-scale-in 0.6s ease-out 0.2s both; }
-        .hero-h1 { animation: hero-fade-up 0.7s ease-out 0.4s both; }
-        .hero-sub { animation: hero-fade-up 0.6s ease-out 0.6s both; }
-        .hero-cta { animation: hero-fade-up 0.6s ease-out 0.8s both; }
-        .hero-scroll { animation: hero-fade-up 0.6s ease-out 1.2s both; }
-        .hero-scroll-inner { animation: hero-bounce 2s ease-in-out infinite; }
-      `}</style>
-
       {/* Full-bleed background */}
       <div className="absolute inset-0 z-0">
         <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#14472F] via-[#1a5438] to-[#237a54]">

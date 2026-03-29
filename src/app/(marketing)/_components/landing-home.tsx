@@ -1,15 +1,21 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import {
   Binoculars,
+  Books,
+  CalendarBlank,
   ChatCircle,
   ClipboardText,
+  GraduationCap,
+  Graph,
   Handshake,
   MagnifyingGlass,
   MapPin,
   PawPrint,
   Sparkle,
   Target,
+  TrendUp,
   UserCirclePlus,
   UsersThree,
 } from '@phosphor-icons/react/dist/ssr'
@@ -20,40 +26,71 @@ import {
 function HeroSection() {
   return (
     <section
-      className="bg-[#F8F4EE]"
+      className="hero-section relative overflow-hidden"
       style={{ padding: 'var(--section-py-xl) 0' }}
     >
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1
-            className="mb-8 font-display font-light text-[#1C1208]"
-            style={{
-              fontSize: 'var(--fs-display)',
-              lineHeight: 0.95,
-              letterSpacing: '-0.04em',
-            }}
-          >
-            Find your handler.
-            <br />
-            Grow your business.
-          </h1>
+      <div className="relative z-[1] mx-auto max-w-[1440px] px-6 lg:px-12">
+        <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-20">
+          {/* Left: text */}
+          <div className="flex-1 text-center lg:max-w-[600px] lg:text-left">
+            <h1
+              className="mb-8 font-display font-light text-[#1C1208]"
+              style={{
+                fontSize: 'var(--fs-display)',
+                lineHeight: 0.95,
+                letterSpacing: '-0.04em',
+              }}
+            >
+              Find your handler.
+              <br />
+              Grow your business.
+            </h1>
 
-          <p
-            className="mx-auto mb-12 max-w-[560px] font-body text-[#4A3E2E]"
-            style={{ fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}
-          >
-            Whether you&apos;re looking for a handler for your next show or
-            building your handling career, HandlerHub connects you with the
-            right people.
-          </p>
+            <p
+              className="mx-auto mb-12 max-w-[560px] font-body text-[#4A3E2E] lg:mx-0"
+              style={{ fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}
+            >
+              Whether you&apos;re looking for a handler for your next show or
+              building your handling career, HandlerHub connects you with the
+              right people.
+            </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/handlers" className="btn-primary">
-              Find a Handler
-            </Link>
-            <Link href="/for-handlers" className="btn-secondary">
-              List Your Services
-            </Link>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start">
+              <Link href="/handlers" className="btn-primary">
+                Find a Handler
+              </Link>
+              <Link href="/for-handlers" className="btn-secondary">
+                List Your Services
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: hero image */}
+          <div className="relative hidden flex-1 lg:block lg:max-w-[580px]">
+            <Image
+              src="/images/brand/hero-artwork.png"
+              alt="Professional dog handler at a conformation show ring"
+              width={580}
+              height={520}
+              className="w-full rounded-2xl"
+              style={{ maxHeight: '520px', objectFit: 'cover' }}
+              priority
+            />
+            {/* Floating stat badges overlay */}
+            <div
+              className="absolute bottom-6 left-6 z-10"
+              style={{
+                filter: 'drop-shadow(0 8px 24px rgba(28,18,8,0.14))',
+              }}
+            >
+              <Image
+                src="/images/brand/stat-badges.png"
+                alt="500+ verified handlers, 50+ events, free to join"
+                width={320}
+                height={100}
+                style={{ width: '320px', height: 'auto' }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -98,7 +135,7 @@ function StepCard({ icon, title, description }: StepProps) {
 function HowItWorksSection() {
   return (
     <section
-      className="bg-[#F8F4EE]"
+      className="how-it-works-section"
       style={{ padding: 'var(--section-py-md) 0' }}
     >
       <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
@@ -298,29 +335,51 @@ function RequestBoardSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 4 - Why HandlerHub                                         */
+/*  Section 4 - Why HandlerHub (6 value prop cards)                    */
 /* ------------------------------------------------------------------ */
 
 const valueProps = [
   {
-    icon: <Target size={28} weight="light" className="text-paddock-green" />,
-    title: 'Built for the show world',
+    icon: (
+      <UsersThree size={32} weight="light" className="text-paddock-green" />
+    ),
+    title: 'Community',
     description:
-      'Not a generic pet marketplace. We understand circuits, breed specialties, and campaign management.',
-  },
-  {
-    icon: <Sparkle size={28} weight="light" className="text-paddock-green" />,
-    title: 'Transparent pricing',
-    description:
-      'Handlers set their own fee schedules. No hidden costs, no platform markups.',
+      'Connect with fellow exhibitors and handlers. Share knowledge, build relationships, grow together.',
   },
   {
     icon: (
-      <UsersThree size={28} weight="light" className="text-paddock-green" />
+      <CalendarBlank size={32} weight="light" className="text-paddock-green" />
     ),
-    title: 'Every handler welcome',
+    title: 'Events',
     description:
-      'From PHA professionals to aspiring handlers at their first show. The request board is your on-ramp.',
+      'Find shows, circuits, and specialties near you. Never miss an opportunity to compete.',
+  },
+  {
+    icon: (
+      <GraduationCap size={32} weight="light" className="text-paddock-green" />
+    ),
+    title: 'Mentorship',
+    description:
+      'Learn from experienced professionals. Get guidance on handling, grooming, and show strategy.',
+  },
+  {
+    icon: <Books size={32} weight="light" className="text-paddock-green" />,
+    title: 'Resources',
+    description:
+      'Access breed-specific guides, fee benchmarks, and industry knowledge in one place.',
+  },
+  {
+    icon: <Graph size={32} weight="light" className="text-paddock-green" />,
+    title: 'Network',
+    description:
+      'Expand your professional circle beyond word of mouth. Reach exhibitors and handlers nationwide.',
+  },
+  {
+    icon: <TrendUp size={32} weight="light" className="text-paddock-green" />,
+    title: 'Growth',
+    description:
+      'Build your reputation on the platform. Track your wins, grow your client base, advance your career.',
   },
 ]
 
@@ -342,10 +401,13 @@ function WhySection() {
           Why HandlerHub
         </h2>
 
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {valueProps.map((vp) => (
             <div key={vp.title} className="text-center">
-              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-[10px] bg-sage">
+              <div
+                className="mx-auto mb-5 flex items-center justify-center rounded-[10px] bg-sage"
+                style={{ width: 56, height: 56 }}
+              >
                 {vp.icon}
               </div>
               <h4
@@ -375,10 +437,27 @@ function WhySection() {
 function FoundingCtaSection() {
   return (
     <section
-      className="bg-paddock-green"
+      className="relative bg-paddock-green"
       style={{ padding: 'var(--section-py-lg) 0' }}
     >
       <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+        {/* Rosette accent above headline */}
+        <div className="mx-auto mb-6 flex justify-center">
+          <Image
+            src="/images/brand/decorative-rosette.png"
+            alt=""
+            aria-hidden={true}
+            width={64}
+            height={64}
+            style={{
+              width: '64px',
+              height: '64px',
+              opacity: 0.4,
+              filter: 'brightness(3)',
+            }}
+          />
+        </div>
+
         <h2
           className="mb-12 text-center font-display font-light text-[#F8F4EE]"
           style={{

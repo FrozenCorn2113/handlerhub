@@ -255,6 +255,41 @@ html {
     max-width: var(--layout-max-width);
     margin: 0 auto;
   }
+
+  /* Hero section: dot grid texture + rosette watermark */
+  .hero-section {
+    position: relative;
+    background-color: #f8f4ee;
+    background-image: radial-gradient(circle, #d4cfc4 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 500px;
+    height: 500px;
+    background-image: url('/images/brand/decorative-rosette.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* How It Works section: diagonal stripe texture */
+  .how-it-works-section {
+    background-color: #f0eae0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 31px,
+      rgba(212, 207, 196, 0.4) 31px,
+      rgba(212, 207, 196, 0.4) 32px
+    );
+  }
 }
 
 @layer utilities {

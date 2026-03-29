@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @import './changelog-notification.css';
 @import './gradients.css';
@@ -38,8 +38,8 @@
     --color-error: #b52a2a;
 
     /* Typography */
-    --font-display: 'DM Sans', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
     /* Type scale */
     --fs-display: clamp(3rem, 2.4rem + 3vw, 4.5rem);

@@ -1,15 +1,20 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import dynamic from 'next/dynamic'
 
 import type { EventWithVenue } from '@/lib/events/queries'
 
 import { EventCard } from './event-card'
-import { EventsFilters, type FilterState } from './events-filters'
+import {
+  EMPTY_FILTERS,
+  EventsFilters,
+  type FilterState,
+} from './events-filters'
 import type { VenuePin } from './events-map'
-import { List, MapTrifold } from '@phosphor-icons/react'
+import { EventsMobileSheet } from './events-mobile-sheet'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 // Dynamic import for map to avoid SSR issues with Leaflet
 const EventsMap = dynamic(
@@ -24,11 +29,14 @@ const EventsMap = dynamic(
   }
 )
 
+const PAGE_SIZE = 50
+
 interface EventsBrowseProps {
   initialEvents: EventWithVenue[]
   initialPins: VenuePin[]
   initialTotal: number
   breeds: string[]
+  superintendents: string[]
 }
 
 export function EventsBrowse({
@@ -36,74 +44,284 @@ export function EventsBrowse({
   initialPins,
   initialTotal,
   breeds,
+  superintendents,
 }: EventsBrowseProps) {
   const [events, setEvents] = useState<EventWithVenue[]>(initialEvents)
   const [pins, setPins] = useState<VenuePin[]>(initialPins)
   const [total, setTotal] = useState(initialTotal)
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [highlightedEventId, setHighlightedEventId] = useState<string | null>(
     null
   )
-  const [showMap, setShowMap] = useState(true)
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    state: '',
-    eventType: '',
-    entryStatus: '',
-    dateFrom: '',
-    dateTo: '',
-  })
+  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
 
   const debounceRef = useRef<NodeJS.Timeout>()
+  const listContainerRef = useRef<HTMLDivElement>(null)
+  const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
+  const eventCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
-  const fetchEvents = useCallback(async (f: FilterState) => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams()
-      if (f.search) params.set('search', f.search)
-      if (f.state) params.set('state', f.state)
-      if (f.eventType) params.set('eventType', f.eventType)
-      if (f.entryStatus) params.set('entryStatus', f.entryStatus)
-      if (f.dateFrom) params.set('dateFrom', f.dateFrom)
-      if (f.dateTo) params.set('dateTo', f.dateTo)
-      params.set('limit', '200')
+  const hasMore = events.length < total
 
-      // Fetch list and pins in parallel
-      const [listRes, pinsRes] = await Promise.all([
-        fetch(`/api/events?${params.toString()}`),
-        fetch(`/api/events?${params.toString()}&view=pins`),
-      ])
+  // Virtualizer for large lists
+  const virtualizer = useVirtualizer({
+    count: events.length + (hasMore ? 1 : 0), // +1 for load-more sentinel
+    getScrollElement: () => listContainerRef.current,
+    estimateSize: () => 160, // estimated card height
+    overscan: 5,
+  })
 
-      const listData = await listRes.json()
-      const pinsData = await pinsRes.json()
-
-      if (listData.events) {
-        setEvents(listData.events)
-        setTotal(listData.total)
+  // Unified fetch: events + pins in one call
+  const fetchEvents = useCallback(
+    async (f: FilterState, append = false) => {
+      if (append) {
+        setLoadingMore(true)
+      } else {
+        setLoading(true)
       }
-      if (pinsData.pins) {
-        setPins(pinsData.pins)
-      }
-    } catch (err) {
-      console.error('Failed to fetch events:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
 
-  // Debounced filter changes
+      try {
+        const params = new URLSearchParams()
+        if (f.search) params.set('search', f.search)
+        if (f.state) params.set('state', f.state)
+        if (f.eventType) params.set('eventType', f.eventType)
+        if (f.entryStatus) params.set('entryStatus', f.entryStatus)
+        if (f.dateFrom) params.set('dateFrom', f.dateFrom)
+        if (f.dateTo) params.set('dateTo', f.dateTo)
+        if (f.breed) params.set('breed', f.breed)
+        if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
+        if (f.superintendent) params.set('superintendent', f.superintendent)
+        if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
+        params.set('limit', String(PAGE_SIZE))
+        params.set('offset', append ? String(events.length) : '0')
+        params.set('view', 'unified')
+
+        const res = await fetch(`/api/events?${params.toString()}`)
+        const data = await res.json()
+
+        if (append) {
+          if (data.events) {
+            setEvents((prev) => [...prev, ...data.events])
+          }
+        } else {
+          if (data.events) {
+            setEvents(data.events)
+            setTotal(data.total)
+          }
+          if (data.pins) {
+            setPins(data.pins)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch events:', err)
+      } finally {
+        setLoading(false)
+        setLoadingMore(false)
+      }
+    },
+    [events.length]
+  )
+
+  // Debounced filter changes (500ms)
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
       fetchEvents(filters)
-    }, 300)
+    }, 500)
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [filters, fetchEvents])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
+
+  // Infinite scroll: IntersectionObserver for the sentinel
+  useEffect(() => {
+    const triggerEl = loadMoreTriggerRef.current
+    if (!triggerEl) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (entry?.isIntersecting && hasMore && !loading && !loadingMore) {
+          fetchEvents(filters, true)
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(triggerEl)
+    return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loading, loadingMore, filters, events.length])
+
+  // Map/list sync: click pin scrolls to card
+  const handlePinClick = useCallback((eventId: string) => {
+    const cardEl = eventCardRefs.current.get(eventId)
+    if (cardEl && listContainerRef.current) {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    setHighlightedEventId(eventId)
+  }, [])
+
+  // Build filter summary for mobile sheet
+  const filterSummary = useMemo(() => {
+    const parts: string[] = []
+    if (filters.state) parts.push(filters.state)
+    if (filters.eventType) parts.push(filters.eventType.replace(/_/g, ' '))
+    if (filters.entryStatus) parts.push(filters.entryStatus.replace(/_/g, ' '))
+    if (filters.breed) parts.push(filters.breed)
+    if (filters.search) parts.push(`"${filters.search}"`)
+    return parts.join(', ')
+  }, [filters])
+
+  const filterContent = (
+    <EventsFilters
+      filters={filters}
+      onFiltersChange={setFilters}
+      breeds={breeds}
+      superintendents={superintendents}
+      resultCount={total}
+    />
+  )
+
+  const eventListContent = (
+    <>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
+        </div>
+      ) : events.length === 0 ? (
+        <div className="px-4 py-12 text-center">
+          <p className="text-base font-medium text-ringside-black">
+            No events found
+          </p>
+          <p className="mt-1 text-sm text-warm-gray">
+            Try adjusting your filters or search terms
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3 p-4">
+          {events.map((event) => (
+            <div
+              key={event.id}
+              ref={(el) => {
+                if (el) eventCardRefs.current.set(event.id, el)
+              }}
+            >
+              <EventCard
+                event={event}
+                isHighlighted={highlightedEventId === event.id}
+                onHover={setHighlightedEventId}
+              />
+            </div>
+          ))}
+          {/* Load more sentinel */}
+          {hasMore && (
+            <div ref={loadMoreTriggerRef} className="flex justify-center py-4">
+              {loadingMore ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
+              ) : (
+                <span className="text-xs text-warm-gray">
+                  Scroll for more...
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  )
+
+  // Virtualized list for desktop left panel
+  const virtualizedListContent = (
+    <>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
+        </div>
+      ) : events.length === 0 ? (
+        <div className="px-4 py-12 text-center">
+          <p className="text-base font-medium text-ringside-black">
+            No events found
+          </p>
+          <p className="mt-1 text-sm text-warm-gray">
+            Try adjusting your filters or search terms
+          </p>
+        </div>
+      ) : (
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualItem) => {
+            const isLoadMore = virtualItem.index === events.length
+
+            if (isLoadMore) {
+              return (
+                <div
+                  key="load-more"
+                  ref={loadMoreTriggerRef}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                  className="flex items-center justify-center"
+                >
+                  {loadingMore ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
+                  ) : hasMore ? (
+                    <span className="text-xs text-warm-gray">
+                      Loading more...
+                    </span>
+                  ) : null}
+                </div>
+              )
+            }
+
+            const event = events[virtualItem.index]
+            if (!event) return null
+
+            return (
+              <div
+                key={event.id}
+                ref={(el) => {
+                  if (el) {
+                    virtualizer.measureElement(el)
+                    eventCardRefs.current.set(event.id, el)
+                  }
+                }}
+                data-index={virtualItem.index}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualItem.start}px)`,
+                  padding: '6px 16px',
+                }}
+              >
+                <EventCard
+                  event={event}
+                  isHighlighted={highlightedEventId === event.id}
+                  onHover={setHighlightedEventId}
+                />
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </>
+  )
 
   return (
     <div className="flex h-[calc(100vh-72px)] flex-col">
@@ -112,87 +330,60 @@ export function EventsBrowse({
         <h1 className="text-lg font-bold text-ringside-black sm:text-xl">
           Upcoming Dog Shows
         </h1>
-        <div className="flex items-center gap-2">
-          {/* Map/List toggle for mobile */}
-          <button
-            onClick={() => setShowMap(!showMap)}
-            className="flex items-center gap-1.5 rounded-lg border border-[#E8E0D4] bg-white px-3 py-1.5 text-sm font-medium text-ringside-black transition-colors hover:border-paddock-green lg:hidden"
-          >
-            {showMap ? (
-              <>
-                <List size={16} weight="bold" />
-                List
-              </>
-            ) : (
-              <>
-                <MapTrifold size={16} weight="bold" />
-                Map
-              </>
-            )}
-          </button>
-        </div>
       </div>
 
-      {/* Main content: filters + list + map */}
-      <div className="flex min-h-0 flex-1">
-        {/* Left panel: filters + event list */}
-        <div
-          className={`flex w-full flex-col border-r border-[#E8E0D4] lg:w-[420px] xl:w-[480px] ${
-            showMap ? 'hidden lg:flex' : 'flex'
-          }`}
-        >
+      {/* ── DESKTOP: split layout (lg+) ── */}
+      <div className="hidden min-h-0 flex-1 lg:flex">
+        {/* Left panel: filters + scrollable virtualized list */}
+        <div className="flex w-[420px] flex-col border-r border-[#E8E0D4] xl:w-[480px]">
           {/* Filters */}
-          <div className="space-y-3 border-b border-[#E8E0D4] bg-white p-4">
-            <EventsFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              breeds={breeds}
-              resultCount={total}
-            />
+          <div className="border-b border-[#E8E0D4] bg-white p-4">
+            {filterContent}
           </div>
 
-          {/* Event cards list */}
-          <div className="flex-1 overflow-y-auto bg-[#FAFAF7]">
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
-              </div>
-            ) : events.length === 0 ? (
-              <div className="px-4 py-12 text-center">
-                <p className="text-base font-medium text-ringside-black">
-                  No events found
-                </p>
-                <p className="mt-1 text-sm text-warm-gray">
-                  Try adjusting your filters or search terms
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3 p-4">
-                {events.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    isHighlighted={highlightedEventId === event.id}
-                    onHover={setHighlightedEventId}
-                  />
-                ))}
-              </div>
-            )}
+          {/* Virtualized event cards */}
+          <div
+            ref={listContainerRef}
+            className="flex-1 overflow-y-auto bg-[#FAFAF7]"
+          >
+            {virtualizedListContent}
           </div>
         </div>
 
-        {/* Right panel: map */}
-        <div className={`flex-1 ${showMap ? 'block' : 'hidden lg:block'}`}>
+        {/* Right panel: persistent map */}
+        <div className="flex-1">
           <EventsMap
             pins={pins}
             highlightedEventId={highlightedEventId}
             onPinHover={setHighlightedEventId}
+            onPinClick={handlePinClick}
           />
         </div>
       </div>
 
+      {/* ── MOBILE: full-screen map + bottom sheet (<lg) ── */}
+      <div className="relative min-h-0 flex-1 lg:hidden">
+        {/* Full-screen map */}
+        <div className="h-full w-full">
+          <EventsMap
+            pins={pins}
+            highlightedEventId={highlightedEventId}
+            onPinHover={setHighlightedEventId}
+            onPinClick={handlePinClick}
+          />
+        </div>
+
+        {/* Bottom sheet drawer */}
+        <EventsMobileSheet
+          filterSummary={filterSummary}
+          eventCount={total}
+          filterContent={filterContent}
+          listContent={eventListContent}
+        />
+      </div>
+
       {/* AKC Attribution */}
-      <div className="border-t border-[#E8E0D4] bg-[#F8F4EE] px-4 py-2 text-center text-xs text-warm-gray">
+      <div className="hidden border-t border-[#E8E0D4] bg-[#F8F4EE] px-4 py-2 text-center text-xs text-warm-gray lg:block">
         Event data sourced from AKC
       </div>
     </div>

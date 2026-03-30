@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 
-import { prisma } from '@/lib/db'
 import {
   getEventBreeds,
-  getFilteredEvents,
-  getVenuePins,
+  getEventsWithPins,
+  getSuperintendents,
 } from '@/lib/events/queries'
 
 import { EventsBrowse } from '@/components/events/events-browse'
@@ -27,26 +26,26 @@ export const metadata: Metadata = {
 }
 
 export default async function EventsPage() {
-  let initialEvents: Awaited<ReturnType<typeof getFilteredEvents>>['events'] =
-    []
+  let initialEvents: any[] = []
   let initialTotal = 0
-  let initialPins: Awaited<ReturnType<typeof getVenuePins>> = []
+  let initialPins: any[] = []
   let breeds: string[] = []
+  let superintendents: string[] = []
 
   try {
     const now = new Date()
-    const [eventsResult, pinsResult, breedsResult] = await Promise.all([
-      getFilteredEvents({ dateFrom: now, limit: 100 }),
-      getVenuePins({ dateFrom: now }),
+    const [result, breedsResult, supersResult] = await Promise.all([
+      getEventsWithPins({ dateFrom: now, limit: 50 }),
       getEventBreeds(),
+      getSuperintendents(),
     ])
 
-    initialEvents = eventsResult.events
-    initialTotal = eventsResult.total
-    initialPins = pinsResult
+    initialEvents = result.events
+    initialTotal = result.total
+    initialPins = result.pins
     breeds = breedsResult
+    superintendents = supersResult
   } catch (error) {
-    // DB unavailable -- render with empty state
     console.error('Failed to load events:', error)
   }
 
@@ -56,6 +55,7 @@ export default async function EventsPage() {
       initialPins={initialPins as any}
       initialTotal={initialTotal}
       breeds={breeds}
+      superintendents={superintendents}
     />
   )
 }

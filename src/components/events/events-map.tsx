@@ -8,6 +8,7 @@ import {
   EVENT_TYPE_LABELS,
 } from '@/lib/events/constants'
 
+import { MapPin, NavigationArrow } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
 
 export interface VenuePin {
@@ -33,16 +34,19 @@ interface EventsMapProps {
   pins: VenuePin[]
   highlightedEventId?: string | null
   onPinHover?: (eventId: string | null) => void
+  onPinClick?: (eventId: string) => void
 }
 
 export function EventsMap({
   pins,
   highlightedEventId,
   onPinHover,
+  onPinClick,
 }: EventsMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const leafletMapRef = useRef<any>(null)
-  const markersRef = useRef<any[]>([])
+  const clusterGroupRef = useRef<any>(null)
+  const markersRef = useRef<Map<string, any>>(new Map())
 
   // Compute which venue is highlighted
   const highlightedVenueId = useMemo(() => {
@@ -63,7 +67,25 @@ export function EventsMap({
     const initMap = async () => {
       L = (await import('leaflet')).default
 
-      // Fix default icon issue in webpack/Next.js
+      // Import marker cluster CSS
+      await import('leaflet.markercluster')
+      // Inject markercluster CSS via CDN
+      if (!document.getElementById('markercluster-css')) {
+        const defaultCss = document.createElement('link')
+        defaultCss.id = 'markercluster-css'
+        defaultCss.rel = 'stylesheet'
+        defaultCss.href =
+          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'
+        document.head.appendChild(defaultCss)
+
+        const customCss = document.createElement('link')
+        customCss.rel = 'stylesheet'
+        customCss.href =
+          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
+        document.head.appendChild(customCss)
+      }
+
+      // Fix default icon issue
       delete (L.Icon.Default.prototype as any)._getIconUrl
       L.Icon.Default.mergeOptions({
         iconRetinaUrl:
@@ -77,10 +99,13 @@ export function EventsMap({
         leafletMapRef.current.remove()
       }
 
+      // Detect mobile for scroll wheel zoom
+      const isMobile = window.innerWidth < 768
+
       const map = L.map(mapRef.current!, {
-        center: [39.8283, -98.5795], // Center of US
+        center: [39.8283, -98.5795],
         zoom: 4,
-        scrollWheelZoom: true,
+        scrollWheelZoom: !isMobile,
         zoomControl: true,
       })
 
@@ -111,6 +136,7 @@ export function EventsMap({
 
     const loadAndUpdate = async () => {
       const L = (await import('leaflet')).default
+      await import('leaflet.markercluster')
       updateMarkers(L, leafletMapRef.current)
     }
 
@@ -120,10 +146,10 @@ export function EventsMap({
 
   // Update highlight effect
   useEffect(() => {
-    markersRef.current.forEach((m) => {
+    markersRef.current.forEach((m, venueId) => {
       const el = m.getElement?.()
       if (!el) return
-      if (highlightedVenueId && m._venueId === highlightedVenueId) {
+      if (highlightedVenueId && venueId === highlightedVenueId) {
         el.style.transform = `${el.style.transform || ''} scale(1.3)`
         el.style.zIndex = '1000'
         el.style.filter =
@@ -139,25 +165,74 @@ export function EventsMap({
     })
   }, [highlightedVenueId])
 
+  // Public method: pan to a specific venue
+  useEffect(() => {
+    if (!highlightedVenueId || !leafletMapRef.current) return
+    const marker = markersRef.current.get(highlightedVenueId)
+    if (marker) {
+      const latLng = marker.getLatLng()
+      leafletMapRef.current.panTo(latLng, { animate: true, duration: 0.3 })
+    }
+  }, [highlightedVenueId])
+
   function updateMarkers(L: any, map: any) {
-    // Clear existing markers
-    markersRef.current.forEach((m) => m.remove())
-    markersRef.current = []
+    // Clear existing cluster group
+    if (clusterGroupRef.current) {
+      map.removeLayer(clusterGroupRef.current)
+    }
+    markersRef.current.clear()
 
     if (pins.length === 0) return
+
+    // Create cluster group with HandlerHub styling
+    const clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      iconCreateFunction: (cluster: any) => {
+        const count = cluster.getChildCount()
+        let size = 36
+        let fontSize = 13
+        if (count >= 100) {
+          size = 44
+          fontSize = 14
+        } else if (count >= 10) {
+          size = 40
+          fontSize = 13
+        }
+        return L.divIcon({
+          html: `<div style="
+            background: #1F6B4A;
+            color: white;
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: ${fontSize}px;
+            font-weight: 700;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+          ">${count}</div>`,
+          className: 'custom-cluster',
+          iconSize: [size, size],
+          iconAnchor: [size / 2, size / 2],
+        })
+      },
+    })
 
     const bounds: [number, number][] = []
 
     pins.forEach((pin) => {
       bounds.push([pin.lat, pin.lng])
 
-      // Determine primary event type for color
       const primaryEvent = pin.events[0]
       const color = primaryEvent
         ? EVENT_TYPE_COLORS[primaryEvent.eventType]
         : '#1F6B4A'
 
-      // Create custom icon
       const isMulti = pin.eventCount > 1
       const iconHtml = isMulti
         ? `<div style="
@@ -190,10 +265,9 @@ export function EventsMap({
         iconAnchor: isMulti ? [16, 16] : [7, 7],
       })
 
-      const marker = L.marker([pin.lat, pin.lng], { icon }).addTo(map)
+      const marker = L.marker([pin.lat, pin.lng], { icon })
       ;(marker as any)._venueId = pin.venueId
 
-      // Build popup content
       const popupContent = buildPopupContent(pin)
       marker.bindPopup(popupContent, {
         maxWidth: 300,
@@ -208,9 +282,18 @@ export function EventsMap({
       marker.on('mouseout', () => {
         onPinHover?.(null)
       })
+      marker.on('click', () => {
+        if (pin.events.length > 0) {
+          onPinClick?.(pin.events[0].id)
+        }
+      })
 
-      markersRef.current.push(marker)
+      clusterGroup.addLayer(marker)
+      markersRef.current.set(pin.venueId, marker)
     })
+
+    map.addLayer(clusterGroup)
+    clusterGroupRef.current = clusterGroup
 
     if (bounds.length > 0) {
       map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 })
@@ -218,6 +301,8 @@ export function EventsMap({
   }
 
   function buildPopupContent(pin: VenuePin): string {
+    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${pin.lat},${pin.lng}`
+
     const eventList = pin.events
       .slice(0, 5)
       .map((e) => {
@@ -253,6 +338,11 @@ export function EventsMap({
         <div style="font-size:12px;color:#7A6E5E;margin-bottom:6px;">${pin.city}, ${pin.state}</div>
         ${eventList}
         ${moreText}
+        <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"
+          style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:4px 10px;
+          background:#1F6B4A;color:white;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">
+          Get Directions
+        </a>
       </div>
     `
   }
@@ -265,7 +355,7 @@ export function EventsMap({
         crossOrigin=""
       />
       <style>{`
-        .custom-pin {
+        .custom-pin, .custom-cluster {
           background: transparent !important;
           border: none !important;
         }
@@ -277,11 +367,25 @@ export function EventsMap({
           margin: 10px 14px;
         }
       `}</style>
-      <div
-        ref={mapRef}
-        className="h-full w-full rounded-xl"
-        style={{ minHeight: '400px' }}
-      />
+      <div className="relative h-full w-full">
+        <div
+          ref={mapRef}
+          className="h-full w-full"
+          style={{ minHeight: '400px' }}
+        />
+        {/* Empty state overlay */}
+        {pins.length === 0 && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
+            <MapPin size={40} weight="light" className="mb-2 text-warm-gray" />
+            <p className="text-sm font-medium text-warm-gray">
+              No venues with coordinates found
+            </p>
+            <p className="text-xs text-warm-gray/70">
+              Try adjusting your filters
+            </p>
+          </div>
+        )}
+      </div>
     </>
   )
 }

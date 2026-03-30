@@ -556,5 +556,7 @@ model Event {
   @@index([entryStatus])
   @@index([clubName])
   @@index([startDate, eventType])
+  @@index([startDate, entryStatus])
+  @@index([venueId, startDate])
   @@map("events")
 }

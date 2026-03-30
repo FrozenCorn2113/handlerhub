@@ -54,12 +54,12 @@ export function PasswordResetForm(): JSX.Element {
             router.push('/login')
             break
           default:
-            toast.error('Error resetting password<br/>Please try again')
+            toast.error('Error resetting password. Please try again.')
             router.push('/login')
         }
       } catch (error) {
         console.error(error)
-        toast.error('Something went wrong<br/>Try again')
+        toast.error('Something went wrong. Try again.')
       }
     })
   }

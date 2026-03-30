@@ -57,9 +57,9 @@ export function SignInWithEmailForm(): JSX.Element {
 
         searchParams.get('error') === 'OAuthAccountNotLinked'
           ? toast.warning(
-              'Email already in use with another provider.<br/>Perhaps you signed up with another method?'
+              'Email already in use with another provider. Perhaps you signed up with another method?'
             )
-          : toast.error('Something went wrong<br/>Please try again')
+          : toast.error('Something went wrong. Please try again.')
       }
     })
   }

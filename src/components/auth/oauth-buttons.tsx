@@ -51,7 +51,7 @@ export function OAuthButtons(): JSX.Element {
 
       toast.success('Redirecting...')
     } catch (error) {
-      toast.error('Something went wrong<br/>Please try again')
+      toast.error('Something went wrong. Please try again.')
 
       console.error(error)
       throw new Error(`Error signing in with ${provider}`)

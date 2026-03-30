@@ -56,11 +56,11 @@ export function EmailVerificationForm(): JSX.Element {
             router.push('/login')
             break
           default:
-            toast.error('Error sending verification link<br/>Please try again')
+            toast.error('Error sending verification link. Please try again.')
             router.push('/register/reverify-email')
         }
       } catch (error) {
-        toast.error('Something went wrong<br/>Please try again')
+        toast.error('Something went wrong. Please try again.')
         console.error(error)
       }
     })

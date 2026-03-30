@@ -662,7 +662,8 @@ export default function HandlerProfileForm({
         <CardHeader>
           <CardTitle>Detailed Fee Schedule</CardTitle>
           <CardDescription>
-            Provide a detailed breakdown of your rates. All fields are optional.
+            Set your rates to help exhibitors understand your pricing upfront.
+            Transparent pricing builds trust and attracts serious inquiries.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1033,6 +1034,25 @@ export default function HandlerProfileForm({
                 setFormData({ ...formData, pastClients: e.target.value })
               }
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gallery Photos */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Gallery Photos</CardTitle>
+          <CardDescription>
+            Add photos of you in the ring, with dogs, at shows, or your
+            facility. Profiles with photos get significantly more inquiries.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-xl border-2 border-dashed border-tan bg-ring-cream/50 p-8 text-center">
+            <p className="font-body text-sm text-warm-gray">
+              Gallery photo uploads coming soon. In the meantime, make sure your
+              profile photo is professional and up-to-date.
+            </p>
           </div>
         </CardContent>
       </Card>

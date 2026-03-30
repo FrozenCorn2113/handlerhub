@@ -52,7 +52,7 @@ export async function signUpWithPassword(
       const fromEmail = env.RESEND_FROM_EMAIL
       if (fromEmail) {
         // Send the raw (unhashed) token in the email link
-        await resend.emails.send({
+        const { error: emailError2 } = await resend.emails.send({
           from: fromEmail,
           to: [validatedInput.data.email],
           subject: `${siteConfig.name} - Verify your email address`,
@@ -61,6 +61,9 @@ export async function signUpWithPassword(
             emailVerificationToken,
           }),
         })
+        if (emailError2) {
+          console.error('Resend email error:', emailError2)
+        }
       } else {
         console.error(
           'RESEND_FROM_EMAIL is not set -- skipping verification email'

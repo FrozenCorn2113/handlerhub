@@ -48,7 +48,7 @@ export async function resendEmailVerificationLink(
     }
 
     // Send the raw (unhashed) token in the email link
-    const emailSent = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [validatedInput.data.email],
       subject: `${siteConfig.name} - Verify your email address`,
@@ -58,7 +58,12 @@ export async function resendEmailVerificationLink(
       }),
     })
 
-    return userUpdated && emailSent ? 'success' : 'error'
+    if (error) {
+      console.error('Resend email error:', error)
+      return 'error'
+    }
+
+    return userUpdated && data ? 'success' : 'error'
   } catch (error) {
     console.error(error)
     throw new Error('Error resending email verification link')

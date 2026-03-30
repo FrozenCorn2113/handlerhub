@@ -1,6 +1,7 @@
 'use server'
 
 import { signIn } from '@/lib/auth/auth'
+import { DEFAULT_LOGIN_REDIRECT } from '@/lib/auth/routes'
 import {
   SignInWithPasswordFormInput,
   signInWithPasswordSchema,
@@ -36,9 +37,9 @@ export async function signInWithPassword(
     await signIn('credentials', {
       email: validatedInput.data.email,
       password: validatedInput.data.password,
-      redirect: false,
+      redirectTo: DEFAULT_LOGIN_REDIRECT,
     })
-
+    // Never reached on success -- signIn redirects via NEXT_REDIRECT throw
     return 'success'
   } catch (error) {
     if (error instanceof AuthError) {

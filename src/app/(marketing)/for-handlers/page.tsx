@@ -127,7 +127,7 @@ export default async function ForHandlersPage() {
       <section className="bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-14 text-center font-display text-[#14472F]"
+            className="mb-14 w-[400px] text-left font-display text-[#14472F]"
             style={{
               fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
               fontWeight: 700,
@@ -231,7 +231,7 @@ export default async function ForHandlersPage() {
                     {card.label}
                   </p>
                   <p
-                    className="font-display text-white"
+                    className="flex flex-wrap font-display text-white"
                     style={{
                       fontSize: '30px',
                       fontWeight: 700,

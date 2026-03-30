@@ -28,10 +28,6 @@ import {
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/enforces-shorthand */
-
-/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export interface ProfileHandler {

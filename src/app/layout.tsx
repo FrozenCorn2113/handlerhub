@@ -22,10 +22,6 @@ import { GA } from 'pliny/analytics/GoogleAnalytics'
 
 const googleAnalyticsId = env.NEXT_PUBLIC_ANALITYCS_ID!
 
-interface RootLayoutProps {
-  children: React.ReactNode
-}
-
 export const viewport: Viewport = {
   themeColor: [{ media: '(prefers-color-scheme: light)', color: '#1F6B4A' }],
 }

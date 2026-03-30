@@ -134,6 +134,18 @@ function MissionSection() {
   return (
     <section className="border-t border-gray-100 bg-[#F8F4EE] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+        <ScrollReveal>
+          <h2
+            className="mx-auto mb-14 max-w-3xl text-center font-display text-[#14472F]"
+            style={{
+              fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              fontWeight: 700,
+              fontStyle: 'italic',
+            }}
+          >
+            A sport built on passion deserves a platform built on trust
+          </h2>
+        </ScrollReveal>
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {missionCards.map((card, i) => (
             <ScrollReveal key={card.title} delay={i * 0.1}>

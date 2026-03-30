@@ -26,40 +26,21 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         />
       </Link>
 
-      {/* Left side - Branded panel (desktop only) */}
-      <div
-        className="relative hidden w-1/2 flex-col overflow-hidden lg:flex"
-        style={{
-          background:
-            'linear-gradient(160deg, #0D3520 0%, #14472F 30%, #1F6B4A 70%, #14472F 100%)',
-        }}
-      >
-        {/* Top gradient overlay for depth */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-48 bg-gradient-to-b from-[#0D3520]/80 to-transparent" />
-
-        {/* Dot pattern overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '24px 24px',
-          }}
+      {/* Left side - Hero image panel (desktop only) */}
+      <div className="relative hidden w-1/2 flex-col overflow-hidden lg:flex">
+        <Image
+          src="/images/hero-handler.jpg"
+          alt="Professional handler with show dog"
+          fill
+          className="object-cover"
+          priority
         />
 
-        {/* Decorative vertical stripes */}
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-stretch justify-center gap-6">
-          <div className="w-px bg-gradient-to-b from-transparent via-white/[0.08] to-transparent" />
-          <div className="w-[2px] bg-gradient-to-b from-transparent via-white/[0.12] to-transparent backdrop-blur-sm" />
-          <div className="w-px bg-gradient-to-b from-transparent via-white/[0.06] to-transparent" />
-          <div className="ml-16 w-px bg-gradient-to-b from-transparent via-white/[0.10] to-transparent" />
-          <div className="w-[2px] bg-gradient-to-b from-transparent via-white/[0.08] to-transparent backdrop-blur-sm" />
-          <div className="ml-24 w-px bg-gradient-to-b from-transparent via-white/[0.05] to-transparent" />
-          <div className="w-px bg-gradient-to-b from-transparent via-white/[0.10] to-transparent" />
-        </div>
+        {/* Dark overlay for text readability */}
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
         {/* Content */}
-        <div className="relative z-20 flex flex-1 flex-col items-center justify-center px-12">
+        <div className="relative z-10 flex flex-1 flex-col items-center justify-end px-12 pb-16">
           <div className="flex w-full max-w-md flex-col items-center text-center">
             <h2
               className="mb-4 text-4xl font-bold leading-tight tracking-tight text-white"
@@ -68,13 +49,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
               Where great dogs meet great handlers
             </h2>
 
-            <p className="mb-12 text-lg leading-relaxed text-white/60">
+            <p className="mb-8 text-lg leading-relaxed text-white/80">
               The platform connecting exhibitors with professional handlers.
             </p>
 
             {/* Founding 100 card */}
-            <div className="w-full rounded-2xl border border-white/10 bg-white/[0.07] p-8 text-center backdrop-blur-md">
-              <p className="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-white/80">
+            <div className="w-full rounded-2xl border border-white/15 bg-white/10 p-8 text-center backdrop-blur-md">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-amber-400">
                 Early Access
               </p>
               <p
@@ -83,24 +64,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
               >
                 Join the Founding 100
               </p>
-              <p className="text-base leading-relaxed text-white/60">
-                We&apos;re building HandlerHub with our first members. Get in
-                early, shape the platform, and be the first name exhibitors see.
+              <p className="text-base leading-relaxed text-white/70">
+                Get in early, shape the platform, and be the first name
+                exhibitors see.
               </p>
             </div>
           </div>
         </div>
-
-        {/* Green circle accent at bottom */}
-        <div
-          className="pointer-events-none absolute -bottom-24 left-1/2 z-10 size-56 -translate-x-1/2 rounded-full opacity-30 blur-3xl"
-          style={{
-            background: 'radial-gradient(circle, #2D7A54 0%, transparent 70%)',
-          }}
-        />
-
-        {/* Bottom gradient fade */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0D3520]/60 to-transparent" />
       </div>
 
       {/* Right side - Form */}

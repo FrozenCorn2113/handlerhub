@@ -9,7 +9,7 @@ import {
 } from '@/lib/events/constants'
 import type { EventWithVenue } from '@/lib/events/queries'
 
-import { Calendar, Clock, MapPin, User } from '@phosphor-icons/react'
+import { Calendar, Clock, MapPin, PawPrint, User } from '@phosphor-icons/react'
 
 interface EventCardProps {
   event: EventWithVenue
@@ -107,6 +107,12 @@ export function EventCard({ event, isHighlighted, onHover }: EventCardProps) {
             <span className="truncate">{event.eligibleBreeds}</span>
           </div>
         )}
+      </div>
+
+      {/* Handler hint */}
+      <div className="mt-3 flex items-center gap-1.5 border-t border-[#E8E0D4] pt-2.5 text-xs font-medium text-paddock-green">
+        <PawPrint size={12} weight="bold" />
+        <span>Handlers available near this show</span>
       </div>
     </Link>
   )

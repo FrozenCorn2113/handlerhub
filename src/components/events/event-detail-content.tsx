@@ -17,6 +17,7 @@ import {
   Clock,
   CurrencyDollar,
   EnvelopeSimple,
+  MagnifyingGlass,
   MapPin,
   PawPrint,
   Phone,
@@ -345,6 +346,28 @@ export function EventDetailContent({
 
           {/* Right column: contacts */}
           <div className="space-y-6">
+            {/* Find a Handler CTA */}
+            <div className="rounded-xl border-2 border-paddock-green bg-gradient-to-br from-sage/40 to-paddock-green/10 p-5">
+              <h2 className="mb-2 flex items-center gap-2 text-base font-bold text-ringside-black">
+                <MagnifyingGlass
+                  size={18}
+                  weight="bold"
+                  className="text-paddock-green"
+                />
+                Need a Handler?
+              </h2>
+              <p className="mb-4 text-sm text-warm-brown">
+                Find professional handlers available near this show.
+              </p>
+              <Link
+                href={`/handlers?state=${encodeURIComponent(event.venue.state)}${event.venue.city ? `&city=${encodeURIComponent(event.venue.city)}` : ''}`}
+                className="inline-flex items-center gap-2 rounded-full bg-paddock-green px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-forest"
+              >
+                <PawPrint size={16} weight="bold" />
+                Find a Handler
+              </Link>
+            </div>
+
             {/* AKC Event Number */}
             <div className="rounded-xl border border-[#E8E0D4] bg-white p-5">
               <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-ringside-black">

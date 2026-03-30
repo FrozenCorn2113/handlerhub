@@ -5,15 +5,9 @@ import Link from 'next/link'
 
 import { siteLogoSrc } from '@/config/site'
 
-import {
-  ArrowRight,
-  Handshake,
-  MagnifyingGlass,
-  MapPin,
-  PawPrint,
-  Star,
-  UsersThree,
-} from '@phosphor-icons/react'
+import { MissionCard } from '@/components/ui/card-21'
+
+import { ArrowRight, MapPin, PawPrint, Star } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 /* ------------------------------------------------------------------ */
@@ -45,21 +39,10 @@ function ScrollReveal({
 /*  Section 1 - Hero (centered)                                        */
 /* ------------------------------------------------------------------ */
 function HeroSection() {
-  const popularBreeds = [
-    { label: 'Standard Poodle', query: 'Standard Poodle' },
-    { label: 'Golden Retriever', query: 'Golden Retriever' },
-    { label: 'German Shepherd', query: 'German Shepherd' },
-    { label: 'Westminster', query: 'Westminster' },
-  ]
-
   return (
     <section className="bg-white pb-0 pt-12 lg:pt-20">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-            The dog show community&apos;s home base
-          </p>
-
           <h1
             className="mb-6 font-display text-[#14472F]"
             style={{
@@ -95,33 +78,17 @@ function HeroSection() {
               Become a Founding Handler
             </Link>
           </div>
-
-          {/* Popular breed pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="text-sm font-semibold text-gray-500">
-              Popular:
-            </span>
-            {popularBreeds.map((breed) => (
-              <Link
-                key={breed.query}
-                href={`/handlers?q=${encodeURIComponent(breed.query)}`}
-                className="rounded-full border border-gray-300 px-4 py-1.5 text-sm text-gray-700 transition-colors hover:border-[#14472F] hover:text-[#14472F]"
-              >
-                {breed.label}
-              </Link>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* Dog lineup banner */}
-      <div className="mt-12 flex justify-center lg:mt-16">
+      {/* Dog lineup banner — narrower + tighter to CTAs so dogs read as the hero baseline */}
+      <div className="mt-6 flex justify-center lg:mt-8">
         <Image
           src="/images/dog-lineup.png"
           alt="Dog lineup banner"
           width={1200}
           height={400}
-          className="w-full max-w-[1200px] object-contain"
+          className="block h-auto w-full max-w-3xl object-contain object-bottom sm:max-w-4xl"
           priority
         />
       </div>
@@ -130,164 +97,50 @@ function HeroSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 2 - Browse by service                                      */
+/*  Section 2 - Mission cards                                          */
 /* ------------------------------------------------------------------ */
-const services = [
+const missionCards = [
   {
-    title: 'Show Handling',
-    description: 'Ring-ready professionals for your breed',
-    image: '/images/show-rottweiler.jpg',
-    href: '/handlers?service=handling',
+    imageUrl: '/images/dog-action.jpg',
+    title: 'Open Doors',
+    description:
+      "The sport of dog showing shouldn't be gatekept. Whether you're brand new or a seasoned competitor, there's a place for you here.",
+    themeColor: '150 50% 25%',
+    imagePosition: 'center',
   },
   {
-    title: 'Grooming',
-    description: 'Breed-specific show prep and styling',
-    image: '/images/dog-love.jpg',
-    href: '/handlers?service=grooming',
+    imageUrl: '/images/dog-love.jpg',
+    title: 'Built by the Community',
+    description:
+      'Your reputation is earned from the people you work with, not decided by the top 5%. Ratings, reviews, and trust, all driven by the community.',
+    themeColor: '25 70% 35%',
+    imagePosition: 'center',
   },
   {
-    title: 'Training',
-    description: 'Gaiting, stacking, and ring conditioning',
-    image: '/images/dog-action.jpg',
-    href: '/handlers?service=training',
-  },
-  {
-    title: 'Campaign',
-    description: 'Full-season strategy and management',
-    image: '/images/dog-portrait.jpg',
-    href: '/handlers?service=campaign',
+    imageUrl: '/images/dog-portrait.jpg',
+    title: 'Transparency for All',
+    description:
+      "Fair pricing, open communication, no backroom deals. Post what you need, connect directly, and know exactly what you're getting.",
+    themeColor: '200 40% 30%',
+    imagePosition: 'center 30%',
   },
 ]
 
-function ServiceSection() {
+function MissionSection() {
   return (
-    <section className="border-t border-gray-100 bg-[#FAFAF8] py-20 lg:py-28">
+    <section className="border-t border-gray-100 bg-[#F8F4EE] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <ScrollReveal>
-          <h2 className="mb-12 font-display text-2xl font-bold text-[#14472F] lg:text-3xl">
-            Browse by service
-          </h2>
-        </ScrollReveal>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((svc, i) => (
-            <ScrollReveal key={svc.title} delay={i * 0.08}>
-              <Link href={svc.href} className="group block">
-                <div className="overflow-hidden rounded-2xl">
-                  <img
-                    src={svc.image}
-                    alt={svc.title}
-                    className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <h3 className="mt-4 font-display text-lg font-bold text-[#14472F] group-hover:text-[#1F6B4A]">
-                  {svc.title}
-                </h3>
-                <p className="mt-1 text-base text-gray-600">
-                  {svc.description}
-                </p>
-              </Link>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Section 3 - Photo break / value prop                               */
-/* ------------------------------------------------------------------ */
-function PhotoBreakSection() {
-  return (
-    <section className="relative overflow-hidden">
-      <div className="relative h-[400px] lg:h-[480px]">
-        <img
-          src="/images/hero-connection.jpg"
-          alt="Handler with dog"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[#14472F]/70" />
-        <div className="relative z-10 flex h-full items-center justify-center px-6 text-center">
-          <div>
-            <p className="mx-auto max-w-xl text-xl leading-relaxed text-white lg:text-2xl">
-              The dog show community deserves a place where finding the right
-              handler is simple, transparent, and open to everyone.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Section 4 - How it works                                           */
-/* ------------------------------------------------------------------ */
-function HowItWorksSection() {
-  const steps = [
-    {
-      number: '01',
-      title: 'Search',
-      description:
-        'Browse by breed, region, or show circuit. See real experience, specialties, and what they charge.',
-      icon: <MagnifyingGlass size={28} weight="duotone" />,
-    },
-    {
-      number: '02',
-      title: 'Connect',
-      description:
-        'Message handlers directly, work out the details. No middlemen, no platform fees.',
-      icon: <UsersThree size={28} weight="duotone" />,
-    },
-    {
-      number: '03',
-      title: 'Compete',
-      description:
-        'Your dog, the right handler, the ring. More entries, more opportunities, less stress.',
-      icon: <Handshake size={28} weight="duotone" />,
-    },
-  ]
-
-  return (
-    <section className="bg-white py-20 lg:py-28">
-      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <ScrollReveal>
-          <div className="mb-16 text-center">
-            <p className="mb-2 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-              For Exhibitors
-            </p>
-            <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-gray-600">
-              How it works
-            </p>
-            <h2
-              className="font-display text-[#14472F]"
-              style={{
-                fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
-                fontWeight: 700,
-              }}
-            >
-              Three steps to ringside
-            </h2>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid gap-12 lg:grid-cols-3 lg:gap-16">
-          {steps.map((step, i) => (
-            <ScrollReveal key={step.number} delay={i * 0.1}>
-              <div className="text-center">
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#14472F]/5 text-[#14472F]">
-                  {step.icon}
-                </div>
-                <span className="mb-2 block font-display text-sm font-bold uppercase tracking-widest text-[#D4621A]">
-                  Step {step.number}
-                </span>
-                <h3 className="mb-3 font-display text-xl font-bold text-[#14472F]">
-                  {step.title}
-                </h3>
-                <p className="text-base leading-relaxed text-gray-600">
-                  {step.description}
-                </p>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {missionCards.map((card, i) => (
+            <ScrollReveal key={card.title} delay={i * 0.1}>
+              <div className="h-[450px]">
+                <MissionCard
+                  imageUrl={card.imageUrl}
+                  title={card.title}
+                  description={card.description}
+                  themeColor={card.themeColor}
+                  imagePosition={card.imagePosition}
+                />
               </div>
             </ScrollReveal>
           ))}
@@ -419,7 +272,7 @@ function FoundingCtaSection() {
           <img
             src={siteLogoSrc}
             alt="HandlerHub"
-            className="mx-auto mb-8 h-20 w-20 rounded-2xl object-contain"
+            className="mx-auto mb-8 h-24 w-auto object-contain"
           />
           <h2
             className="mb-4 font-display text-white"
@@ -471,9 +324,7 @@ export default function LandingHome() {
   return (
     <div>
       <HeroSection />
-      <ServiceSection />
-      <PhotoBreakSection />
-      <HowItWorksSection />
+      <MissionSection />
       <RequestBoardSection />
       <FoundingCtaSection />
     </div>

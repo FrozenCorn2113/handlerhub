@@ -134,38 +134,95 @@ export default async function ForHandlersPage() {
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                src: '/images/show-rottweiler.jpg',
-                label: 'DISCOVER',
-                headline: 'Exhibitors who need your expertise',
-              },
-              {
-                src: '/images/dog-corgi.jpg',
-                label: 'CONTROL',
-                headline: 'Your rates, your schedule, your terms',
-              },
-              {
-                src: '/images/hero-connection.jpg',
-                label: 'GROW',
-                headline: 'A reputation that works for you',
-              },
-            ].map((card) => (
+            {(
+              [
+                {
+                  src: '/images/show-rottweiler.jpg',
+                  gradient: null,
+                  label: 'DISCOVER',
+                  headline: 'Exhibitors who need your expertise',
+                  description:
+                    'Get found by exhibitors searching for handlers by breed, location, and show circuit.',
+                },
+                {
+                  src: '/images/dog-corgi.jpg',
+                  gradient: null,
+                  label: 'CONTROL',
+                  headline: 'Work on your terms, always',
+                  description:
+                    'Set your own rates, availability, and service areas. Accept only the clients that fit.',
+                },
+                {
+                  src: '/images/hero-connection.jpg',
+                  gradient: null,
+                  label: 'GROW',
+                  headline: 'A reputation that works for you',
+                  description:
+                    'Build a verified track record with reviews and results that attract new clients.',
+                },
+                {
+                  src: null,
+                  gradient: 'from-[#1a3a2a] to-[#2d5e3f]',
+                  label: 'OPTIMIZE',
+                  headline: 'Tools that streamline your work',
+                  description:
+                    'Built-in dashboard to manage bookings, messages, and client relationships.',
+                },
+                {
+                  src: null,
+                  gradient: 'from-[#1C1208] to-[#3d2e15]',
+                  label: 'SECURE',
+                  headline: 'Payouts you can trust',
+                  description:
+                    'Transparent pricing with reliable, on-time payments directly to you.',
+                },
+                {
+                  src: null,
+                  gradient: 'from-[#14472F] to-[#D4621A]',
+                  label: 'SUPPORT',
+                  headline: 'Real partners for the road ahead',
+                  description:
+                    'Dedicated help when you need it, from onboarding to growing your business.',
+                },
+              ] as {
+                src: string | null
+                gradient: string | null
+                label: string
+                headline: string
+                description: string
+              }[]
+            ).map((card) => (
               <div
                 key={card.label}
                 className="group relative overflow-hidden rounded-2xl"
                 style={{ aspectRatio: '3 / 4' }}
               >
-                <Image
-                  src={card.src}
-                  alt={card.headline}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
+                {/* Image or gradient placeholder */}
+                {card.src ? (
+                  <Image
+                    src={card.src}
+                    alt={card.headline}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                ) : (
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
+                  />
+                )}
+
                 {/* Bottom gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                {/* Text */}
+
+                {/* Frosted glass hover overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-6 opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100">
+                  <p className="text-center text-sm font-medium leading-relaxed text-white">
+                    {card.description}
+                  </p>
+                </div>
+
+                {/* Label + headline always visible */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-white/70">
                     {card.label}

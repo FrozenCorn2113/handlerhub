@@ -13,6 +13,8 @@ export const AUTH_ERRORS: Record<string, string> = {
     "We couldn't log you in. Please check your login details and try again.",
   CallbackRouteError:
     'Login failed due to a technical issue. Please try again or contact support for assistance.',
+  Configuration:
+    'A server configuration error occurred. Please try again or contact support.',
   CredentialsSignin:
     'Invalid login details. Please check your information and try again.',
   DuplicateConditionalUI:

@@ -46,7 +46,7 @@ export async function getUserByEmail(
     })
   } catch (error) {
     console.error('getUserByEmail failed:', error)
-    throw error
+    return null
   }
 }
 

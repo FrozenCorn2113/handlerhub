@@ -20,6 +20,9 @@ const publicRoutes = [
   '/role-select',
   '/our-story',
   '/events',
+  '/signup/verify-email',
+  '/login/password-reset',
+  '/signin/password-update',
 ]
 const authRoutes = ['/login', '/register', '/auth-error']
 const apiAuthPrefix = '/api/auth'

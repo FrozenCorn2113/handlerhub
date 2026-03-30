@@ -47,23 +47,23 @@ export function StitchMarketingFooter() {
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
                   href="/handlers"
                 >
-                  Find Handlers
+                  Find a Handler
                 </Link>
               </li>
               <li>
                 <Link
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/requests"
-                >
-                  Post a Request
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/#how-it-works"
+                  href="/how-it-works"
                 >
                   How It Works
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
+                  href="/events"
+                >
+                  Events
                 </Link>
               </li>
             </ul>
@@ -86,12 +86,11 @@ export function StitchMarketingFooter() {
               <li>
                 <Link
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/requests"
+                  href="/our-story"
                 >
-                  Browse Requests
+                  Our Story
                 </Link>
               </li>
-              {/* Pricing link hidden during free launch period */}
             </ul>
           </div>
 
@@ -122,7 +121,15 @@ export function StitchMarketingFooter() {
                   className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
                   href="/legal/terms-of-service"
                 >
-                  Legal
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
+                  href="/legal/privacy-policy"
+                >
+                  Privacy Policy
                 </Link>
               </li>
             </ul>

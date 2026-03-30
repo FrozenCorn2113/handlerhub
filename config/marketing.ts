@@ -3,38 +3,38 @@ import { MarketingConfig } from 'types'
 export const marketingConfig: MarketingConfig = {
   mainNav: [
     {
-      title: 'Browse',
+      title: 'Find a Handler',
       href: '/handlers',
     },
     {
-      title: 'How it Works',
-      href: '/#how-it-works',
+      title: 'How It Works',
+      href: '/how-it-works',
+    },
+    {
+      title: 'Events',
+      href: '/events',
     },
     {
       title: 'For Handlers',
       href: '/for-handlers',
-    },
-    {
-      title: 'Contact',
-      href: '/contact',
     },
   ],
   multiLevelNav: [
     {
-      title: 'Browse',
+      title: 'Find a Handler',
       href: '/handlers',
     },
     {
-      title: 'How it Works',
-      href: '/#how-it-works',
+      title: 'How It Works',
+      href: '/how-it-works',
+    },
+    {
+      title: 'Events',
+      href: '/events',
     },
     {
       title: 'For Handlers',
       href: '/for-handlers',
-    },
-    {
-      title: 'Contact',
-      href: '/contact',
     },
   ],
   footer: {

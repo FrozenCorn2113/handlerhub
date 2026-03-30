@@ -50,37 +50,37 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Content */}
         <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
           <Image
-            src="/handler-hub-logo-new.png"
-            width={280}
-            height={129}
+            src="/handler-hub-logo-option-2.png"
+            width={360}
+            height={166}
             alt="HandlerHub"
-            className="mb-10 h-28 w-auto object-contain drop-shadow-2xl"
+            className="mb-10 h-40 w-auto object-contain brightness-0 drop-shadow-2xl invert"
             priority
           />
 
           <h2
-            className="mb-4 text-3xl font-bold tracking-tight text-white"
+            className="mb-4 text-4xl font-bold tracking-tight text-white"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             Where great dogs meet great handlers
           </h2>
 
-          <p className="mb-12 text-base leading-relaxed text-white/60">
+          <p className="mb-12 text-lg leading-relaxed text-white/70">
             The platform connecting exhibitors with professional handlers.
           </p>
 
           {/* Founding 100 card */}
-          <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-6 text-center backdrop-blur-sm">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+          <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-8 text-center backdrop-blur-sm">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-white">
               Early Access
             </p>
             <p
-              className="mb-3 text-lg font-bold text-white"
+              className="mb-3 text-xl font-bold text-white"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               Join the Founding 100
             </p>
-            <p className="text-sm leading-relaxed text-white/70">
+            <p className="text-base leading-relaxed text-white/70">
               We&apos;re building HandlerHub with our first members. Get in
               early, shape the platform, and be the first name exhibitors see.
             </p>
@@ -88,7 +88,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#14472F]/50 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#14472F]/50 to-transparent" />
       </div>
     </div>
   )

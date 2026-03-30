@@ -22,87 +22,41 @@ function useSearchParam(key: string): string | null {
   return paramValue
 }
 
-interface LoadingState {
-  google: boolean
-  github: boolean
-}
-
 export function OAuthButtons(): JSX.Element {
   const nextUrl = useSearchParam('next')
   const fromUrl = useSearchParam('from')
   const callbackUrl = nextUrl || fromUrl
-  const initialLoadingValues = {
-    google: false,
-    github: false,
-  }
-  const [isLoading, setIsLoading] = useState<LoadingState>(initialLoadingValues)
-  async function handleOAuthSignIn(
-    provider: 'google' | 'github'
-  ): Promise<void> {
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function handleGoogleSignIn(): Promise<void> {
     try {
-      await signIn(provider, {
+      setIsLoading(true)
+      await signIn('google', {
         callbackUrl: callbackUrl || '/dashboard',
       })
-
-      setIsLoading({
-        ...initialLoadingValues,
-        [provider]: true,
-      })
-
       toast.success('Redirecting...')
     } catch (error) {
       toast.error('Something went wrong. Please try again.')
-
       console.error(error)
-      throw new Error(`Error signing in with ${provider}`)
+      throw new Error('Error signing in with Google')
     }
-
-    setIsLoading({
-      ...initialLoadingValues,
-      [provider]: false,
-    })
+    setIsLoading(false)
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
+    <div className="grid gap-2">
       <Button
         aria-label="Sign in with Google"
         variant="outline"
-        onClick={() => {
-          setIsLoading({
-            ...initialLoadingValues,
-            google: true,
-          })
-          void handleOAuthSignIn('google')
-        }}
-        className="w-full sm:w-auto"
+        onClick={() => void handleGoogleSignIn()}
+        className="w-full"
       >
-        {isLoading.google ? (
+        {isLoading ? (
           <Icons.spinner className="mr-2 size-4 animate-spin" />
         ) : (
           <Icons.google className="mr-2 size-4" />
         )}
-        Google
-      </Button>
-
-      <Button
-        aria-label="Sign in with gitHub"
-        variant="outline"
-        onClick={() => {
-          setIsLoading({
-            ...initialLoadingValues,
-            github: true,
-          })
-          void handleOAuthSignIn('github')
-        }}
-        className="w-full sm:w-auto"
-      >
-        {isLoading.github ? (
-          <Icons.spinner className="mr-2 size-4 animate-spin" />
-        ) : (
-          <Icons.github className="mr-2 size-4" />
-        )}
-        GitHub
+        Continue with Google
       </Button>
     </div>
   )

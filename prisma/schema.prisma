@@ -39,6 +39,13 @@ enum RequestStatus {
   CANCELLED
 }
 
+enum ServiceType {
+  HANDLING
+  GROOMING
+  TRANSPORT
+  PHOTOGRAPHY
+}
+
 model Account {
   id                       String   @id @default(cuid())
   userId                   String
@@ -199,6 +206,7 @@ model HandlerProfile {
   // Specializations
   breeds        String[]  // Array of breed names they specialize in
   services      String[]  // Array of services (e.g., ["Conformation Handling", "Professional Handling", "Grooming", "Training"])
+  serviceTypes  ServiceType[] @default([HANDLING])
 
   // Pricing & Availability
   ratePerShow   Float?    // Rate per show in USD

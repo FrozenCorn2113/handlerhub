@@ -23,6 +23,10 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/classnames-order */
+
 export function StitchLandingShell({
   children,
 }: {
@@ -52,12 +56,6 @@ export function StitchLandingShell({
               href="/handlers"
             >
               Find a Handler
-            </Link>
-            <Link
-              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
-              href="/how-it-works"
-            >
-              How It Works
             </Link>
             <Link
               className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
@@ -110,13 +108,6 @@ export function StitchLandingShell({
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Find a Handler
-              </Link>
-              <Link
-                className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
-                href="/how-it-works"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                How It Works
               </Link>
               <Link
                 className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"

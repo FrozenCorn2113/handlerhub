@@ -69,6 +69,8 @@ async function fetchHandler(id: string) {
           handlerProfile: {
             select: {
               profileImage: true,
+              coverImage: true,
+              galleryImages: true,
               bio: true,
               yearsExperience: true,
               breeds: true,
@@ -80,6 +82,11 @@ async function fetchHandler(id: string) {
               feeSchedule: true,
               city: true,
               state: true,
+              isInsured: true,
+              isBonded: true,
+              totalCompletedBookings: true,
+              businessName: true,
+              createdAt: true,
             },
           },
         },
@@ -102,7 +109,10 @@ async function fetchHandler(id: string) {
       id: dbHandler.id,
       name: dbHandler.name ?? 'Professional Handler',
       profileImage: p.profileImage ?? dbHandler.image ?? null,
+      coverImage: p.coverImage ?? null,
+      galleryImages: p.galleryImages ?? [],
       bio: p.bio ?? null,
+      tagline: p.businessName ?? null,
       yearsExperience: p.yearsExperience ?? null,
       location,
       breeds: p.breeds ?? [],
@@ -111,10 +121,75 @@ async function fetchHandler(id: string) {
       registries,
       feeSchedule: parseFeeSchedule(p.feeSchedule),
       ratePerShow: p.ratePerShow ?? null,
+      isInsured: p.isInsured ?? false,
+      isBonded: p.isBonded ?? false,
+      kennelClubMemberships: p.kennelClubMemberships ?? [],
+      totalCompletedBookings: p.totalCompletedBookings ?? 0,
+      isFoundingHandler: true,
     }
   } catch {
     return null
   }
+}
+
+function generateJsonLd(
+  handler: {
+    name: string
+    profileImage: string | null
+    bio: string | null
+    location: string | null
+    breeds: string[]
+    yearsExperience: number | null
+    feeSchedule: FeeSchedule | null
+    ratePerShow: number | null
+    registries: string[]
+  },
+  id: string
+) {
+  const jsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: handler.name,
+    description:
+      handler.bio ||
+      `Professional dog handler specializing in ${handler.breeds.slice(0, 3).join(', ') || 'multiple breeds'}`,
+    url: `https://handlerhub.com/handlers/${id}`,
+    ...(handler.profileImage && { image: handler.profileImage }),
+    ...(handler.location && {
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: handler.location.split(', ')[0],
+        addressRegion: handler.location.split(', ')[1],
+        addressCountry: 'US',
+      },
+    }),
+    ...(handler.ratePerShow && {
+      priceRange: `$${handler.ratePerShow}+`,
+    }),
+    serviceType: 'Professional Dog Handling',
+    areaServed:
+      handler.breeds.length > 0
+        ? handler.breeds.map((breed) => ({ '@type': 'Text', name: breed }))
+        : undefined,
+    ...(handler.yearsExperience && {
+      foundingDate: new Date(
+        new Date().getFullYear() - handler.yearsExperience,
+        0,
+        1
+      )
+        .toISOString()
+        .split('T')[0],
+    }),
+    additionalType: 'https://schema.org/AnimalShelter',
+    knowsAbout: handler.breeds,
+    memberOf: handler.registries.map((reg) => ({
+      '@type': 'Organization',
+      name: reg,
+    })),
+  }
+
+  // Clean undefined values
+  return JSON.parse(JSON.stringify(jsonLd))
 }
 
 export async function generateMetadata({
@@ -137,13 +212,36 @@ export async function generateMetadata({
       ? handler.regions[0]
       : (handler.location ?? 'various regions')
 
-  const description = `${handler.name} specializes in ${breeds}. Based in ${region}. View profile and fee schedule on HandlerHub.`
+  const description = `${handler.name} is a professional dog handler specializing in ${breeds}, based in ${region}. View fee schedule, experience, and book on HandlerHub.`
+
+  const canonicalUrl = `https://handlerhub.com/handlers/${params.id}`
 
   return {
-    title: `${handler.name} - Professional Handler | HandlerHub`,
+    title: `${handler.name} - Professional Dog Handler | HandlerHub`,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: `${handler.name} - Professional Handler | HandlerHub`,
+      title: `${handler.name} - Professional Dog Handler`,
+      description,
+      url: canonicalUrl,
+      siteName: 'HandlerHub',
+      type: 'profile',
+      images: handler.profileImage
+        ? [
+            {
+              url: handler.profileImage,
+              width: 400,
+              height: 400,
+              alt: `${handler.name} - Professional Dog Handler`,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: 'summary',
+      title: `${handler.name} - Professional Dog Handler`,
       description,
       images: handler.profileImage ? [handler.profileImage] : [],
     },
@@ -172,5 +270,15 @@ export default async function HandlerProfilePage({
     messageHref,
   }
 
-  return <WebmakerProfilePage handler={profileHandler} />
+  const jsonLd = generateJsonLd(handler, params.id)
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <WebmakerProfilePage handler={profileHandler} />
+    </>
+  )
 }

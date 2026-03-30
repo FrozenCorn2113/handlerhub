@@ -13,30 +13,6 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
-
 export function StitchLandingShell({
   children,
 }: {

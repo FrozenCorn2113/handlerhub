@@ -116,6 +116,7 @@ export function EventsMap({
       }).addTo(map)
 
       leafletMapRef.current = map
+      setTimeout(() => map.invalidateSize(), 100)
       updateMarkers(L, map)
     }
 

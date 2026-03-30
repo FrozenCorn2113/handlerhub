@@ -324,7 +324,7 @@ export function EventsBrowse({
   )
 
   return (
-    <div className="flex h-[calc(100vh-72px)] flex-col">
+    <div className="flex h-[calc(100vh-140px)] flex-col overflow-hidden">
       {/* Toolbar */}
       <div className="flex items-center justify-between border-b border-[#E8E0D4] bg-[#F8F4EE] px-4 py-3 sm:px-6">
         <h1 className="text-lg font-bold text-ringside-black sm:text-xl">

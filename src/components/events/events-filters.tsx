@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import {
   ENTRY_STATUS_CONFIG,
@@ -70,14 +70,18 @@ function FilterBadge({ count }: { count: number }) {
 function FilterPopover({
   label,
   badgeCount,
+  isOpen,
+  onOpenChange,
   children,
 }: {
   label: string
   badgeCount: number
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
   children: React.ReactNode
 }) {
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1 rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm font-medium text-ringside-black transition-colors hover:border-paddock-green/40">
           {label}
@@ -107,15 +111,19 @@ export function EventsFilters({
   superintendents,
   resultCount,
 }: EventsFiltersProps) {
+  const [openPopover, setOpenPopover] = useState<string | null>(null)
+
   const updateFilter = useCallback(
     (key: keyof FilterState, value: string) => {
       onFiltersChange({ ...filters, [key]: value })
+      setOpenPopover(null)
     },
     [filters, onFiltersChange]
   )
 
   const clearFilters = useCallback(() => {
     onFiltersChange(EMPTY_FILTERS)
+    setOpenPopover(null)
   }, [onFiltersChange])
 
   const activeFilterCount = useMemo(() => {
@@ -162,7 +170,12 @@ export function EventsFilters({
       {/* Horizontal filter bar */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Location */}
-        <FilterPopover label="Location" badgeCount={locationCount}>
+        <FilterPopover
+          label="Location"
+          badgeCount={locationCount}
+          isOpen={openPopover === 'location'}
+          onOpenChange={(open) => setOpenPopover(open ? 'location' : null)}
+        >
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
             State
           </label>
@@ -181,7 +194,12 @@ export function EventsFilters({
         </FilterPopover>
 
         {/* Event Type */}
-        <FilterPopover label="Type" badgeCount={typeCount}>
+        <FilterPopover
+          label="Type"
+          badgeCount={typeCount}
+          isOpen={openPopover === 'type'}
+          onOpenChange={(open) => setOpenPopover(open ? 'type' : null)}
+        >
           <div className="space-y-3">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
@@ -218,7 +236,12 @@ export function EventsFilters({
         </FilterPopover>
 
         {/* Entry Status */}
-        <FilterPopover label="Status" badgeCount={statusCount}>
+        <FilterPopover
+          label="Status"
+          badgeCount={statusCount}
+          isOpen={openPopover === 'status'}
+          onOpenChange={(open) => setOpenPopover(open ? 'status' : null)}
+        >
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
             Entry Status
           </label>
@@ -239,7 +262,12 @@ export function EventsFilters({
         </FilterPopover>
 
         {/* Date Range */}
-        <FilterPopover label="Dates" badgeCount={dateCount}>
+        <FilterPopover
+          label="Dates"
+          badgeCount={dateCount}
+          isOpen={openPopover === 'dates'}
+          onOpenChange={(open) => setOpenPopover(open ? 'dates' : null)}
+        >
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
             Date Range
           </label>
@@ -263,7 +291,12 @@ export function EventsFilters({
 
         {/* Breed */}
         {breeds.length > 0 && (
-          <FilterPopover label="Breed" badgeCount={breedCount}>
+          <FilterPopover
+            label="Breed"
+            badgeCount={breedCount}
+            isOpen={openPopover === 'breed'}
+            onOpenChange={(open) => setOpenPopover(open ? 'breed' : null)}
+          >
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
               Breed
             </label>
@@ -284,7 +317,14 @@ export function EventsFilters({
 
         {/* Superintendent */}
         {superintendents.length > 0 && (
-          <FilterPopover label="Superintendent" badgeCount={superCount}>
+          <FilterPopover
+            label="Superintendent"
+            badgeCount={superCount}
+            isOpen={openPopover === 'superintendent'}
+            onOpenChange={(open) =>
+              setOpenPopover(open ? 'superintendent' : null)
+            }
+          >
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
               Superintendent
             </label>
@@ -304,7 +344,10 @@ export function EventsFilters({
         )}
 
         {/* Sort */}
-        <Popover>
+        <Popover
+          open={openPopover === 'sort'}
+          onOpenChange={(open) => setOpenPopover(open ? 'sort' : null)}
+        >
           <PopoverTrigger asChild>
             <button className="flex items-center gap-1 rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm font-medium text-warm-gray transition-colors hover:border-paddock-green/40">
               <SortAscending size={14} weight="bold" />

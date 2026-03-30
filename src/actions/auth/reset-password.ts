@@ -15,28 +15,36 @@ import { getUserByEmail } from '@/actions/user'
 import { env } from '@/root/env.mjs'
 import crypto from 'crypto'
 
+// TODO: Add rate limiting to prevent abuse (e.g., max 3 requests per email per hour)
 export async function resetPassword(
   rawInput: PasswordResetFormInput
-): Promise<'invalid-input' | 'not-found' | 'error' | 'success'> {
+): Promise<'invalid-input' | 'error' | 'success'> {
   try {
     const validatedInput = passwordResetSchema.safeParse(rawInput)
     if (!validatedInput.success) return 'invalid-input'
 
     const user = await getUserByEmail({ email: validatedInput.data.email })
-    if (!user) return 'not-found'
 
-    const today = new Date()
+    // Enumeration prevention: return success even if user not found.
+    // This prevents attackers from discovering which emails are registered.
+    if (!user) return 'success'
+
     const resetPasswordToken = crypto.randomBytes(32).toString('base64url')
-    const resetPasswordTokenExpiry = new Date(
-      today.setDate(today.getDate() + 1)
-    ) // 24 hours from now
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(resetPasswordToken)
+      .digest('hex')
 
+    // Token expires in 30 minutes (OWASP recommends max 1 hour)
+    const resetPasswordTokenExpiry = new Date(Date.now() + 30 * 60 * 1000)
+
+    // Storing hashed token invalidates any previous token automatically
     const userUpdated = await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        resetPasswordToken,
+        resetPasswordToken: hashedToken,
         resetPasswordTokenExpiry,
       },
     })
@@ -46,6 +54,7 @@ export async function resetPassword(
       throw new Error('RESEND_FROM_EMAIL is not set')
     }
 
+    // Send the raw (unhashed) token in the email link
     const emailSent = await resend.emails.send({
       from: fromEmail,
       to: [validatedInput.data.email],

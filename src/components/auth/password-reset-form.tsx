@@ -45,12 +45,10 @@ export function PasswordResetForm(): JSX.Element {
         const message = await resetPassword({ email: formData.email })
 
         switch (message) {
-          case 'not-found':
-            toast.warning('User with this email address does not exist')
-            form.reset()
-            break
           case 'success':
-            toast.success('Check your email for a password reset link')
+            toast.success(
+              'If an account exists with that email, you will receive a password reset link.'
+            )
             router.push('/login')
             break
           default:

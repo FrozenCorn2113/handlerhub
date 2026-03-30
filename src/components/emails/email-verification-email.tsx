@@ -1,17 +1,8 @@
 import { siteConfig } from '@/config/site'
 
+import { AuthEmailLayout } from './auth-email-layout'
 import { env } from '@/root/env.mjs'
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Section,
-  Tailwind,
-  Text,
-} from '@react-email/components'
+import { Button, Text } from '@react-email/components'
 
 interface EmailVerificationEmailProps {
   email: string
@@ -22,51 +13,27 @@ export function EmailVerificationEmail({
   email,
   emailVerificationToken,
 }: Readonly<EmailVerificationEmailProps>): JSX.Element {
-  const previewText = `${siteConfig.name} email verification.`
-  return (
-    <Html lang="en">
-      <Head>
-        <title>{previewText}</title>
-      </Head>
-      <Preview>{previewText}</Preview>
-      <Tailwind>
-        <Body>
-          <Container>
-            <Section>
-              <Text className="text-xl">Hi,</Text>
-              <Text className="text-base">
-                Your email address, {email}, was recently used to sign up at{' '}
-                <span className="font-semibold tracking-wide">
-                  {siteConfig.name}
-                </span>
-                .
-              </Text>
-              <Text className="text-base">
-                Please verify this address by clicking the button below
-              </Text>
-              <Button
-                href={`${env.NEXT_PUBLIC_APP_URL}/signup/verify-email?token=${emailVerificationToken}`}
-              >
-                Verify email now
-              </Button>
-            </Section>
+  const previewText = `${siteConfig.name} - Verify your email address`
 
-            <Section>
-              <Text className="text-xs">
-                If you didn&apos;t sign up at {siteConfig.name}, just ignore and
-                delete this message.
-              </Text>
-              <Text className="text-base font-medium">
-                Enjoy{' '}
-                <span className="font-semibold tracking-wide">
-                  {siteConfig.name}
-                </span>{' '}
-                and have a nice day!
-              </Text>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+  return (
+    <AuthEmailLayout previewText={previewText}>
+      <Text className="text-lg font-semibold text-gray-900">
+        Verify your email address
+      </Text>
+      <Text className="text-sm leading-6 text-gray-600">
+        Your email address ({email}) was used to sign up for {siteConfig.name}.
+        Please verify it by clicking the button below.
+      </Text>
+      <Button
+        href={`${env.NEXT_PUBLIC_APP_URL}/signup/verify-email?token=${emailVerificationToken}`}
+        className="mt-2 rounded-md bg-[#1F6B4A] px-6 py-3 text-center text-sm font-semibold text-white"
+      >
+        Verify email
+      </Button>
+      <Text className="mt-6 text-xs text-gray-400">
+        If you did not sign up for {siteConfig.name}, you can safely ignore this
+        email.
+      </Text>
+    </AuthEmailLayout>
   )
 }

@@ -2,17 +2,8 @@ import { siteConfig } from '@/config/site'
 
 import { absoluteUrl } from '@/lib/utils'
 
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Section,
-  Tailwind,
-  Text,
-} from '@react-email/components'
+import { AuthEmailLayout } from './auth-email-layout'
+import { Button, Text } from '@react-email/components'
 
 interface ResetPasswordEmailProps {
   email: string
@@ -23,57 +14,29 @@ export function ResetPasswordEmail({
   email,
   resetPasswordToken,
 }: Readonly<ResetPasswordEmailProps>): JSX.Element {
-  const previewText = `${siteConfig.name} password reset.`
+  const previewText = `${siteConfig.name} - Reset your password`
 
   return (
-    <Html lang="en">
-      <Head>
-        <title>{previewText}</title>
-      </Head>
-      <Preview>{previewText}</Preview>
-      <Tailwind>
-        <Body>
-          <Container>
-            <Section>
-              <Text className="text-xl">Hi,</Text>
-              <Text className="text-base">
-                Someone just requested a password change for your{' '}
-                {siteConfig.name}
-                account associated with {email}.
-              </Text>
-              <Text className="text-base">
-                If this was you, you can set a new password here:
-              </Text>
-              <Button
-                href={absoluteUrl(
-                  `/signin/password-update?token=${resetPasswordToken}`
-                )}
-              >
-                Set new password
-              </Button>
-            </Section>
-            <Section>
-              <Text className="text-xs">
-                If you don&apos;t want to change your password or didn&apos;t
-                request this, just ignore and delete this message.
-              </Text>
-              <Text className="text-xs">
-                To keep your account secure, please don&apos;t forward this
-                email to anyone.
-              </Text>
-            </Section>
-            <Section>
-              <Text className="text-base font-medium">
-                Enjoy{' '}
-                <span className="font-semibold tracking-wide">
-                  {siteConfig.name}
-                </span>{' '}
-                and have a nice day!
-              </Text>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+    <AuthEmailLayout previewText={previewText}>
+      <Text className="text-lg font-semibold text-gray-900">
+        Reset your password
+      </Text>
+      <Text className="text-sm leading-6 text-gray-600">
+        A password reset was requested for your {siteConfig.name} account (
+        {email}). Click the button below to set a new password.
+      </Text>
+      <Button
+        href={absoluteUrl(
+          `/signin/password-update?token=${resetPasswordToken}`
+        )}
+        className="mt-2 rounded-md bg-[#1F6B4A] px-6 py-3 text-center text-sm font-semibold text-white"
+      >
+        Set new password
+      </Button>
+      <Text className="mt-6 text-xs text-gray-400">
+        If you did not request a password reset, you can safely ignore this
+        email. Do not forward this email to anyone.
+      </Text>
+    </AuthEmailLayout>
   )
 }

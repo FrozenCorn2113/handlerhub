@@ -15,6 +15,7 @@ import { getUserByEmail } from '../user'
 import { env } from '@/root/env.mjs'
 import crypto from 'crypto'
 
+// TODO: Add rate limiting to prevent abuse (e.g., max 3 requests per email per hour)
 export async function resendEmailVerificationLink(
   rawInput: EmailVerificationFormInput
 ): Promise<'invalid-input' | 'not-found' | 'error' | 'success'> {
@@ -25,14 +26,19 @@ export async function resendEmailVerificationLink(
     const user = await getUserByEmail({ email: validatedInput.data.email })
     if (!user) return 'not-found'
 
+    // Generate new token and hash it for storage (invalidates any previous token)
     const emailVerificationToken = crypto.randomBytes(32).toString('base64url')
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(emailVerificationToken)
+      .digest('hex')
 
     const userUpdated = await prisma.user.update({
       where: {
         email: validatedInput.data.email,
       },
       data: {
-        emailVerificationToken,
+        emailVerificationToken: hashedToken,
       },
     })
 
@@ -41,6 +47,7 @@ export async function resendEmailVerificationLink(
       throw new Error('RESEND_FROM_EMAIL is not set')
     }
 
+    // Send the raw (unhashed) token in the email link
     const emailSent = await resend.emails.send({
       from: fromEmail,
       to: [validatedInput.data.email],

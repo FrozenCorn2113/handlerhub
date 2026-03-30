@@ -32,21 +32,26 @@ export async function signUpWithPassword(
 
     const passwordHash = await bcryptjs.hash(validatedInput.data.password, 10)
     const emailVerificationToken = crypto.randomBytes(32).toString('base64url')
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(emailVerificationToken)
+      .digest('hex')
 
     const newUser = await prisma.user.create({
       data: {
         email: validatedInput.data.email,
         password: passwordHash,
-        emailVerificationToken,
+        emailVerificationToken: hashedToken,
       },
     })
 
     if (!newUser) return 'error'
 
-    // Email sending is best-effort — account is already created
+    // Email sending is best-effort -- account is already created
     try {
       const fromEmail = env.RESEND_FROM_EMAIL
       if (fromEmail) {
+        // Send the raw (unhashed) token in the email link
         await resend.emails.send({
           from: fromEmail,
           to: [validatedInput.data.email],
@@ -58,12 +63,12 @@ export async function signUpWithPassword(
         })
       } else {
         console.error(
-          'RESEND_FROM_EMAIL is not set — skipping verification email'
+          'RESEND_FROM_EMAIL is not set -- skipping verification email'
         )
       }
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError)
-      // Don't fail signup — user can resend verification later
+      // Don't fail signup -- user can resend verification later
     }
 
     return 'success'

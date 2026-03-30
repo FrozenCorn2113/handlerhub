@@ -10,9 +10,9 @@ export function StitchMarketingFooter() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="mb-6 flex items-center gap-2.5">
               <img
-                src="/handler-hub-logo.png"
+                src="/handler-hub-logo-light.png"
                 alt="HandlerHub logo"
-                className="h-8 w-8 object-contain brightness-0 invert"
+                className="h-8 w-8 object-contain"
               />
               <span className="flex items-baseline gap-0">
                 <span

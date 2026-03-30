@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         }}
       >
         <Image
-          src="/handler-hub-logo-new.png"
+          src="/handler-hub-logo-light.png"
           width={160}
           height={74}
           alt="HandlerHub"
@@ -50,11 +50,11 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Content */}
         <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
           <Image
-            src="/handler-hub-logo-option-2.png"
+            src="/handler-hub-logo-light.png"
             width={360}
             height={166}
             alt="HandlerHub"
-            className="mb-10 h-40 w-auto object-contain brightness-0 drop-shadow-2xl invert"
+            className="mb-10 h-40 w-auto object-contain drop-shadow-2xl"
             priority
           />
 

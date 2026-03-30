@@ -46,7 +46,7 @@ export default async function SignInPage({
       <div className="mb-10">
         <Link href="/" className="inline-flex items-center gap-3">
           <Image
-            src="/handler-hub-logo-new.png"
+            src="/handler-hub-logo-dark.png"
             width={200}
             height={92}
             alt={siteConfig.name}

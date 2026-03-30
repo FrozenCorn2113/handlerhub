@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { siteLogoSrc } from '@/config/site'
+import { siteLogoLight } from '@/config/site'
 
 import { MissionCard } from '@/components/ui/card-21'
 import { HandlerCard } from '@/components/ui/handler-card'
@@ -125,7 +125,7 @@ const missionCards = [
     description:
       "Fair pricing, open communication, no backroom deals. Post what you need, connect directly, and know exactly what you're getting.",
     themeColor: '200 40% 30%',
-    imagePosition: 'center 20%',
+    imagePosition: 'center top',
     href: '/requests',
   },
 ]
@@ -285,7 +285,7 @@ function FoundingCtaSection() {
             For Handlers
           </p>
           <img
-            src={siteLogoSrc}
+            src={siteLogoLight}
             alt="HandlerHub"
             className="mx-auto mb-8 h-24 w-auto object-contain"
           />

@@ -9,7 +9,7 @@ interface IconLogoProps {
 export default function IconLogo({ className }: IconLogoProps) {
   return (
     <Image
-      src="/handler-hub-logo.png"
+      src="/handler-hub-logo-dark.png"
       width={40}
       height={40}
       className={className}

@@ -21,6 +21,8 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
 export function StitchLandingShell({
   children,
 }: {
@@ -38,7 +40,7 @@ export function StitchLandingShell({
             aria-label="HandlerHub home"
           >
             <img
-              src="/handler-hub-logo.svg"
+              src="/handler-hub-logo-light.png"
               alt="HandlerHub"
               className="-my-16 h-56 w-auto shrink-0 object-contain"
             />

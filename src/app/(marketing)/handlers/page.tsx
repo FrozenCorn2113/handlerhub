@@ -1,7 +1,5 @@
 'use client'
 
-import { WebmakerShell } from '@/components/webmaker/shell'
-
 import {
   Dog,
   Funnel,
@@ -303,8 +301,8 @@ function MapPlaceholder() {
 
 export default function HandlersPage() {
   return (
-    <WebmakerShell>
-      <div className="flex h-[calc(100vh-72px)] flex-col">
+    <>
+      <div className="flex h-[calc(100vh-140px)] flex-col">
         {/* Filter bar */}
         <FilterBar />
 
@@ -331,6 +329,6 @@ export default function HandlersPage() {
           </div>
         </div>
       </div>
-    </WebmakerShell>
+    </>
   )
 }

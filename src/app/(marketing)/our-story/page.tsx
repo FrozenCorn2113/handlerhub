@@ -3,8 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { StitchLandingShell } from '@/app/(marketing)/_components/stitch-landing-shell'
-
 /* ------------------------------------------------------------------ */
 /*  Section label                                                      */
 /* ------------------------------------------------------------------ */
@@ -23,7 +21,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export default function OurStoryPage() {
   return (
-    <StitchLandingShell>
+    <>
       {/* Hero */}
       <section
         className="bg-[#F8F4EE]"
@@ -192,6 +190,6 @@ export default function OurStoryPage() {
           </div>
         </div>
       </section>
-    </StitchLandingShell>
+    </>
   )
 }

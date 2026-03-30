@@ -10,7 +10,6 @@ import {
   type ProfileHandler,
   WebmakerProfilePage,
 } from '@/components/webmaker/pages/profile-page'
-import { WebmakerShell } from '@/components/webmaker/shell'
 
 export const dynamic = 'force-dynamic'
 
@@ -173,9 +172,5 @@ export default async function HandlerProfilePage({
     messageHref,
   }
 
-  return (
-    <WebmakerShell>
-      <WebmakerProfilePage handler={profileHandler} />
-    </WebmakerShell>
-  )
+  return <WebmakerProfilePage handler={profileHandler} />
 }

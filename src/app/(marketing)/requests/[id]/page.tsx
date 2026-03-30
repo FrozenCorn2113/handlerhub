@@ -4,7 +4,6 @@ import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
 import { RequestDetail } from '@/components/requests/request-detail'
-import { WebmakerShell } from '@/components/webmaker/shell'
 
 export const dynamic = 'force-dynamic'
 
@@ -69,12 +68,10 @@ export default async function RequestDetailPage({
   }
 
   return (
-    <WebmakerShell>
-      <RequestDetail
-        request={serialized}
-        currentUserId={user?.id ?? null}
-        currentUserRole={user?.role ?? null}
-      />
-    </WebmakerShell>
+    <RequestDetail
+      request={serialized}
+      currentUserId={user?.id ?? null}
+      currentUserRole={user?.role ?? null}
+    />
   )
 }

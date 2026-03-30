@@ -6,7 +6,6 @@ import { ENTRY_STATUS_CONFIG, EVENT_TYPE_LABELS } from '@/lib/events/constants'
 import { getAlsoAtVenue, getEventBySlug } from '@/lib/events/queries'
 
 import { EventDetailContent } from '@/components/events/event-detail-content'
-import { WebmakerShell } from '@/components/webmaker/shell'
 
 interface EventDetailPageProps {
   params: { slug: string }
@@ -60,11 +59,6 @@ export default async function EventDetailPage({
   )
 
   return (
-    <WebmakerShell>
-      <EventDetailContent
-        event={event as any}
-        alsoAtVenue={alsoAtVenue as any}
-      />
-    </WebmakerShell>
+    <EventDetailContent event={event as any} alsoAtVenue={alsoAtVenue as any} />
   )
 }

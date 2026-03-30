@@ -1,3 +1,5 @@
+import { StitchLandingShell } from '@/app/(marketing)/_components/stitch-landing-shell'
+
 interface MarketingLayoutProps {
   children: React.ReactNode
 }
@@ -5,6 +7,5 @@ interface MarketingLayoutProps {
 export default async function MarketingLayout({
   children,
 }: MarketingLayoutProps) {
-  // Pages under (marketing) render their own header/footer
-  return <>{children}</>
+  return <StitchLandingShell>{children}</StitchLandingShell>
 }

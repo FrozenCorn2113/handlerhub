@@ -8,7 +8,6 @@ import {
 } from '@/lib/events/queries'
 
 import { EventsBrowse } from '@/components/events/events-browse'
-import { WebmakerShell } from '@/components/webmaker/shell'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,13 +51,11 @@ export default async function EventsPage() {
   }
 
   return (
-    <WebmakerShell>
-      <EventsBrowse
-        initialEvents={initialEvents as any}
-        initialPins={initialPins as any}
-        initialTotal={initialTotal}
-        breeds={breeds}
-      />
-    </WebmakerShell>
+    <EventsBrowse
+      initialEvents={initialEvents as any}
+      initialPins={initialPins as any}
+      initialTotal={initialTotal}
+      breeds={breeds}
+    />
   )
 }

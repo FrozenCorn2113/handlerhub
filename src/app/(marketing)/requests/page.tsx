@@ -5,7 +5,6 @@ import {
   RequestBoard,
   type ServiceRequestItem,
 } from '@/components/requests/request-board'
-import { WebmakerShell } from '@/components/webmaker/shell'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,9 +54,5 @@ export default async function RequestBoardPage() {
     // Fall back to empty list if DB is unavailable
   }
 
-  return (
-    <WebmakerShell>
-      <RequestBoard requests={requests} />
-    </WebmakerShell>
-  )
+  return <RequestBoard requests={requests} />
 }

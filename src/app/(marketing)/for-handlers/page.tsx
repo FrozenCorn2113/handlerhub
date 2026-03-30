@@ -1,7 +1,5 @@
 import Link from 'next/link'
 
-import { StitchLandingShell } from '@/app/(marketing)/_components/stitch-landing-shell'
-
 import {
   Broadcast,
   ClipboardText,
@@ -89,7 +87,7 @@ function StepCard({ number, icon, title, description }: StepProps) {
 
 export default function ForHandlersPage() {
   return (
-    <StitchLandingShell>
+    <>
       {/* Hero */}
       <section
         className="bg-[#F8F4EE]"
@@ -311,6 +309,6 @@ export default function ForHandlersPage() {
           </div>
         </div>
       </section>
-    </StitchLandingShell>
+    </>
   )
 }

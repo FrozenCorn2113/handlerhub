@@ -94,9 +94,6 @@ export default async function ForHandlersPage() {
         <div className="absolute inset-0 bg-black/50" />
 
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
-            Become a Handler
-          </p>
           <h1
             className="mb-8 font-display text-white"
             style={{
@@ -224,13 +221,13 @@ export default async function ForHandlersPage() {
 
                 {/* Label + headline always visible */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+                  <p className="mb-1 h-5 text-[15px] font-bold uppercase tracking-[0.2em] text-white/70">
                     {card.label}
                   </p>
                   <p
                     className="font-display text-white"
                     style={{
-                      fontSize: 'clamp(1.125rem, 1rem + 0.5vw, 1.375rem)',
+                      fontSize: '30px',
                       fontWeight: 700,
                       lineHeight: 1.25,
                     }}
@@ -310,44 +307,37 @@ export default async function ForHandlersPage() {
       {/* ---------------------------------------------------------- */}
       {/*  Section 4 — Community (Bento Grid)                        */}
       {/* ---------------------------------------------------------- */}
-      <section className="bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto max-w-[960px] px-6 lg:px-8">
           <h2
-            className="mb-14 text-center font-display text-[#14472F]"
+            className="mb-10 text-center font-display text-[#14472F]"
             style={{
-              fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              fontSize: 'clamp(1.5rem, 1.1rem + 1.5vw, 2.25rem)',
               fontWeight: 700,
             }}
           >
             We grow better together
           </h2>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
-            {/* Founding 100 card — col 1, spans both rows */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-[#14472F] p-8 text-white md:col-span-1 md:row-span-1 lg:row-span-2 lg:p-10">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Founding 100 card */}
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#14472F] p-6 text-white lg:p-8">
               {/* Rosette decoration */}
               <Image
                 src="/images/brand/decorative-rosette.png"
                 alt=""
-                width={220}
-                height={220}
-                className="absolute -bottom-8 -right-8 opacity-10"
+                width={180}
+                height={180}
+                className="absolute -bottom-6 -right-6 opacity-10"
               />
               <div className="relative z-10">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
                   Founding 100
                 </p>
-                <h3
-                  className="mb-4 font-display"
-                  style={{
-                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <h3 className="mb-3 font-display text-lg font-bold leading-tight lg:text-xl">
                   Be one of the first
                 </h3>
-                <p className="mb-8 text-sm leading-relaxed text-white/70">
+                <p className="mb-6 text-sm leading-relaxed text-white/70">
                   Early members earn a founding badge and help shape the
                   platform from day one.
                 </p>
@@ -355,7 +345,7 @@ export default async function ForHandlersPage() {
               <div className="relative z-10">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-body text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   Join now
                   <ArrowRight size={14} weight="bold" />
@@ -363,20 +353,13 @@ export default async function ForHandlersPage() {
               </div>
             </div>
 
-            {/* Upcoming Shows card — cols 2-3, row 1 */}
-            <div className="flex flex-col justify-between rounded-3xl border border-gray-100 bg-[#F8F4EE] p-8 md:col-span-1 lg:col-span-2 lg:p-10">
+            {/* Upcoming Shows card */}
+            <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-[#F8F4EE] p-6 lg:p-8">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
                   Upcoming Shows
                 </p>
-                <h3
-                  className="mb-3 font-display text-[#14472F]"
-                  style={{
-                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <h3 className="mb-3 font-display text-lg font-bold leading-tight text-[#14472F] lg:text-xl">
                   Find shows near you
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
@@ -387,7 +370,7 @@ export default async function ForHandlersPage() {
               <div>
                 <Link
                   href="/events"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 font-body text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
                 >
                   Browse events
                   <ArrowRight size={14} weight="bold" />
@@ -395,32 +378,13 @@ export default async function ForHandlersPage() {
               </div>
             </div>
 
-            {/* Decorative card — col 4, row 1 */}
-            <div className="relative hidden overflow-hidden rounded-3xl bg-[#1C1208] lg:block">
-              <Image
-                src="/images/brand/decorative-rosette.png"
-                alt=""
-                width={280}
-                height={280}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.08]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1C1208] via-transparent to-[#14472F]/30" />
-            </div>
-
-            {/* Our Story card — col 2, row 2 */}
-            <div className="flex flex-col justify-between rounded-3xl border border-gray-100 bg-[#F8F4EE] p-8 lg:p-10">
+            {/* Our Story card */}
+            <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-[#F8F4EE] p-6 lg:p-8">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
                   Our Story
                 </p>
-                <h3
-                  className="mb-3 font-display text-[#14472F]"
-                  style={{
-                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <h3 className="mb-3 font-display text-lg font-bold leading-tight text-[#14472F] lg:text-xl">
                   Built by handlers, for handlers
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
@@ -431,7 +395,7 @@ export default async function ForHandlersPage() {
               <div>
                 <Link
                   href="/our-story"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 font-body text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
                 >
                   Read more
                   <ArrowRight size={14} weight="bold" />
@@ -439,20 +403,13 @@ export default async function ForHandlersPage() {
               </div>
             </div>
 
-            {/* Community card — cols 3-4, row 2 */}
-            <div className="flex flex-col justify-between rounded-3xl bg-[#D4621A] p-8 text-white md:col-span-1 lg:col-span-2 lg:p-10">
+            {/* Community card */}
+            <div className="flex flex-col justify-between rounded-2xl bg-[#D4621A] p-6 text-white lg:p-8">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
                   Community
                 </p>
-                <h3
-                  className="mb-3 font-display"
-                  style={{
-                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <h3 className="mb-3 font-display text-lg font-bold leading-tight lg:text-xl">
                   Join the conversation
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-white/80">
@@ -463,7 +420,7 @@ export default async function ForHandlersPage() {
               <div>
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/30 hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2.5 font-body text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/30 hover:shadow-lg"
                 >
                   Coming soon
                   <ArrowRight size={14} weight="bold" />
@@ -473,13 +430,13 @@ export default async function ForHandlersPage() {
           </div>
 
           {/* Final CTA */}
-          <div className="mt-14 text-center">
+          <div className="mt-10 text-center">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-10 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-3.5 font-body text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
             >
               Get started
-              <ArrowRight size={18} weight="bold" />
+              <ArrowRight size={16} weight="bold" />
             </Link>
           </div>
         </div>

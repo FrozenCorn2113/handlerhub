@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { siteLogoSrc } from '@/config/site'
 
 import { MissionCard } from '@/components/ui/card-21'
+import { HandlerCard } from '@/components/ui/handler-card'
 
 import { ArrowRight, MapPin, PawPrint, Star } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
@@ -107,6 +108,7 @@ const missionCards = [
       "The sport of dog showing shouldn't be gatekept. Whether you're brand new or a seasoned competitor, there's a place for you here.",
     themeColor: '150 50% 25%',
     imagePosition: 'center',
+    href: '/register',
   },
   {
     imageUrl: '/images/dog-love.jpg',
@@ -115,6 +117,7 @@ const missionCards = [
       'Your reputation is earned from the people you work with, not decided by the top 5%. Ratings, reviews, and trust, all driven by the community.',
     themeColor: '25 70% 35%',
     imagePosition: 'center',
+    href: '/handlers',
   },
   {
     imageUrl: '/images/dog-portrait.jpg',
@@ -122,7 +125,8 @@ const missionCards = [
     description:
       "Fair pricing, open communication, no backroom deals. Post what you need, connect directly, and know exactly what you're getting.",
     themeColor: '200 40% 30%',
-    imagePosition: 'center 30%',
+    imagePosition: 'center 20%',
+    href: '/requests',
   },
 ]
 
@@ -133,15 +137,14 @@ function MissionSection() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {missionCards.map((card, i) => (
             <ScrollReveal key={card.title} delay={i * 0.1}>
-              <div className="h-[450px]">
-                <MissionCard
-                  imageUrl={card.imageUrl}
-                  title={card.title}
-                  description={card.description}
-                  themeColor={card.themeColor}
-                  imagePosition={card.imagePosition}
-                />
-              </div>
+              <MissionCard
+                imageUrl={card.imageUrl}
+                title={card.title}
+                description={card.description}
+                themeColor={card.themeColor}
+                imagePosition={card.imagePosition}
+                href={card.href}
+              />
             </ScrollReveal>
           ))}
         </div>
@@ -318,12 +321,96 @@ function FoundingCtaSection() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Section - Featured Handlers                                        */
+/* ------------------------------------------------------------------ */
+function FeaturedHandlersSection() {
+  return (
+    <section className="border-t border-gray-100 bg-white py-20 lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+        <ScrollReveal>
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              Handlers
+            </p>
+            <h2
+              className="font-display text-[#14472F]"
+              style={{
+                fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+                fontWeight: 700,
+              }}
+            >
+              Meet our founding handlers
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <ScrollReveal delay={0}>
+            <HandlerCard
+              imageUrl="/images/brett-headshot.jpg"
+              name="Brett Carter"
+              region="Victoria, BC"
+              rating={5.0}
+              reviewCount={0}
+              description="Founder of HandlerHub. New to the sport but passionate about making it accessible to everyone."
+              breeds={['All Breeds']}
+              services={['Founder']}
+              price="Say Hello"
+              href="/our-story"
+            />
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.1}>
+            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
+              <div>
+                <p className="mb-2 text-lg font-semibold text-gray-400">
+                  Your profile here
+                </p>
+                <p className="mb-4 text-sm text-gray-400">
+                  Be one of the founding 100
+                </p>
+                <a
+                  href="/register"
+                  className="inline-flex items-center rounded-full bg-[#14472F] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                >
+                  Join Now
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
+            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
+              <div>
+                <p className="mb-2 text-lg font-semibold text-gray-400">
+                  Your profile here
+                </p>
+                <p className="mb-4 text-sm text-gray-400">
+                  Be one of the founding 100
+                </p>
+                <a
+                  href="/register"
+                  className="inline-flex items-center rounded-full bg-[#14472F] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                >
+                  Join Now
+                </a>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
 /*  Composed landing page                                              */
 /* ------------------------------------------------------------------ */
 export default function LandingHome() {
   return (
     <div>
       <HeroSection />
+      <FeaturedHandlersSection />
       <MissionSection />
       <RequestBoardSection />
       <FoundingCtaSection />

@@ -322,38 +322,40 @@ export default async function ForHandlersPage() {
             We grow better together
           </h2>
 
-          <div className="grid gap-5 md:grid-cols-3">
-            {/* Founding 100 card */}
-            <div className="relative overflow-hidden rounded-2xl bg-[#14472F] p-8 text-white">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+            {/* Founding 100 card — col 1, spans both rows */}
+            <div className="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-[#14472F] p-8 text-white md:col-span-1 md:row-span-1 lg:row-span-2 lg:p-10">
               {/* Rosette decoration */}
               <Image
                 src="/images/brand/decorative-rosette.png"
                 alt=""
-                width={180}
-                height={180}
-                className="absolute -bottom-6 -right-6 opacity-10"
+                width={220}
+                height={220}
+                className="absolute -bottom-8 -right-8 opacity-10"
               />
               <div className="relative z-10">
-                <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
                   Founding 100
                 </p>
                 <h3
-                  className="mb-3 font-display"
+                  className="mb-4 font-display"
                   style={{
-                    fontSize: '1.375rem',
+                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
                     fontWeight: 700,
-                    lineHeight: 1.25,
+                    lineHeight: 1.2,
                   }}
                 >
                   Be one of the first
                 </h3>
-                <p className="mb-6 text-sm leading-relaxed text-white/75">
+                <p className="mb-8 text-sm leading-relaxed text-white/70">
                   Early members earn a founding badge and help shape the
                   platform from day one.
                 </p>
+              </div>
+              <div className="relative z-10">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
                 >
                   Join now
                   <ArrowRight size={14} weight="bold" />
@@ -361,60 +363,112 @@ export default async function ForHandlersPage() {
               </div>
             </div>
 
-            {/* Upcoming Shows card */}
-            <div className="rounded-2xl border border-gray-100 bg-[#F8F4EE] p-8">
-              <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-                Upcoming Shows
-              </p>
-              <h3
-                className="mb-3 font-display text-[#14472F]"
-                style={{
-                  fontSize: '1.375rem',
-                  fontWeight: 700,
-                  lineHeight: 1.25,
-                }}
-              >
-                Find shows near you
-              </h3>
-              <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
-                Browse upcoming AKC events by location, breed, and event type.
-                Plan your calendar and connect with exhibitors who need you.
-              </p>
-              <Link
-                href="/events"
-                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-              >
-                Browse events
-                <ArrowRight size={14} weight="bold" />
-              </Link>
+            {/* Upcoming Shows card — cols 2-3, row 1 */}
+            <div className="flex flex-col justify-between rounded-3xl border border-gray-100 bg-[#F8F4EE] p-8 md:col-span-1 lg:col-span-2 lg:p-10">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
+                  Upcoming Shows
+                </p>
+                <h3
+                  className="mb-3 font-display text-[#14472F]"
+                  style={{
+                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
+                    fontWeight: 700,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Find shows near you
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
+                  Browse upcoming AKC events by location, breed, and event type.
+                  Plan your calendar and connect with exhibitors who need you.
+                </p>
+              </div>
+              <div>
+                <Link
+                  href="/events"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                >
+                  Browse events
+                  <ArrowRight size={14} weight="bold" />
+                </Link>
+              </div>
             </div>
 
-            {/* Our Story card */}
-            <div className="rounded-2xl border border-gray-100 bg-[#F8F4EE] p-8">
-              <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-                Our Story
-              </p>
-              <h3
-                className="mb-3 font-display text-[#14472F]"
-                style={{
-                  fontSize: '1.375rem',
-                  fontWeight: 700,
-                  lineHeight: 1.25,
-                }}
-              >
-                Built by handlers, for handlers
-              </h3>
-              <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
-                HandlerHub started with a simple idea: the sport of dog showing
-                deserves a modern platform that puts handlers first.
-              </p>
-              <Link
-                href="/our-story"
-                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-              >
-                Read more
-                <ArrowRight size={14} weight="bold" />
-              </Link>
+            {/* Decorative card — col 4, row 1 */}
+            <div className="relative hidden overflow-hidden rounded-3xl bg-[#1C1208] lg:block">
+              <Image
+                src="/images/brand/decorative-rosette.png"
+                alt=""
+                width={280}
+                height={280}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.08]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1C1208] via-transparent to-[#14472F]/30" />
+            </div>
+
+            {/* Our Story card — col 2, row 2 */}
+            <div className="flex flex-col justify-between rounded-3xl border border-gray-100 bg-[#F8F4EE] p-8 lg:p-10">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
+                  Our Story
+                </p>
+                <h3
+                  className="mb-3 font-display text-[#14472F]"
+                  style={{
+                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
+                    fontWeight: 700,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Built by handlers, for handlers
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
+                  HandlerHub started with a simple idea: the sport of dog
+                  showing deserves a modern platform that puts handlers first.
+                </p>
+              </div>
+              <div>
+                <Link
+                  href="/our-story"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-6 py-3 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+                >
+                  Read more
+                  <ArrowRight size={14} weight="bold" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Community card — cols 3-4, row 2 */}
+            <div className="flex flex-col justify-between rounded-3xl bg-[#D4621A] p-8 text-white md:col-span-1 lg:col-span-2 lg:p-10">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
+                  Community
+                </p>
+                <h3
+                  className="mb-3 font-display"
+                  style={{
+                    fontSize: 'clamp(1.25rem, 1rem + 0.75vw, 1.625rem)',
+                    fontWeight: 700,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Join the conversation
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed text-white/80">
+                  Connect with fellow handlers, share wins, and learn from each
+                  other in a community built around the sport.
+                </p>
+              </div>
+              <div>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/30 hover:shadow-lg"
+                >
+                  Coming soon
+                  <ArrowRight size={14} weight="bold" />
+                </Link>
+              </div>
             </div>
           </div>
 

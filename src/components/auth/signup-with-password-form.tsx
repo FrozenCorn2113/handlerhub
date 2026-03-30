@@ -49,13 +49,13 @@ export function SignUpWithPasswordForm(): JSX.Element {
   function onSubmit(formData: SignUpWithPasswordFormInput): void {
     startTransition(async () => {
       try {
-        const message = await signUpWithPassword({
+        const result = await signUpWithPassword({
           email: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
         })
 
-        switch (message) {
+        switch (result.status) {
           case 'exists':
             toast.warning(
               'User with this email address already exists. If this is you, please sign in instead.'
@@ -69,8 +69,12 @@ export function SignUpWithPasswordForm(): JSX.Element {
             router.push(`/login?next=${encodeURIComponent(nextUrl)}`)
             break
           default:
-            toast.error('Something went wrong. Please try again.')
-            console.error(message)
+            toast.error(
+              result.debug
+                ? `Signup failed: ${result.debug}`
+                : 'Something went wrong. Please try again.'
+            )
+            console.error('signup result:', result)
         }
       } catch (error) {
         console.error(error)

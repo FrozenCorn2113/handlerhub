@@ -22,13 +22,17 @@ const baseUrl = absoluteUrl('')
 
 export async function signUpWithPassword(
   rawInput: SignUpWithPasswordFormInput
-): Promise<'invalid-input' | 'exists' | 'error' | 'success'> {
+): Promise<{ status: string; debug?: string }> {
   try {
     const validatedInput = signUpWithPasswordSchema.safeParse(rawInput)
-    if (!validatedInput.success) return 'invalid-input'
+    if (!validatedInput.success)
+      return {
+        status: 'invalid-input',
+        debug: JSON.stringify(validatedInput.error.flatten()),
+      }
 
     const user = await getUserByEmail({ email: validatedInput.data.email })
-    if (user) return 'exists'
+    if (user) return { status: 'exists' }
 
     const passwordHash = await bcryptjs.hash(validatedInput.data.password, 10)
     const emailVerificationToken = crypto.randomBytes(32).toString('base64url')
@@ -41,7 +45,8 @@ export async function signUpWithPassword(
       },
     })
 
-    if (!newUser) return 'error'
+    if (!newUser)
+      return { status: 'error', debug: 'prisma.user.create returned falsy' }
 
     // Email sending is best-effort — account is already created
     try {
@@ -66,9 +71,10 @@ export async function signUpWithPassword(
       // Don't fail signup — user can resend verification later
     }
 
-    return 'success'
+    return { status: 'success' }
   } catch (error) {
-    console.error('Signup error:', error)
-    return 'error'
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('Signup error:', msg, error)
+    return { status: 'error', debug: msg }
   }
 }

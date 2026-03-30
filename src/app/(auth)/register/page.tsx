@@ -45,15 +45,13 @@ export default async function SignUpPage({
       <div className="mb-10">
         <Link href="/" className="inline-flex items-center gap-3">
           <Image
-            src="/handler-hub-logo.png"
-            width={36}
-            height={36}
+            src="/handler-hub-logo-new.png"
+            width={200}
+            height={92}
             alt={siteConfig.name}
+            className="h-14 w-auto object-contain"
             priority
           />
-          <span className="text-lg font-bold text-forest">
-            {siteConfig.name}
-          </span>
         </Link>
       </div>
 

@@ -15,18 +15,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         }}
       >
         <Image
-          src="/handler-hub-logo.png"
-          width={32}
-          height={32}
+          src="/handler-hub-logo-new.png"
+          width={160}
+          height={74}
           alt="HandlerHub"
+          className="h-12 w-auto object-contain"
           priority
         />
-        <span
-          className="text-lg font-bold text-white"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          HandlerHub
-        </span>
       </div>
 
       {/* Left side - Form */}
@@ -55,11 +50,11 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Content */}
         <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
           <Image
-            src="/handler-hub-logo.png"
-            width={120}
-            height={120}
+            src="/handler-hub-logo-new.png"
+            width={280}
+            height={129}
             alt="HandlerHub"
-            className="mb-10 drop-shadow-2xl"
+            className="mb-10 h-28 w-auto object-contain drop-shadow-2xl"
             priority
           />
 
@@ -71,25 +66,24 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           </h2>
 
           <p className="mb-12 text-base leading-relaxed text-white/60">
-            The professional marketplace connecting dog show handlers with
-            exhibitors. Find, book, and manage handler services with ease.
+            The platform connecting exhibitors with professional handlers.
           </p>
 
-          {/* Floating testimonial card */}
-          <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-6 text-left backdrop-blur-sm">
-            <p className="mb-4 text-sm italic leading-relaxed text-white/90">
-              &ldquo;HandlerHub made it so easy to find the right handler for
-              our show schedule. We booked within 24 hours.&rdquo;
+          {/* Founding 100 card */}
+          <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-6 text-center backdrop-blur-sm">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              Early Access
             </p>
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-sm font-bold text-white">
-                S
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Sarah M.</p>
-                <p className="text-xs text-white/50">Dog Show Exhibitor</p>
-              </div>
-            </div>
+            <p
+              className="mb-3 text-lg font-bold text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Join the Founding 100
+            </p>
+            <p className="text-sm leading-relaxed text-white/70">
+              We&apos;re building HandlerHub with our first members. Get in
+              early, shape the platform, and be the first name exhibitors see.
+            </p>
           </div>
         </div>
 

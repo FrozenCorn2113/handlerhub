@@ -44,10 +44,10 @@ const MissionCard = React.forwardRef<HTMLAnchorElement, MissionCardProps>(
         {...props}
       >
         {/* Image card */}
-        <div className="relative h-[320px] overflow-hidden rounded-2xl shadow-lg transition-shadow duration-300 group-hover:shadow-xl">
+        <div className="relative h-[320px] overflow-hidden rounded-2xl shadow-lg transition-shadow duration-300">
           <div
             className={cn(
-              'absolute bg-cover transition-transform duration-500 ease-in-out group-hover:scale-110',
+              'absolute bg-cover transition-transform duration-500 ease-in-out',
               imageLayerPositionClassName ?? 'inset-0'
             )}
             style={{

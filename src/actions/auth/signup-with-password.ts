@@ -41,24 +41,34 @@ export async function signUpWithPassword(
       },
     })
 
-    const fromEmail = env.RESEND_FROM_EMAIL
-    if (!fromEmail) {
-      throw new Error('RESEND_FROM_EMAIL is not set')
+    if (!newUser) return 'error'
+
+    // Email sending is best-effort — account is already created
+    try {
+      const fromEmail = env.RESEND_FROM_EMAIL
+      if (fromEmail) {
+        await resend.emails.send({
+          from: fromEmail,
+          to: [validatedInput.data.email],
+          subject: `${siteConfig.name} - Verify your email address`,
+          react: EmailVerificationEmail({
+            email: validatedInput.data.email,
+            emailVerificationToken,
+          }),
+        })
+      } else {
+        console.error(
+          'RESEND_FROM_EMAIL is not set — skipping verification email'
+        )
+      }
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError)
+      // Don't fail signup — user can resend verification later
     }
 
-    const emailSent = await resend.emails.send({
-      from: fromEmail,
-      to: [validatedInput.data.email],
-      subject: `${siteConfig.name} - Verify your email address`,
-      react: EmailVerificationEmail({
-        email: validatedInput.data.email,
-        emailVerificationToken,
-      }),
-    })
-
-    return newUser && emailSent ? 'success' : 'error'
+    return 'success'
   } catch (error) {
-    console.error(error)
-    throw new Error('Error signing up with password')
+    console.error('Signup error:', error)
+    return 'error'
   }
 }

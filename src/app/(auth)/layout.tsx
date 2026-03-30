@@ -47,17 +47,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 flex max-w-md flex-col items-center px-12 text-center">
-          <Image
-            src="/handler-hub-logo-light.png"
-            width={360}
-            height={166}
-            alt="HandlerHub"
-            className="mb-10 h-40 w-auto object-contain drop-shadow-2xl"
-            priority
-          />
-
+        {/* Content — centered in panel via parent flex; no absolute positioning */}
+        <div className="relative z-10 flex w-full max-w-md flex-col items-center px-12 text-center">
           <h2
             className="mb-4 text-4xl font-bold tracking-tight text-white"
             style={{ fontFamily: 'var(--font-display)' }}

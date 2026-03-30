@@ -41,16 +41,11 @@ export async function signInWithPassword(
 
     return 'success'
   } catch (error) {
-    console.error(error)
     if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'invalid-credentials'
-        default:
-          throw error
-      }
-    } else {
-      throw new Error('Error signin in with password')
+      console.error('Auth error:', error.type, error.message)
+      return 'invalid-credentials'
     }
+    // Re-throw non-AuthErrors (NEXT_REDIRECT, etc.) so Next.js can handle them
+    throw error
   }
 }

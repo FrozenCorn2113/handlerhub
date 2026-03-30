@@ -3,6 +3,8 @@ import Link from 'next/link'
 
 import { prisma } from '@/lib/db'
 
+import { BentoGrid, BentoGridItem } from '@/components/ui/bento-grid'
+
 import {
   ArrowRight,
   CalendarBlank,
@@ -308,9 +310,9 @@ export default async function ForHandlersPage() {
       {/*  Section 4 — Community (Bento Grid)                        */}
       {/* ---------------------------------------------------------- */}
       <section className="bg-white py-16 lg:py-20">
-        <div className="mx-auto max-w-[960px] px-6 lg:px-8">
+        <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-10 text-center font-display text-[#14472F]"
+            className="mb-10 font-display text-[#14472F]"
             style={{
               fontSize: 'clamp(1.5rem, 1.1rem + 1.5vw, 2.25rem)',
               fontWeight: 700,
@@ -319,115 +321,64 @@ export default async function ForHandlersPage() {
             We grow better together
           </h2>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Founding 100 card */}
-            <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#14472F] p-6 text-white lg:p-8">
-              {/* Rosette decoration */}
-              <Image
-                src="/images/brand/decorative-rosette.png"
-                alt=""
-                width={180}
-                height={180}
-                className="absolute -bottom-6 -right-6 opacity-10"
-              />
-              <div className="relative z-10">
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
-                  Founding 100
-                </p>
-                <h3 className="mb-3 font-display text-lg font-bold leading-tight lg:text-xl">
-                  Be one of the first
-                </h3>
-                <p className="mb-6 text-sm leading-relaxed text-white/70">
-                  Early members earn a founding badge and help shape the
-                  platform from day one.
-                </p>
-              </div>
-              <div className="relative z-10">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 font-body text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
-                >
-                  Join now
-                  <ArrowRight size={14} weight="bold" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Upcoming Shows card */}
-            <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-[#F8F4EE] p-6 lg:p-8">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
-                  Upcoming Shows
-                </p>
-                <h3 className="mb-3 font-display text-lg font-bold leading-tight text-[#14472F] lg:text-xl">
-                  Find shows near you
-                </h3>
-                <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
-                  Browse upcoming AKC events by location, breed, and event type.
-                  Plan your calendar and connect with exhibitors who need you.
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="/events"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 font-body text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-                >
-                  Browse events
-                  <ArrowRight size={14} weight="bold" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Our Story card */}
-            <div className="flex flex-col justify-between rounded-2xl border border-gray-100 bg-[#F8F4EE] p-6 lg:p-8">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#D4621A]">
-                  Our Story
-                </p>
-                <h3 className="mb-3 font-display text-lg font-bold leading-tight text-[#14472F] lg:text-xl">
-                  Built by handlers, for handlers
-                </h3>
-                <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
-                  HandlerHub started with a simple idea: the sport of dog
-                  showing deserves a modern platform that puts handlers first.
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="/our-story"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 font-body text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-                >
-                  Read more
-                  <ArrowRight size={14} weight="bold" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Community card */}
-            <div className="flex flex-col justify-between rounded-2xl bg-[#D4621A] p-6 text-white lg:p-8">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50">
-                  Community
-                </p>
-                <h3 className="mb-3 font-display text-lg font-bold leading-tight lg:text-xl">
-                  Join the conversation
-                </h3>
-                <p className="mb-6 text-sm leading-relaxed text-white/80">
-                  Connect with fellow handlers, share wins, and learn from each
-                  other in a community built around the sport.
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2.5 font-body text-sm font-semibold text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/30 hover:shadow-lg"
-                >
-                  Coming soon
-                  <ArrowRight size={14} weight="bold" />
-                </Link>
-              </div>
-            </div>
-          </div>
+          <BentoGrid>
+            <BentoGridItem
+              title="Founding 100"
+              description="Be one of the first. Early members earn a founding badge and help shape the platform."
+              header={
+                <Image
+                  src="/images/backgrounds/woman-handler-jack-russell-terrier.png"
+                  alt="Handler with Jack Russell Terrier"
+                  fill
+                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              }
+              className="border-[#14472F]/10 md:col-span-1"
+            />
+            <BentoGridItem
+              title="Upcoming Shows"
+              description="Browse AKC events by location, breed, and type. Plan your calendar."
+              header={
+                <Image
+                  src="/images/backgrounds/lagotto-romagnolo-dog-show-green-carpet.png"
+                  alt="Lagotto Romagnolo at dog show"
+                  fill
+                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 66vw"
+                />
+              }
+              className="border-[#14472F]/10 md:col-span-2"
+            />
+            <BentoGridItem
+              title="Our Story"
+              description="Built by handlers, for handlers. The sport deserves a modern platform."
+              header={
+                <Image
+                  src="/images/backgrounds/man-and-corgi-grassy-field.png"
+                  alt="Man with Corgi in grassy field"
+                  fill
+                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 66vw"
+                />
+              }
+              className="border-[#14472F]/10 md:col-span-2"
+            />
+            <BentoGridItem
+              title="Community"
+              description="Connect with fellow handlers, share wins, and grow together."
+              header={
+                <Image
+                  src="/images/backgrounds/irish-setter-stacked-on-grass.png"
+                  alt="Irish Setter stacked on grass"
+                  fill
+                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              }
+              className="border-[#14472F]/10 md:col-span-1"
+            />
+          </BentoGrid>
 
           {/* Final CTA */}
           <div className="mt-10 text-center">

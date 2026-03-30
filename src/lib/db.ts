@@ -8,8 +8,8 @@ declare global {
 
 function getDatabaseUrl(): string | undefined {
   const url =
-    process.env.POSTGRES_DATABASE_URL_UNPOOLED ??
-    process.env.POSTGRES_DATABASE_URL
+    process.env.POSTGRES_DATABASE_URL ??
+    process.env.POSTGRES_DATABASE_URL_UNPOOLED
 
   if (!url) return undefined
 

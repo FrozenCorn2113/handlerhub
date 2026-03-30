@@ -46,20 +46,14 @@ export default async function SignUpPage({
           className="mb-2 text-4xl font-bold tracking-tight text-gray-900"
           style={{ fontFamily: 'var(--font-display)' }}
         >
-          Create account
+          Get Started
         </h1>
-        <p className="mb-8 text-sm text-gray-500">
-          Already have an account?{' '}
-          <Link
-            href={`/login?next=${encodeURIComponent(nextUrl)}`}
-            className="font-semibold text-paddock-green hover:underline"
-          >
-            Sign in
-          </Link>
+        <p className="mb-8 text-base text-gray-500">
+          Welcome to HandlerHub — Let&apos;s get started
         </p>
 
-        {/* Form */}
-        <SignUpWithPasswordForm />
+        {/* OAuth first for visual hierarchy */}
+        <OAuthButtons />
 
         {/* Divider */}
         <div className="relative my-8">
@@ -71,11 +65,22 @@ export default async function SignUpPage({
           </div>
         </div>
 
-        {/* OAuth */}
-        <OAuthButtons />
+        {/* Form */}
+        <SignUpWithPasswordForm />
+
+        {/* Sign in link */}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{' '}
+          <Link
+            href={`/login?next=${encodeURIComponent(nextUrl)}`}
+            className="font-semibold text-paddock-green hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
 
         {/* Terms */}
-        <p className="mt-8 text-center text-xs text-gray-400">
+        <p className="mt-6 text-center text-xs text-gray-400">
           By continuing, you agree to our{' '}
           <Link
             href="/legal/terms-of-service"

@@ -76,7 +76,7 @@ function HeroSection() {
               href="/for-handlers"
               className="inline-flex items-center gap-2 rounded-full border-2 border-[#14472F] px-8 py-4 font-display text-base font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:bg-[#14472F]/5"
             >
-              Become a Founding Handler
+              Become a Handler
             </Link>
           </div>
         </div>
@@ -114,7 +114,7 @@ const missionCards = [
     imageUrl: '/images/dog-love.jpg',
     title: 'Built by the Community',
     description:
-      'Your reputation is earned from the people you work with, not decided by the top 5%. Ratings, reviews, and trust, all driven by the community.',
+      'Your reputation is earned from the people you work with. Ratings, reviews, and trust, all driven by the community.',
     themeColor: '25 70% 35%',
     imagePosition: 'center',
     href: '/handlers',
@@ -123,9 +123,9 @@ const missionCards = [
     imageUrl: '/images/dog-portrait.jpg',
     title: 'Transparency for All',
     description:
-      "Fair pricing, open communication, no backroom deals. Post what you need, connect directly, and know exactly what you're getting.",
+      'Open communication, honest expectations. Post what you need and connect directly with the right handler.',
     themeColor: '200 40% 30%',
-    imagePosition: 'center top',
+    imagePosition: 'center 15%',
     imageLayerPositionClassName: 'bottom-0 right-0 h-full w-full',
     href: '/requests',
   },

@@ -1,310 +1,374 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
+import { prisma } from '@/lib/db'
+
 import {
-  Broadcast,
-  ClipboardText,
-  CurrencyDollar,
-  Handshake,
-  Link as LinkIcon,
-  UserCirclePlus,
+  ArrowRight,
+  CalendarBlank,
+  MapPin,
 } from '@phosphor-icons/react/dist/ssr'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
-  title: 'For Handlers | HandlerHub',
+  title: 'Become a Handler | HandlerHub',
   description:
-    'Get discovered by exhibitors. Set your rates. Build your reputation on HandlerHub.',
+    'Create your profile on HandlerHub and let exhibitors find you by breed, region, and show circuit.',
 }
 
 /* ------------------------------------------------------------------ */
-/*  Benefit card                                                       */
+/*  Event type label helper                                            */
 /* ------------------------------------------------------------------ */
-
-interface BenefitProps {
-  icon: React.ReactNode
-  title: string
-  description: string
-}
-
-function BenefitCard({ icon, title, description }: BenefitProps) {
-  return (
-    <div className="card-hh flex flex-col items-start">
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-[10px] bg-sage">
-        {icon}
-      </div>
-      <h3
-        className="mb-2 font-body text-lg font-semibold text-[#1C1208]"
-        style={{ lineHeight: 1.3, letterSpacing: 0 }}
-      >
-        {title}
-      </h3>
-      <p className="text-sm text-[#4A3E2E]" style={{ lineHeight: 1.7 }}>
-        {description}
-      </p>
-    </div>
-  )
+function eventTypeLabel(type: string) {
+  const map: Record<string, string> = {
+    ALL_BREED: 'All-Breed',
+    LIMITED_BREED: 'Limited Breed',
+    SPECIALTY: 'Specialty',
+    PARENT_SPECIALTY: 'Parent Specialty',
+    DESIGNATED_SPECIALTY: 'Designated Specialty',
+    JUNIOR_SHOWMANSHIP: 'Junior Showmanship',
+    SWEEPSTAKES: 'Sweepstakes',
+    OTHER: 'Other',
+  }
+  return map[type] || type
 }
 
 /* ------------------------------------------------------------------ */
-/*  How it works step                                                  */
+/*  Format date helper                                                 */
 /* ------------------------------------------------------------------ */
-
-interface StepProps {
-  number: string
-  icon: React.ReactNode
-  title: string
-  description: string
-}
-
-function StepCard({ number, icon, title, description }: StepProps) {
-  return (
-    <div className="flex items-start gap-4">
-      <div className="flex shrink-0 flex-col items-center">
-        <span className="mb-2 text-xs font-semibold text-[#7A6E5E]">
-          {number}
-        </span>
-        <div className="flex h-14 w-14 items-center justify-center rounded-[10px] bg-sage">
-          {icon}
-        </div>
-      </div>
-      <div className="pt-5">
-        <h4
-          className="mb-1 font-body text-base font-semibold text-[#1C1208]"
-          style={{ lineHeight: 1.4, letterSpacing: 0 }}
-        >
-          {title}
-        </h4>
-        <p className="text-sm text-[#4A3E2E]" style={{ lineHeight: 1.6 }}>
-          {description}
-        </p>
-      </div>
-    </div>
-  )
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(date))
 }
 
 /* ------------------------------------------------------------------ */
 /*  Page                                                               */
 /* ------------------------------------------------------------------ */
+export default async function ForHandlersPage() {
+  /* Fetch upcoming events server-side */
+  let upcomingEvents: {
+    id: string
+    clubName: string
+    eventType: string
+    startDate: Date
+    venue: { city: string; state: string }
+  }[] = []
 
-export default function ForHandlersPage() {
+  try {
+    upcomingEvents = await prisma.event.findMany({
+      where: { startDate: { gte: new Date() } },
+      orderBy: { startDate: 'asc' },
+      take: 4,
+      select: {
+        id: true,
+        clubName: true,
+        eventType: true,
+        startDate: true,
+        venue: { select: { city: true, state: true } },
+      },
+    })
+  } catch {
+    // DB unavailable — section will show fallback
+  }
+
   return (
     <>
-      {/* Hero */}
-      <section
-        className="bg-[#F8F4EE]"
-        style={{ padding: 'var(--section-py-xl) 0' }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1
-              className="mb-8 font-display font-light text-[#1C1208]"
-              style={{
-                fontSize: 'var(--fs-display)',
-                lineHeight: 0.95,
-                letterSpacing: '-0.04em',
-              }}
-            >
-              Get discovered.
-              <br />
-              Set your rates.
-              <br />
-              Build your reputation.
-            </h1>
+      {/* ---------------------------------------------------------- */}
+      {/*  Section 1 — Hero                                          */}
+      {/* ---------------------------------------------------------- */}
+      <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden lg:min-h-[600px]">
+        {/* Background image */}
+        <Image
+          src="/images/hero-handler.jpg"
+          alt=""
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/50" />
 
-            <p
-              className="mx-auto mb-12 max-w-[560px] font-body text-[#4A3E2E]"
-              style={{ fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}
-            >
-              HandlerHub is the professional marketplace where exhibitors find
-              you. Create your profile, set your fee schedule, and start
-              connecting with clients.
+        <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+            Become a Handler
+          </p>
+          <h1
+            className="mb-8 font-display text-white"
+            style={{
+              fontSize: 'clamp(2rem, 1.5rem + 3vw, 3.5rem)',
+              lineHeight: 1.12,
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Grow your handling business with clients who find you
+          </h1>
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+          >
+            Create your profile
+            <ArrowRight size={18} weight="bold" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/*  Section 2 — Why (Image Cards)                             */}
+      {/* ---------------------------------------------------------- */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+          <h2
+            className="mb-14 text-center font-display text-[#14472F]"
+            style={{
+              fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              fontWeight: 700,
+            }}
+          >
+            A better way to build your business
+          </h2>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                src: '/images/show-rottweiler.jpg',
+                label: 'DISCOVER',
+                headline: 'Exhibitors who need your expertise',
+              },
+              {
+                src: '/images/dog-corgi.jpg',
+                label: 'CONTROL',
+                headline: 'Your rates, your schedule, your terms',
+              },
+              {
+                src: '/images/hero-connection.jpg',
+                label: 'GROW',
+                headline: 'A reputation that works for you',
+              },
+            ].map((card) => (
+              <div
+                key={card.label}
+                className="group relative overflow-hidden rounded-2xl"
+                style={{ aspectRatio: '3 / 4' }}
+              >
+                <Image
+                  src={card.src}
+                  alt={card.headline}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                {/* Bottom gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                {/* Text */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-white/70">
+                    {card.label}
+                  </p>
+                  <p
+                    className="font-display text-white"
+                    style={{
+                      fontSize: 'clamp(1.125rem, 1rem + 0.5vw, 1.375rem)',
+                      fontWeight: 700,
+                      lineHeight: 1.25,
+                    }}
+                  >
+                    {card.headline}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/*  Section 3 — Upcoming Shows                                */}
+      {/* ---------------------------------------------------------- */}
+      <section className="border-t border-gray-100 bg-[#F8F4EE] py-20 lg:py-28">
+        <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+          <h2
+            className="mb-14 text-center font-display text-[#14472F]"
+            style={{
+              fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              fontWeight: 700,
+            }}
+          >
+            Upcoming shows near you
+          </h2>
+
+          {upcomingEvents.length > 0 ? (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {upcomingEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-gray-200 hover:shadow-lg"
+                >
+                  <span className="mb-3 inline-block rounded-full bg-[#14472F] px-3 py-1 text-xs font-semibold text-white">
+                    {eventTypeLabel(event.eventType)}
+                  </span>
+                  <h3 className="mb-2 font-display text-base font-bold leading-snug text-[#14472F]">
+                    {event.clubName}
+                  </h3>
+                  <div className="flex flex-col gap-1 text-sm text-gray-600">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin size={14} weight="bold" className="shrink-0" />
+                      {event.venue.city}, {event.venue.state}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <CalendarBlank
+                        size={14}
+                        weight="bold"
+                        className="shrink-0"
+                      />
+                      {formatDate(event.startDate)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">
+              Events are loading. Check back soon.
             </p>
+          )}
 
-            <Link href="/register" className="btn-primary">
-              Create Your Profile
+          <div className="mt-10 text-center">
+            <Link
+              href="/events"
+              className="inline-flex items-center gap-2 text-base font-semibold text-[#14472F] transition-colors hover:text-[#1F6B4A]"
+            >
+              Browse all events
+              <ArrowRight size={16} weight="bold" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section
-        className="bg-[#F8F4EE]"
-        style={{ padding: 'var(--section-py-md) 0' }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
+      {/* ---------------------------------------------------------- */}
+      {/*  Section 4 — Community (Bento Grid)                        */}
+      {/* ---------------------------------------------------------- */}
+      <section className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-16 text-center font-display font-light text-[#1C1208]"
+            className="mb-14 text-center font-display text-[#14472F]"
             style={{
-              fontSize: 'var(--fs-h2)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
+              fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              fontWeight: 700,
             }}
           >
-            Why handlers choose HandlerHub
+            We grow better together
           </h2>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <BenefitCard
-              icon={
-                <CurrencyDollar
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Your profile, your terms"
-              description="Set your own fee schedule, breed specialties, and circuit coverage. You control what exhibitors see and what you charge."
-            />
-            <BenefitCard
-              icon={
-                <ClipboardText
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Find clients through the request board"
-              description="Exhibitors post what they need. You browse open requests and respond to the ones that fit your skills and schedule."
-            />
-            <BenefitCard
-              icon={
-                <LinkIcon
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Share your profile anywhere"
-              description="One link to your professional page. Share it on Facebook, in breed groups, on your website, or anywhere you connect with exhibitors."
-            />
+          <div className="grid gap-5 md:grid-cols-3">
+            {/* Founding 100 card */}
+            <div className="relative overflow-hidden rounded-2xl bg-[#14472F] p-8 text-white">
+              {/* Rosette decoration */}
+              <Image
+                src="/images/brand/decorative-rosette.png"
+                alt=""
+                width={180}
+                height={180}
+                className="absolute -bottom-6 -right-6 opacity-10"
+              />
+              <div className="relative z-10">
+                <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-white/60">
+                  Founding 100
+                </p>
+                <h3
+                  className="mb-3 font-display"
+                  style={{
+                    fontSize: '1.375rem',
+                    fontWeight: 700,
+                    lineHeight: 1.25,
+                  }}
+                >
+                  Be one of the first
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed text-white/75">
+                  Early members earn a founding badge and help shape the
+                  platform from day one.
+                </p>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#14472F] transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                >
+                  Join now
+                  <ArrowRight size={14} weight="bold" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Upcoming Shows card */}
+            <div className="rounded-2xl border border-gray-100 bg-[#F8F4EE] p-8">
+              <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+                Upcoming Shows
+              </p>
+              <h3
+                className="mb-3 font-display text-[#14472F]"
+                style={{
+                  fontSize: '1.375rem',
+                  fontWeight: 700,
+                  lineHeight: 1.25,
+                }}
+              >
+                Find shows near you
+              </h3>
+              <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
+                Browse upcoming AKC events by location, breed, and event type.
+                Plan your calendar and connect with exhibitors who need you.
+              </p>
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+              >
+                Browse events
+                <ArrowRight size={14} weight="bold" />
+              </Link>
+            </div>
+
+            {/* Our Story card */}
+            <div className="rounded-2xl border border-gray-100 bg-[#F8F4EE] p-8">
+              <p className="mb-1 text-sm font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+                Our Story
+              </p>
+              <h3
+                className="mb-3 font-display text-[#14472F]"
+                style={{
+                  fontSize: '1.375rem',
+                  fontWeight: 700,
+                  lineHeight: 1.25,
+                }}
+              >
+                Built by handlers, for handlers
+              </h3>
+              <p className="mb-6 text-sm leading-relaxed text-[#4A3E2E]">
+                HandlerHub started with a simple idea: the sport of dog showing
+                deserves a modern platform that puts handlers first.
+              </p>
+              <Link
+                href="/our-story"
+                className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
+              >
+                Read more
+                <ArrowRight size={14} weight="bold" />
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* How it works */}
-      <section
-        className="bg-[#F0EAE0]"
-        style={{ padding: 'var(--section-py-md) 0' }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-          <h2
-            className="mb-16 text-center font-display font-light text-[#1C1208]"
-            style={{
-              fontSize: 'var(--fs-h2)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            How it works
-          </h2>
-
-          <div className="mx-auto grid max-w-2xl gap-10">
-            <StepCard
-              number="01"
-              icon={
-                <UserCirclePlus
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Create your professional profile"
-              description="Add your breed specialties, credentials, show record, service areas, and fee schedule. Upload photos from the ring."
-            />
-            <StepCard
-              number="02"
-              icon={
-                <Broadcast
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Get discovered by exhibitors"
-              description="Exhibitors search by breed, region, and service type. Your profile shows up when you match what they need."
-            />
-            <StepCard
-              number="03"
-              icon={
-                <Handshake
-                  size={40}
-                  weight="light"
-                  className="text-paddock-green"
-                />
-              }
-              title="Connect and grow your business"
-              description="Respond to requests, message exhibitors directly, and build lasting client relationships through the platform."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Who it's for */}
-      <section
-        className="bg-[#F8F4EE]"
-        style={{ padding: 'var(--section-py-md) 0' }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2
-              className="mb-6 font-display font-light text-[#1C1208]"
-              style={{
-                fontSize: 'var(--fs-h2)',
-                lineHeight: 1.05,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              For every handler
-            </h2>
-            <p
-              className="mb-4 text-[#4A3E2E]"
-              style={{ fontSize: '18px', lineHeight: 1.7 }}
-            >
-              Whether you are a PHA professional with decades of experience or
-              an aspiring handler looking for your first clients, HandlerHub is
-              built for you. The request board is your on-ramp to new
-              opportunities.
-            </p>
-            <p
-              className="text-[#7A6E5E]"
-              style={{ fontSize: '16px', lineHeight: 1.7 }}
-            >
-              No subscription fees. No commission on your bookings. Create your
-              profile and start connecting today.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section
-        className="bg-paddock-green"
-        style={{ padding: 'var(--section-py-lg) 0' }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 lg:px-12">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2
-              className="mb-6 font-display font-light text-[#F8F4EE]"
-              style={{
-                fontSize: 'var(--fs-h2)',
-                lineHeight: 1.05,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              Ready to get started?
-            </h2>
-            <p
-              className="mx-auto mb-10 max-w-md text-[#F8F4EE]/80"
-              style={{ fontSize: '18px', lineHeight: 1.7 }}
-            >
-              Create your professional handler profile and be among the first on
-              HandlerHub.
-            </p>
+          {/* Final CTA */}
+          <div className="mt-14 text-center">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center rounded-full bg-[#F8F4EE] px-7 py-3.5 text-sm font-medium text-paddock-green transition-colors hover:bg-white"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-10 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
             >
-              Create Your Profile
+              Get started
+              <ArrowRight size={18} weight="bold" />
             </Link>
           </div>
         </div>

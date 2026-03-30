@@ -110,7 +110,7 @@ export default async function ForHandlersPage() {
           </h1>
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+            className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
           >
             Create your profile
             <ArrowRight size={18} weight="bold" />
@@ -133,7 +133,7 @@ export default async function ForHandlersPage() {
             A better way to build your business
           </h2>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {(
               [
                 {
@@ -161,24 +161,24 @@ export default async function ForHandlersPage() {
                     'Build a verified track record with reviews and results that attract new clients.',
                 },
                 {
-                  src: null,
-                  gradient: 'from-[#1a3a2a] to-[#2d5e3f]',
+                  src: '/images/backgrounds/jack-russell-agility-jump-hurdle.png',
+                  gradient: null,
                   label: 'OPTIMIZE',
                   headline: 'Tools that streamline your work',
                   description:
                     'Built-in dashboard to manage bookings, messages, and client relationships.',
                 },
                 {
-                  src: null,
-                  gradient: 'from-[#1C1208] to-[#3d2e15]',
+                  src: '/images/backgrounds/Untitled design (17).png',
+                  gradient: null,
                   label: 'SECURE',
                   headline: 'Payouts you can trust',
                   description:
                     'Transparent pricing with reliable, on-time payments directly to you.',
                 },
                 {
-                  src: null,
-                  gradient: 'from-[#14472F] to-[#D4621A]',
+                  src: '/images/backgrounds/dog-birthday-celebration-indoors.png',
+                  gradient: null,
                   label: 'SUPPORT',
                   headline: 'Real partners for the road ahead',
                   description:
@@ -217,7 +217,7 @@ export default async function ForHandlersPage() {
 
                 {/* Frosted glass hover overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 p-6 opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100">
-                  <p className="text-center text-sm font-medium leading-relaxed text-white">
+                  <p className="text-center text-base font-medium leading-relaxed text-white lg:text-lg">
                     {card.description}
                   </p>
                 </div>
@@ -476,7 +476,7 @@ export default async function ForHandlersPage() {
           <div className="mt-14 text-center">
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-10 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-10 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
             >
               Get started
               <ArrowRight size={18} weight="bold" />

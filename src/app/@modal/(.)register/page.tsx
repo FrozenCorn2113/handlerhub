@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -32,33 +33,47 @@ export default function RegisterModal() {
         className="relative mx-4 flex w-full max-w-5xl overflow-hidden rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Left panel - black with decorative stripes (hidden on mobile) */}
-        <div className="relative hidden w-1/2 shrink-0 flex-col overflow-hidden bg-black lg:flex">
-          {/* Top gradient overlay */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[3] h-full bg-gradient-to-t from-transparent to-black" />
+        {/* Left panel - hero image (hidden on mobile) */}
+        <div className="relative hidden w-1/2 shrink-0 flex-col overflow-hidden lg:flex">
+          <Image
+            src="/images/hero-handler.jpg"
+            alt="Professional handler with show dog"
+            fill
+            className="object-cover"
+            priority
+          />
 
-          {/* Decorative vertical glass stripes */}
-          <div className="pointer-events-none absolute inset-0 z-[2] flex overflow-hidden backdrop-blur-2xl">
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-            <div className="h-full w-16 bg-gradient-to-r from-transparent via-black/70 to-white/30 opacity-30" />
-          </div>
-
-          {/* Warm amber glow at bottom */}
-          <div className="pointer-events-none absolute -bottom-16 left-0 z-[1] h-60 w-60 rounded-full bg-amber-600 opacity-60 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-8 left-0 z-[1] h-32 w-32 rounded-full bg-white opacity-40 blur-xl" />
+          {/* Dark overlay for text readability */}
+          <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
           {/* Content */}
-          <div className="relative z-10 flex flex-1 flex-col justify-end px-10 pb-16">
+          <div className="relative z-10 flex flex-1 flex-col justify-end px-10 pb-12">
             <h2
               className="text-2xl font-medium leading-tight tracking-tight text-white md:text-3xl"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              Where great dogs meet great handlers.
+              Where great dogs meet great handlers
             </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/80">
+              The platform connecting exhibitors with professional handlers.
+            </p>
+
+            {/* Founding 100 card */}
+            <div className="mt-6 rounded-xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-400">
+                Early Access
+              </p>
+              <p
+                className="mt-1 text-base font-semibold text-white"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                Join the Founding 100
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-white/70">
+                Get in early, shape the platform, and be the first name
+                exhibitors see.
+              </p>
+            </div>
           </div>
         </div>
 

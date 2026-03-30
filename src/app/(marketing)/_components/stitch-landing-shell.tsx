@@ -35,6 +35,8 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
 export function StitchLandingShell({
   children,
 }: {
@@ -44,7 +46,7 @@ export function StitchLandingShell({
 
   return (
     <div className="bg-white font-body text-[#1C1208] antialiased">
-      <header className="sticky top-0 z-50 w-full bg-[#14472F]">
+      <header className="w-full bg-[#14472F]">
         <div className="mx-auto flex h-[140px] max-w-7xl items-center justify-between px-6 lg:px-12">
           <Link
             href="/"

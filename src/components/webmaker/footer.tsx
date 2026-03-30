@@ -130,8 +130,8 @@ export function WebmakerFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-[#F8F4EE]/20 pt-8">
-          <p className="text-center text-xs text-[#F8F4EE]/50">
+        <div className="flex w-full justify-center border-t border-[#F8F4EE]/20 pt-8">
+          <p className="mx-[300px] max-w-full text-center text-xs text-[#F8F4EE]/50">
             &copy; 2026 HandlerHub. All rights reserved.
           </p>
         </div>

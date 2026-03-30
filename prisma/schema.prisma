@@ -256,6 +256,11 @@ model HandlerProfile {
   agreedToTerms Boolean   @default(false)
   termsAgreedAt DateTime?
 
+  // Claiming
+  isClaimed   Boolean   @default(true)
+  claimedAt   DateTime?
+  claimedBy   String?   // userId who claimed
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

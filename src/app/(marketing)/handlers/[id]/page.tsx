@@ -86,6 +86,7 @@ async function fetchHandler(id: string) {
               isBonded: true,
               totalCompletedBookings: true,
               businessName: true,
+              isClaimed: true,
               createdAt: true,
             },
           },
@@ -126,6 +127,7 @@ async function fetchHandler(id: string) {
       kennelClubMemberships: p.kennelClubMemberships ?? [],
       totalCompletedBookings: p.totalCompletedBookings ?? 0,
       isFoundingHandler: true,
+      isClaimed: p.isClaimed,
     }
   } catch {
     return null

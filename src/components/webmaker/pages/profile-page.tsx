@@ -28,6 +28,10 @@ import {
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export interface ProfileHandler {
@@ -197,23 +201,25 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               </p>
             )}
 
-            {/* CTA buttons */}
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href={handler.messageHref}
-                className="btn-primary inline-flex"
-              >
-                <EnvelopeSimple className="h-4 w-4" />
-                Message {handler.name.split(' ')[0]}
-              </Link>
-              <button
-                onClick={copyProfileLink}
-                className="btn-secondary inline-flex"
-              >
-                <LinkIcon className="h-4 w-4" />
-                {copied ? 'Copied!' : 'Copy Profile Link'}
-              </button>
-            </div>
+            {/* CTA buttons — hidden for unclaimed profiles */}
+            {handler.isClaimed !== false && (
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={handler.messageHref}
+                  className="btn-primary inline-flex"
+                >
+                  <EnvelopeSimple className="h-4 w-4" />
+                  Message {handler.name.split(' ')[0]}
+                </Link>
+                <button
+                  onClick={copyProfileLink}
+                  className="btn-secondary inline-flex"
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  {copied ? 'Copied!' : 'Copy Profile Link'}
+                </button>
+              </div>
+            )}
 
             {/* Stats row */}
             <div className="mt-6 rounded-xl bg-ring-cream p-4">
@@ -445,29 +451,31 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               </section>
             )}
 
-            {/* Contact CTA */}
-            <section className="card-hh border-2 border-paddock-green/20 p-6">
-              <div className="mb-3 flex items-center gap-2">
-                <CheckCircle
-                  className="h-5 w-5 text-paddock-green"
-                  weight="fill"
-                />
-                <h3 className="font-body text-sm font-semibold text-ringside-black">
-                  Interested in working with {handler.name.split(' ')[0]}?
-                </h3>
-              </div>
-              <p className="mb-4 font-body text-sm text-warm-gray">
-                Send a message to discuss your show needs, availability, and
-                pricing.
-              </p>
-              <Link
-                href={handler.messageHref}
-                className="btn-primary w-full text-center"
-              >
-                <EnvelopeSimple className="h-4 w-4" />
-                Message
-              </Link>
-            </section>
+            {/* Contact CTA — hidden for unclaimed profiles */}
+            {handler.isClaimed !== false && (
+              <section className="card-hh border-2 border-paddock-green/20 p-6">
+                <div className="mb-3 flex items-center gap-2">
+                  <CheckCircle
+                    className="h-5 w-5 text-paddock-green"
+                    weight="fill"
+                  />
+                  <h3 className="font-body text-sm font-semibold text-ringside-black">
+                    Interested in working with {handler.name.split(' ')[0]}?
+                  </h3>
+                </div>
+                <p className="mb-4 font-body text-sm text-warm-gray">
+                  Send a message to discuss your show needs, availability, and
+                  pricing.
+                </p>
+                <Link
+                  href={handler.messageHref}
+                  className="btn-primary w-full text-center"
+                >
+                  <EnvelopeSimple className="h-4 w-4" />
+                  Message
+                </Link>
+              </section>
+            )}
           </div>
         </div>
       </div>

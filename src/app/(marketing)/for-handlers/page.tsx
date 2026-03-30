@@ -82,18 +82,19 @@ export default async function ForHandlersPage() {
       {/* ---------------------------------------------------------- */}
       {/*  Section 1 — Hero                                          */}
       {/* ---------------------------------------------------------- */}
-      <section className="relative flex min-h-[520px] items-center justify-center overflow-hidden lg:min-h-[600px]">
-        {/* Background image */}
-        <Image
-          src="/images/hero-handler.jpg"
-          alt=""
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/50" />
+      <section className="relative isolate min-h-[520px] overflow-hidden lg:min-h-[600px]">
+        {/* Background — wrapper keeps fill image bounded to this section */}
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <Image
+            src="/images/hero-handler.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
+        <div className="absolute inset-0 z-[1] bg-black/50" aria-hidden />
 
         <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center">
           <h1
@@ -103,13 +104,16 @@ export default async function ForHandlersPage() {
               lineHeight: 1.12,
               fontWeight: 700,
               letterSpacing: '-0.02em',
+              height: '195px',
+              paddingTop: '30px',
+              paddingBottom: '30px',
             }}
           >
             Grow your handling business with clients who find you
           </h1>
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+            className="mb-2.5 mt-[90px] inline-flex items-center gap-2 rounded-full bg-[#15472F] px-8 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
           >
             Create your profile
             <ArrowRight size={18} weight="bold" />
@@ -344,7 +348,7 @@ export default async function ForHandlersPage() {
                   src="/images/backgrounds/lagotto-romagnolo-dog-show-green-carpet.png"
                   alt="Lagotto Romagnolo at dog show"
                   fill
-                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  className="object-cover object-top transition-transform duration-300 ease-in-out group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
               }
@@ -359,6 +363,7 @@ export default async function ForHandlersPage() {
                   alt="Man with Corgi in grassy field"
                   fill
                   className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  style={{ objectPosition: 'center 80%' }}
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
               }
@@ -373,6 +378,7 @@ export default async function ForHandlersPage() {
                   alt="Irish Setter stacked on grass"
                   fill
                   className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                  style={{ objectPosition: '62% top' }}
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               }

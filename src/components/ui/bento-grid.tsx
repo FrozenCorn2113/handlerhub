@@ -40,7 +40,7 @@ const BentoGridItem = React.forwardRef<HTMLDivElement, BentoGridItemProps>(
         )}
         {...props}
       >
-        <div className="relative flex h-full min-h-[6rem] flex-1 overflow-hidden rounded-xl">
+        <div className="relative min-h-[6rem] w-full flex-1 overflow-hidden rounded-xl">
           {header}
         </div>
 

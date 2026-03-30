@@ -37,18 +37,14 @@ export function Sidebar() {
         >
           <Link href="/dashboard" className="flex items-center gap-2">
             <IconLogo />
-            <h3
+            <div
               className={cn(
-                'min-w-max pl-2 text-2xl font-bold',
+                'min-w-max pl-2',
                 sidebar?.isOpen === false
                   ? 'hidden -translate-x-96 opacity-0'
                   : 'translate-x-0 opacity-100'
               )}
-            >
-              <span className="hidden font-urban text-base font-bold text-black sm:inline-block dark:text-white">
-                {siteConfig.name}
-              </span>
-            </h3>
+            />
           </Link>
         </Button>
         <Menu isOpen={sidebar?.isOpen} />

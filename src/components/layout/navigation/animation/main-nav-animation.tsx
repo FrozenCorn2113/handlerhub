@@ -1,8 +1,11 @@
 import React from 'react'
+
 import Link from 'next/link'
 
 import { siteConfig } from '@/config/site'
+
 import { cn } from '@/lib/utils'
+
 import { NavDesktop } from '@/components/layout/navigation/animation/nav-animation-desktop'
 import { NavMobile } from '@/components/layout/navigation/animation/nav-animation-mobile'
 import IconLogo from '@/components/shared/logo-icon'
@@ -26,11 +29,8 @@ export const MainNavAnimation: React.FC<MainNavProps> = ({ className }) => {
   return (
     <div className={MainNavClasses}>
       <nav className="container flex items-center justify-between py-1 lg:py-5">
-        <Link href="/" className="items-center space-x-2 sm:flex">
-          <IconLogo />
-          <span className="hidden font-urban text-xl font-bold sm:inline-block">
-            {siteConfig.name}
-          </span>
+        <Link href="/" className="items-center sm:flex">
+          <IconLogo className="h-10 w-auto" />
         </Link>
         <NavMobile />
         <NavDesktop />

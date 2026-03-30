@@ -8,6 +8,8 @@ interface MissionCardProps extends React.HTMLAttributes<HTMLAnchorElement> {
   description: string
   themeColor: string
   imagePosition?: string
+  /** Override default full-bleed positioning (e.g. right/bottom + size instead of inset-0). */
+  imageLayerPositionClassName?: string
   href: string
 }
 
@@ -20,6 +22,7 @@ const MissionCard = React.forwardRef<HTMLAnchorElement, MissionCardProps>(
       description,
       themeColor,
       imagePosition = 'center',
+      imageLayerPositionClassName,
       href,
       ...props
     },
@@ -43,7 +46,10 @@ const MissionCard = React.forwardRef<HTMLAnchorElement, MissionCardProps>(
         {/* Image card */}
         <div className="relative h-[320px] overflow-hidden rounded-2xl shadow-lg transition-shadow duration-300 group-hover:shadow-xl">
           <div
-            className="absolute inset-0 bg-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+            className={cn(
+              'absolute bg-cover transition-transform duration-500 ease-in-out group-hover:scale-110',
+              imageLayerPositionClassName ?? 'inset-0'
+            )}
             style={{
               backgroundImage: `url(${imageUrl})`,
               backgroundPosition: imagePosition,

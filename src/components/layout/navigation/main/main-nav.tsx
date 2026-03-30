@@ -52,11 +52,8 @@ export function MainNav({ items, children }: MainNavProps) {
 
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="hidden items-center space-x-2 md:flex">
-        <IconLogo />
-        <span className="hidden font-urban text-xl font-bold sm:inline-block">
-          {siteConfig.name}
-        </span>
+      <Link href="/" className="hidden items-center md:flex">
+        <IconLogo className="h-10 w-auto" />
       </Link>
       {items?.length ? (
         <nav className="hidden gap-6 md:flex">

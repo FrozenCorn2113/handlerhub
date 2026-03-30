@@ -64,11 +64,8 @@ export function MultiLevelNav({
       }`}
     >
       <div className="container flex h-16 items-center justify-start py-4">
-        <Link href="/" className="mr-10 hidden items-center space-x-2 md:flex">
-          <IconLogo />
-          <span className="hidden font-urban text-xl font-bold sm:inline-block">
-            {siteConfig.name}
-          </span>
+        <Link href="/" className="mr-10 hidden items-center md:flex">
+          <IconLogo className="h-10 w-auto" />
         </Link>
         {items?.length ? (
           <NavigationMenu className="mr-10">

@@ -37,17 +37,8 @@ export async function SiteFooter({
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
           <div className="col-span-2">
-            <div className="mb-4 flex items-center gap-3">
-              <IconLogo className="size-8" />
-              <h2
-                className="text-xl tracking-tight text-gray-900"
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 700,
-                }}
-              >
-                {siteConfig.name}
-              </h2>
+            <div className="mb-4">
+              <IconLogo className="h-16 w-auto" />
             </div>
             <p className="mb-6 max-w-xs text-sm text-gray-500">
               {siteConfig.shortDescription ?? siteConfig.description}

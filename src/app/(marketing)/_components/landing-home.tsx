@@ -126,6 +126,7 @@ const missionCards = [
       "Fair pricing, open communication, no backroom deals. Post what you need, connect directly, and know exactly what you're getting.",
     themeColor: '200 40% 30%',
     imagePosition: 'center top',
+    imageLayerPositionClassName: 'bottom-0 right-0 h-full w-full',
     href: '/requests',
   },
 ]
@@ -155,6 +156,7 @@ function MissionSection() {
                 description={card.description}
                 themeColor={card.themeColor}
                 imagePosition={card.imagePosition}
+                imageLayerPositionClassName={card.imageLayerPositionClassName}
                 href={card.href}
               />
             </ScrollReveal>
@@ -281,9 +283,6 @@ function FoundingCtaSection() {
     <section className="bg-[#14472F] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mb-4 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-            For Handlers
-          </p>
           <img
             src={siteLogoLight}
             alt="HandlerHub"
@@ -341,9 +340,6 @@ function FeaturedHandlersSection() {
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-12 text-center">
-            <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
-              Handlers
-            </p>
             <h2
               className="font-display text-[#14472F]"
               style={{

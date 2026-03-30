@@ -53,12 +53,11 @@ export function HandlerCard({
     <motion.div
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: [0.25, 1, 0.5, 1] }}
       className={cn('w-full max-w-sm cursor-pointer', className)}
     >
       <a href={href}>
-        <Card className="overflow-hidden rounded-2xl border-gray-200 shadow-md transition-shadow duration-300 hover:shadow-xl">
+        <Card className="overflow-hidden rounded-2xl border-gray-200 shadow-md">
           {/* Handler Photo */}
           <div className="relative h-44 w-full">
             <img

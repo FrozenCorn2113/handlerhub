@@ -396,6 +396,21 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
+  // Handlers without a complete profile go to onboarding
+  if (user.role === 'HANDLER') {
+    const profile = await prisma.handlerProfile.findUnique({
+      where: { userId: user.id! },
+      select: { profileCompleteness: true },
+    })
+    if (
+      !profile ||
+      profile.profileCompleteness === null ||
+      profile.profileCompleteness < 60
+    ) {
+      redirect('/onboarding')
+    }
+  }
+
   const userRole = user.role
 
   return (

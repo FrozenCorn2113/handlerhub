@@ -32,7 +32,7 @@ export function OAuthButtons(): JSX.Element {
     try {
       setIsLoading(true)
       await signIn('google', {
-        callbackUrl: callbackUrl || '/onboarding',
+        callbackUrl: callbackUrl || '/dashboard',
       })
       toast.success('Redirecting...')
     } catch (error) {

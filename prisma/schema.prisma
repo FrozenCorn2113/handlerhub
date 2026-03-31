@@ -124,6 +124,9 @@ model User {
   messagesSent            Message[]
   serviceRequests         ServiceRequest[]
   handlerResponses        RequestResponse[] @relation("HandlerResponses")
+  disputes                Dispute[]         @relation("disputes")
+  handlerServices         HandlerService[]  @relation("handlerServices")
+  showAttendance          HandlerShowAttendance[] @relation("showAttendance")
 
   @@map(name: "users")
 }
@@ -252,6 +255,9 @@ model HandlerProfile {
   feeSchedule Json?
   registries  String[]
 
+  // Cancellation policy
+  cancellationPolicy String?
+
   // Terms acceptance
   agreedToTerms Boolean   @default(false)
   termsAgreedAt DateTime?
@@ -349,6 +355,8 @@ model BookingRequest {
   dogProfile   DogProfile?   @relation(fields: [dogProfileId], references: [id], onDelete: SetNull)
   review       Review?
   conversation Conversation?
+  services     BookingService[]
+  disputes     Dispute[]
 
   @@index([exhibitorId])
   @@index([handlerId])
@@ -559,6 +567,9 @@ model Event {
   venueId      String
   venue        Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
 
+  // Attendance
+  handlerAttendance HandlerShowAttendance[]
+
   // Metadata
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -572,4 +583,84 @@ model Event {
   @@index([startDate, entryStatus])
   @@index([venueId, startDate])
   @@map("events")
+}
+
+// ──────────────────────────────────────────────
+// Disputes
+// ──────────────────────────────────────────────
+
+model Dispute {
+  id          String   @id @default(cuid())
+  bookingId   String
+  reporterId  String
+  reason      String
+  status      String   @default("OPEN")
+  adminNotes  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  booking     BookingRequest @relation(fields: [bookingId], references: [id])
+  reporter    User     @relation("disputes", fields: [reporterId], references: [id])
+
+  @@index([bookingId])
+  @@index([reporterId])
+  @@index([status])
+  @@map("disputes")
+}
+
+// ──────────────────────────────────────────────
+// Handler Services (itemized pricing)
+// ──────────────────────────────────────────────
+
+model HandlerService {
+  id          String   @id @default(cuid())
+  handlerId   String
+  name        String
+  description String?
+  price       Int
+  pricePer    String
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  handler     User     @relation("handlerServices", fields: [handlerId], references: [id], onDelete: Cascade)
+  bookings    BookingService[]
+
+  @@index([handlerId])
+  @@index([isActive])
+  @@map("handler_services")
+}
+
+model BookingService {
+  id               String         @id @default(cuid())
+  bookingId        String
+  handlerServiceId String
+  quantity         Int            @default(1)
+  priceAtBooking   Int
+  booking          BookingRequest @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  handlerService   HandlerService @relation(fields: [handlerServiceId], references: [id])
+
+  @@unique([bookingId, handlerServiceId])
+  @@index([bookingId])
+  @@index([handlerServiceId])
+  @@map("booking_services")
+}
+
+// ──────────────────────────────────────────────
+// Handler Show Attendance
+// ──────────────────────────────────────────────
+
+model HandlerShowAttendance {
+  id        String   @id @default(cuid())
+  handlerId String
+  eventId   String
+  maxDogs   Int?
+  notes     String?
+  createdAt DateTime @default(now())
+  handler   User     @relation("showAttendance", fields: [handlerId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id])
+
+  @@unique([handlerId, eventId])
+  @@index([handlerId])
+  @@index([eventId])
+  @@map("handler_show_attendance")
 }

@@ -58,6 +58,416 @@ export default function OpsPreviewPage() {
   return (
     <div className="min-h-screen bg-ring-cream">
       <div className="mx-auto max-w-6xl space-y-16 px-6 py-12">
+        {/* ======================== BRAND OPTIONS ======================== */}
+        <section className="rounded-xl border-2 border-paddock-green/30 bg-white p-8 shadow-md">
+          <div className="mb-8">
+            <span className="mb-2 inline-block rounded-full bg-paddock-green px-3 py-1 font-sans text-[11px] font-semibold uppercase tracking-widest text-white">
+              Decision Required
+            </span>
+            <h1 className="mt-3 font-display text-5xl font-light tracking-tight text-ringside-black">
+              Brand Options
+            </h1>
+            <p className="mt-2 max-w-lg font-sans text-base text-warm-brown">
+              Compare accent colors, logo fonts, and heading rendering side by
+              side.
+            </p>
+          </div>
+
+          {/* ---------- 1. Accent Color Comparison ---------- */}
+          <div className="mb-12">
+            <h2 className="mb-1 font-display text-3xl font-light text-ringside-black">
+              1. Accent Color Comparison
+            </h2>
+            <p className="mb-6 font-sans text-sm text-warm-gray">
+              Each option paired with Paddock Green (#1F6B4A). Pick the accent
+              that complements best.
+            </p>
+
+            <div className="grid gap-6 sm:grid-cols-3">
+              {/* Option A — Warm Amber */}
+              <div className="rounded-lg border border-tan p-6">
+                <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                  Option A
+                </span>
+                <p className="mb-3 font-sans text-sm font-semibold text-ringside-black">
+                  Warm Amber{' '}
+                  <span className="font-normal text-warm-gray">#C8842A</span>
+                </p>
+
+                {/* Color swatches */}
+                <div className="mb-4 flex gap-3">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#1F6B4A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Paddock Green
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#C8842A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Warm Amber
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sample button */}
+                <button
+                  className="mb-4 w-full rounded-full px-6 py-3 font-sans text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#C8842A' }}
+                >
+                  Book Handler
+                </button>
+
+                {/* Sample badge / chip */}
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-medium text-white"
+                    style={{ backgroundColor: '#C8842A' }}
+                  >
+                    <Star size={12} weight="fill" /> 4.8 Rating
+                  </span>
+                  <span
+                    className="inline-flex items-center rounded-full px-3 py-1 font-sans text-xs font-medium"
+                    style={{ backgroundColor: '#C8842A20', color: '#C8842A' }}
+                  >
+                    Featured
+                  </span>
+                </div>
+              </div>
+
+              {/* Option B — Dusty Terracotta */}
+              <div className="rounded-lg border border-tan p-6">
+                <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                  Option B
+                </span>
+                <p className="mb-3 font-sans text-sm font-semibold text-ringside-black">
+                  Dusty Terracotta{' '}
+                  <span className="font-normal text-warm-gray">#B5624A</span>
+                </p>
+
+                {/* Color swatches */}
+                <div className="mb-4 flex gap-3">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#1F6B4A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Paddock Green
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#B5624A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Dusty Terracotta
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sample button */}
+                <button
+                  className="mb-4 w-full rounded-full px-6 py-3 font-sans text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#B5624A' }}
+                >
+                  Book Handler
+                </button>
+
+                {/* Sample badge / chip */}
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-medium text-white"
+                    style={{ backgroundColor: '#B5624A' }}
+                  >
+                    <Star size={12} weight="fill" /> 4.8 Rating
+                  </span>
+                  <span
+                    className="inline-flex items-center rounded-full px-3 py-1 font-sans text-xs font-medium"
+                    style={{ backgroundColor: '#B5624A20', color: '#B5624A' }}
+                  >
+                    Featured
+                  </span>
+                </div>
+              </div>
+
+              {/* Option C — Slate Blue */}
+              <div className="rounded-lg border border-tan p-6">
+                <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                  Option C
+                </span>
+                <p className="mb-3 font-sans text-sm font-semibold text-ringside-black">
+                  Slate Blue{' '}
+                  <span className="font-normal text-warm-gray">#4A6F8A</span>
+                </p>
+
+                {/* Color swatches */}
+                <div className="mb-4 flex gap-3">
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#1F6B4A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Paddock Green
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div
+                      className="h-16 w-16 rounded-lg border border-tan"
+                      style={{ backgroundColor: '#4A6F8A' }}
+                    />
+                    <span className="font-sans text-[10px] text-warm-gray">
+                      Slate Blue
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sample button */}
+                <button
+                  className="mb-4 w-full rounded-full px-6 py-3 font-sans text-[13px] font-medium text-white transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#4A6F8A' }}
+                >
+                  Book Handler
+                </button>
+
+                {/* Sample badge / chip */}
+                <div className="flex items-center gap-2">
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-medium text-white"
+                    style={{ backgroundColor: '#4A6F8A' }}
+                  >
+                    <Star size={12} weight="fill" /> 4.8 Rating
+                  </span>
+                  <span
+                    className="inline-flex items-center rounded-full px-3 py-1 font-sans text-xs font-medium"
+                    style={{ backgroundColor: '#4A6F8A20', color: '#4A6F8A' }}
+                  >
+                    Featured
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ---------- 2. Logo Font Comparison ---------- */}
+          <div className="mb-12">
+            <h2 className="mb-1 font-display text-3xl font-light text-ringside-black">
+              2. Logo Font Comparison
+            </h2>
+            <p className="mb-6 font-sans text-sm text-warm-gray">
+              Current wordmark vs Roca One variant. Shown at desktop (48px) and
+              mobile (32px).
+            </p>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              {/* Current logo */}
+              <div className="rounded-lg border border-tan bg-ring-cream p-6">
+                <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                  Current — Cormorant + Inter
+                </span>
+
+                {/* Desktop size */}
+                <div className="mb-6">
+                  <span className="mb-2 block font-sans text-[10px] text-warm-gray">
+                    Desktop (48px)
+                  </span>
+                  <div className="flex items-baseline">
+                    <span
+                      className="font-display text-[48px] font-light tracking-tight text-ringside-black"
+                      style={{ lineHeight: 1.1 }}
+                    >
+                      Handler
+                    </span>
+                    <span
+                      className="font-sans text-[40px] font-semibold tracking-tight text-paddock-green"
+                      style={{ lineHeight: 1.1 }}
+                    >
+                      Hub
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mobile size */}
+                <div>
+                  <span className="mb-2 block font-sans text-[10px] text-warm-gray">
+                    Mobile (32px)
+                  </span>
+                  <div className="flex items-baseline">
+                    <span
+                      className="font-display text-[32px] font-light tracking-tight text-ringside-black"
+                      style={{ lineHeight: 1.1 }}
+                    >
+                      Handler
+                    </span>
+                    <span
+                      className="font-sans text-[26px] font-semibold tracking-tight text-paddock-green"
+                      style={{ lineHeight: 1.1 }}
+                    >
+                      Hub
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Roca One logo */}
+              <div className="rounded-lg border border-tan bg-ring-cream p-6">
+                <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                  Roca One
+                </span>
+                <p className="mb-4 rounded bg-yellow-50 px-3 py-2 font-sans text-[11px] text-yellow-800">
+                  Roca One is not on Google Fonts. Drop RocaOne-Regular.woff2
+                  into /public/fonts/ to preview. Until then, this falls back to
+                  system sans-serif.
+                </p>
+
+                {/* Desktop size */}
+                <div className="mb-6">
+                  <span className="mb-2 block font-sans text-[10px] text-warm-gray">
+                    Desktop (48px)
+                  </span>
+                  <div className="inline-block">
+                    <span
+                      className="text-[48px] tracking-tight text-ringside-black"
+                      style={{
+                        fontFamily: "'Roca One', sans-serif",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      Handler
+                    </span>
+                    <span
+                      className="text-[48px] tracking-tight text-paddock-green"
+                      style={{
+                        fontFamily: "'Roca One', sans-serif",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      Hub
+                    </span>
+                    <div
+                      className="mt-[-2px] h-[3px] rounded-full bg-paddock-green"
+                      style={{ marginLeft: '60%', width: '40%' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Mobile size */}
+                <div>
+                  <span className="mb-2 block font-sans text-[10px] text-warm-gray">
+                    Mobile (32px)
+                  </span>
+                  <div className="inline-block">
+                    <span
+                      className="text-[32px] tracking-tight text-ringside-black"
+                      style={{
+                        fontFamily: "'Roca One', sans-serif",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      Handler
+                    </span>
+                    <span
+                      className="text-[32px] tracking-tight text-paddock-green"
+                      style={{
+                        fontFamily: "'Roca One', sans-serif",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      Hub
+                    </span>
+                    <div
+                      className="mt-[-2px] h-[2px] rounded-full bg-paddock-green"
+                      style={{ marginLeft: '60%', width: '40%' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ---------- 3. Heading Font Check ---------- */}
+          <div>
+            <h2 className="mb-1 font-display text-3xl font-light text-ringside-black">
+              3. Heading Font Check
+            </h2>
+            <p className="mb-6 font-sans text-sm text-warm-gray">
+              Cormorant Garamond at weight 300 with tracking -0.04em and
+              line-height 0.95.
+            </p>
+
+            <div className="rounded-lg border border-tan bg-ring-cream p-8">
+              <span className="mb-6 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                Cormorant Garamond 300 / tracking -0.04em / line-height 0.95
+              </span>
+
+              <div className="space-y-4">
+                <div>
+                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                    H1 — font-display text-6xl font-light
+                  </span>
+                  <h1
+                    className="font-display text-6xl text-ringside-black"
+                    style={{
+                      fontWeight: 300,
+                      letterSpacing: '-0.04em',
+                      lineHeight: 0.95,
+                      marginBottom: 0,
+                    }}
+                  >
+                    Find Your Perfect Handler
+                  </h1>
+                </div>
+
+                <hr className="border-tan" />
+
+                <div>
+                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                    H2 — font-display text-4xl font-light
+                  </span>
+                  <h2
+                    className="font-display text-4xl text-ringside-black"
+                    style={{
+                      fontWeight: 300,
+                      letterSpacing: '-0.04em',
+                      lineHeight: 0.95,
+                      marginBottom: 0,
+                    }}
+                  >
+                    Professional Handling Services
+                  </h2>
+                </div>
+
+                <hr className="border-tan" />
+
+                <div>
+                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                    H3 — font-display text-3xl font-light
+                  </span>
+                  <h3
+                    className="font-display text-3xl text-ringside-black"
+                    style={{
+                      fontWeight: 300,
+                      letterSpacing: '-0.04em',
+                      lineHeight: 0.95,
+                      marginBottom: 0,
+                    }}
+                  >
+                    Trusted by Exhibitors Nationwide
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Page Header */}
         <div>
           <h1 className="font-display text-5xl font-light tracking-tight text-ringside-black">

@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@400;500;600&display=swap');
+
+/* Roca One — not on Google Fonts. Using @font-face placeholder.
+   To activate: drop RocaOne-Regular.woff2 into /public/fonts/ */
+@font-face {
+  font-family: 'Roca One';
+  src: url('/fonts/RocaOne-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @import './changelog-notification.css';
 @import './gradients.css';
@@ -11,7 +21,7 @@
 @layer base {
   :root {
     /* HandlerHub Brand Colors */
-    --color-bg: #ffffff;
+    --color-bg: #f8f4ee;
     --color-surface: #f0eae0;
     --color-surface-warm: #e8e0d4;
     --color-border: #d4cfc4;
@@ -38,17 +48,17 @@
     --color-error: #b52a2a;
 
     /* Typography */
-    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Type scale */
-    --fs-display: clamp(3rem, 2.4rem + 3vw, 4.5rem);
-    --fs-h1: clamp(2.25rem, 1.6rem + 2.2vw, 3.5rem);
-    --fs-h2: clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem);
-    --fs-h3: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
-    --fs-h4: clamp(1.125rem, 0.9rem + 0.6vw, 1.375rem);
+    --fs-display: clamp(4rem, 3.5rem + 2.5vw, 5.5rem);
+    --fs-h1: clamp(2.5rem, 1.8rem + 2.2vw, 3.75rem);
+    --fs-h2: clamp(2rem, 1.4rem + 1.8vw, 3rem);
+    --fs-h3: clamp(1.5rem, 1.1rem + 1vw, 2rem);
+    --fs-h4: clamp(1.125rem, 0.9rem + 0.6vw, 1.5rem);
     --fs-body-lg: clamp(1.0625rem, 0.95rem + 0.3vw, 1.25rem);
-    --fs-body: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+    --fs-body: 1.125rem;
     --fs-label: 0.8125rem;
     --fs-small: 0.75rem;
 
@@ -128,25 +138,25 @@ html {
   h5,
   h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
     color: var(--color-text);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   h2,
   h3 {
-    line-height: 1.15;
-    letter-spacing: -0.015em;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
 
   h4,
   h5,
   h6 {
-    line-height: 1.25;
+    line-height: 1.2;
     letter-spacing: -0.01em;
-    font-weight: 600;
+    font-weight: 300;
   }
 
   p {
@@ -156,16 +166,16 @@ html {
 
 @layer components {
   .btn-primary {
-    background: var(--color-text);
-    color: #ffffff;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.9375rem;
-    letter-spacing: -0.01em;
-    padding: 12px 24px;
-    border-radius: 10px;
+    background: var(--color-primary);
+    color: #f8f4ee;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: var(--fs-label);
+    letter-spacing: 0.01em;
+    padding: 14px 28px;
+    border-radius: var(--radius-pill);
     border: none;
-    transition: all 200ms ease;
+    transition: background 150ms ease;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -173,22 +183,20 @@ html {
     gap: 0.5rem;
   }
   .btn-primary:hover {
-    background: #000;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--color-primary-dark);
   }
 
   .btn-secondary {
-    background: #ffffff;
-    color: var(--color-text);
-    border: 1.5px solid #e0e0e0;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.9375rem;
-    letter-spacing: -0.01em;
-    padding: 11px 23px;
-    border-radius: 10px;
-    transition: all 200ms ease;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1.5px solid var(--color-primary);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: var(--fs-label);
+    letter-spacing: 0.01em;
+    padding: 13px 27px;
+    border-radius: var(--radius-pill);
+    transition: background 150ms ease;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -196,21 +204,20 @@ html {
     gap: 0.5rem;
   }
   .btn-secondary:hover {
-    border-color: var(--color-text);
-    transform: translateY(-1px);
+    background: var(--color-primary-light);
   }
 
   .card-hh {
     background: #ffffff;
-    border: 1px solid #eee;
+    border: 1px solid var(--color-border);
     border-radius: 16px;
     padding: 1.5rem;
+    box-shadow: var(--shadow-card);
     transition: all 200ms ease;
   }
   .card-hh:hover {
-    border-color: #ddd;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
   }
 
   .chip {
@@ -260,20 +267,16 @@ html {
 
   .hero-section {
     position: relative;
-    background: linear-gradient(135deg, #14472f 0%, #1f6b4a 50%, #237a54 100%);
   }
 
   .how-it-works-section {
-    background-color: #fafafa;
   }
 
   /* Larger touch targets for all interactive buttons */
   .btn-primary,
   .btn-secondary {
-    min-height: 48px;
-    min-width: 48px;
-    padding: 14px 28px;
-    font-size: 1rem;
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 

@@ -46,6 +46,11 @@ export const {
     },
 
     async session({ token, session }) {
+      console.log('[auth:session]', {
+        sub: token.sub,
+        role: token.role,
+        hasUser: !!session.user,
+      })
       if (session.user) {
         if (token.sub) {
           session.user.id = token.sub
@@ -66,12 +71,20 @@ export const {
       return session
     },
 
-    async jwt({ token }) {
+    async jwt({ token, trigger }) {
+      console.log('[auth:jwt]', {
+        sub: token.sub,
+        trigger,
+        hasRole: !!token.role,
+      })
       if (!token.sub) return token
 
       const dbUser = await getUserById(token.sub)
 
-      if (!dbUser) return token
+      if (!dbUser) {
+        console.warn('[auth:jwt] getUserById returned null for', token.sub)
+        return token
+      }
 
       token.name = dbUser.name
       token.role = dbUser.role
@@ -82,5 +95,5 @@ export const {
     },
   },
   ...authConfig,
-  debug: process.env.NODE_ENV !== 'production',
+  debug: true,
 })

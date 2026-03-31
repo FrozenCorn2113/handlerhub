@@ -35,7 +35,7 @@ export default async function SignUpPage({
   const nextUrl =
     safeNext(searchParams?.next) ??
     safeNext(searchParams?.from) ??
-    '/role-select'
+    '/onboarding'
   if (session) redirect(nextUrl)
 
   return (

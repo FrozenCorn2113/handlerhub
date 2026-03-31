@@ -1,4 +1,5 @@
-import { Heading, Html, Text } from '@react-email/components'
+import { EmailLayout, emailStyles } from './email-layout'
+import { Section, Text } from '@react-email/components'
 
 interface ContactFormEmailProps {
   name: string
@@ -12,12 +13,19 @@ export default function ContactFormEmail({
   message,
 }: ContactFormEmailProps) {
   return (
-    <Html lang="en">
-      <Heading as="h1">New Form Submission</Heading>
-      <Text>You just submitted a form. Here are the details:</Text>
-      <Text>Name: {name}</Text>
-      <Text>Email: {email}</Text>
-      <Text>Message: {message}</Text>
-    </Html>
+    <EmailLayout previewText="New contact form submission">
+      <Text style={emailStyles.heading}>New Form Submission</Text>
+      <Text style={emailStyles.text}>
+        You just received a contact form submission. Here are the details:
+      </Text>
+      <Section style={emailStyles.infoBox}>
+        <Text style={emailStyles.infoLabel}>Name</Text>
+        <Text style={emailStyles.infoValue}>{name}</Text>
+        <Text style={emailStyles.infoLabel}>Email</Text>
+        <Text style={emailStyles.infoValue}>{email}</Text>
+        <Text style={emailStyles.infoLabel}>Message</Text>
+        <Text style={{ ...emailStyles.infoValue, margin: '0' }}>{message}</Text>
+      </Section>
+    </EmailLayout>
   )
 }

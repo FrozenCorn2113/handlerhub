@@ -1,6 +1,6 @@
 import { siteConfig } from '@/config/site'
 
-import { AuthEmailLayout } from './auth-email-layout'
+import { EmailLayout, emailStyles } from './email-layout'
 import { env } from '@/root/env.mjs'
 import { Button, Text } from '@react-email/components'
 
@@ -16,24 +16,19 @@ export function WelcomeEmail({
   const previewText = `Welcome to ${siteConfig.name}`
 
   return (
-    <AuthEmailLayout previewText={previewText}>
-      <Text className="text-lg font-semibold text-gray-900">
-        Welcome to {siteConfig.name}
-      </Text>
-      <Text className="text-sm leading-6 text-gray-600">
+    <EmailLayout previewText={previewText}>
+      <Text style={emailStyles.heading}>Welcome to {siteConfig.name}</Text>
+      <Text style={emailStyles.text}>
         Your email address ({email}) has been verified. You can now access all
         features of your account.
       </Text>
-      <Text className="text-sm leading-6 text-gray-600">
+      <Text style={emailStyles.text}>
         Complete your profile to get started finding or offering handler
         services.
       </Text>
-      <Button
-        href={`${baseUrl}/dashboard`}
-        className="mt-2 rounded-md bg-[#1F6B4A] px-6 py-3 text-center text-sm font-semibold text-white"
-      >
+      <Button href={`${baseUrl}/dashboard`} style={emailStyles.primaryButton}>
         Go to Dashboard
       </Button>
-    </AuthEmailLayout>
+    </EmailLayout>
   )
 }

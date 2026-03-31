@@ -1,6 +1,6 @@
 import { siteConfig } from '@/config/site'
 
-import { AuthEmailLayout } from './auth-email-layout'
+import { EmailLayout, emailStyles } from './email-layout'
 import { Button, Text } from '@react-email/components'
 
 interface MagicLinkEmailProps {
@@ -15,26 +15,21 @@ export default function MagicLinkEmail({
   const previewText = `${siteConfig.name} - Sign in link`
 
   return (
-    <AuthEmailLayout previewText={previewText}>
-      <Text className="text-lg font-semibold text-gray-900">
-        Sign in to {siteConfig.name}
-      </Text>
-      <Text className="text-sm leading-6 text-gray-600">
+    <EmailLayout previewText={previewText}>
+      <Text style={emailStyles.heading}>Sign in to {siteConfig.name}</Text>
+      <Text style={emailStyles.text}>
         A sign-in link was requested for {identifier}. Click the button below to
         sign in.
       </Text>
-      <Button
-        href={url}
-        className="mt-2 rounded-md bg-[#1F6B4A] px-6 py-3 text-center text-sm font-semibold text-white"
-      >
+      <Button href={url} style={emailStyles.primaryButton}>
         Sign in
       </Button>
-      <Text className="mt-6 text-xs text-gray-400">
+      <Text style={{ ...emailStyles.smallText, marginTop: '24px' }}>
         If you did not request this, you can safely ignore this email.
       </Text>
-      <Text className="text-xs text-gray-400">
+      <Text style={emailStyles.smallText}>
         Hint: You can set a permanent password in Dashboard &rarr; Settings.
       </Text>
-    </AuthEmailLayout>
+    </EmailLayout>
   )
 }

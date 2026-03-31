@@ -1,6 +1,6 @@
 import { siteConfig } from '@/config/site'
 
-import { AuthEmailLayout } from './auth-email-layout'
+import { EmailLayout, emailStyles } from './email-layout'
 import { env } from '@/root/env.mjs'
 import { Link, Text } from '@react-email/components'
 
@@ -16,24 +16,19 @@ export function PasswordChangedEmail({
   const previewText = `Your ${siteConfig.name} password was changed`
 
   return (
-    <AuthEmailLayout previewText={previewText}>
-      <Text className="text-lg font-semibold text-gray-900">
-        Password changed
-      </Text>
-      <Text className="text-sm leading-6 text-gray-600">
+    <EmailLayout previewText={previewText}>
+      <Text style={emailStyles.heading}>Password changed</Text>
+      <Text style={emailStyles.text}>
         The password for your {siteConfig.name} account ({email}) was
         successfully changed.
       </Text>
-      <Text className="text-sm leading-6 text-gray-600">
+      <Text style={emailStyles.text}>
         If you did not make this change, please{' '}
-        <Link
-          href={`${baseUrl}/contact`}
-          className="font-semibold text-[#1F6B4A] underline"
-        >
+        <Link href={`${baseUrl}/contact`} style={emailStyles.secondaryLink}>
           contact support
         </Link>{' '}
         immediately and reset your password.
       </Text>
-    </AuthEmailLayout>
+    </EmailLayout>
   )
 }

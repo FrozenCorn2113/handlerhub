@@ -26,6 +26,7 @@ const publicRoutes = [
 ]
 const authRoutes = ['/login', '/register', '/auth-error']
 const apiAuthPrefix = '/api/auth'
+// Keep in sync with src/lib/auth/routes.ts
 const DEFAULT_LOGIN_REDIRECT = '/dashboard'
 
 export default function middleware(req: NextRequest) {

@@ -51,12 +51,23 @@ export function SignInWithPasswordForm(): JSX.Element {
   function onSubmit(formData: SignInWithPasswordFormInput) {
     startTransition(async () => {
       try {
-        const message = await signInWithPassword({
+        const result = await signInWithPassword({
           email: formData.email,
           password: formData.password,
         })
 
-        switch (message) {
+        // Success case - server returns object
+        if (typeof result === 'object' && result.status === 'success') {
+          toast.success('You are now signed in')
+          // Honor explicit ?next= param, otherwise use server's smart redirect
+          const destination =
+            nextUrl !== DEFAULT_LOGIN_REDIRECT ? nextUrl : result.redirectTo
+          router.push(destination)
+          return
+        }
+
+        // Error cases - server returns string
+        switch (result) {
           case 'not-registered':
             toast.warning(
               'Please make sure you are signed up before signing in'
@@ -75,16 +86,12 @@ export function SignInWithPasswordForm(): JSX.Element {
               'Invalid email or password. Double-check your credentials and try again.'
             )
             break
-          case 'success':
-            toast.success('You are now signed in')
-            router.push(nextUrl)
-            break
           default:
             toast.error('Please try again')
         }
       } catch (error) {
         console.error(error)
-        toast.error('Something went wrong Please try again')
+        toast.error('Something went wrong. Please try again')
       }
     })
   }

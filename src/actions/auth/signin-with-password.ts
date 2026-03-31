@@ -1,7 +1,7 @@
 'use server'
 
 import { signIn } from '@/lib/auth/auth'
-import { DEFAULT_LOGIN_REDIRECT } from '@/lib/auth/routes'
+import { prisma } from '@/lib/db'
 import {
   SignInWithPasswordFormInput,
   signInWithPasswordSchema,
@@ -18,7 +18,7 @@ export async function signInWithPassword(
   | 'not-registered'
   | 'unverified-email'
   | 'incorrect-provider'
-  | 'success'
+  | { status: 'success'; redirectTo: string }
 > {
   try {
     const validatedInput = signInWithPasswordSchema.safeParse(rawInput)
@@ -37,16 +37,28 @@ export async function signInWithPassword(
     await signIn('credentials', {
       email: validatedInput.data.email,
       password: validatedInput.data.password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
+      redirect: false,
     })
-    // Never reached on success -- signIn redirects via NEXT_REDIRECT throw
-    return 'success'
+
+    const profile = await prisma.handlerProfile.findUnique({
+      where: { userId: existingUser.id },
+      select: { profileCompleteness: true },
+    })
+
+    if (
+      !profile ||
+      profile.profileCompleteness === null ||
+      profile.profileCompleteness < 60
+    ) {
+      return { status: 'success', redirectTo: '/onboarding' }
+    }
+
+    return { status: 'success', redirectTo: '/dashboard' }
   } catch (error) {
     if (error instanceof AuthError) {
       console.error('Auth error:', error.type, error.message)
       return 'invalid-credentials'
     }
-    // Re-throw non-AuthErrors (NEXT_REDIRECT, etc.) so Next.js can handle them
     throw error
   }
 }

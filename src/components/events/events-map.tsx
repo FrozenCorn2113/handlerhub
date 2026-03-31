@@ -63,6 +63,7 @@ export function EventsMap({
     if (!mapRef.current) return
 
     let L: any
+    let resizeObserver: ResizeObserver | null = null
 
     const initMap = async () => {
       L = (await import('leaflet')).default
@@ -116,13 +117,26 @@ export function EventsMap({
       }).addTo(map)
 
       leafletMapRef.current = map
-      setTimeout(() => map.invalidateSize(), 100)
+
+      // Use ResizeObserver to handle container size changes
+      resizeObserver = new ResizeObserver(() => {
+        map.invalidateSize()
+      })
+      resizeObserver.observe(mapRef.current!)
+
+      // Multiple invalidateSize calls to catch late layout shifts
+      requestAnimationFrame(() => {
+        map.invalidateSize()
+        setTimeout(() => map.invalidateSize(), 200)
+      })
+
       updateMarkers(L, map)
     }
 
     initMap()
 
     return () => {
+      resizeObserver?.disconnect()
       if (leafletMapRef.current) {
         leafletMapRef.current.remove()
         leafletMapRef.current = null

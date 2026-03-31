@@ -55,11 +55,21 @@ export function EventsBrowse({
     null
   )
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   const debounceRef = useRef<NodeJS.Timeout>()
   const listContainerRef = useRef<HTMLDivElement>(null)
   const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
   const eventCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+
+  // Track viewport to render only one map instance
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)')
+    setIsDesktop(mql.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
 
   const hasMore = events.length < total
 
@@ -323,6 +333,15 @@ export function EventsBrowse({
     </>
   )
 
+  const mapElement = (
+    <EventsMap
+      pins={pins}
+      highlightedEventId={highlightedEventId}
+      onPinHover={setHighlightedEventId}
+      onPinClick={handlePinClick}
+    />
+  )
+
   return (
     <div className="flex h-[calc(100vh-140px)] flex-col overflow-hidden">
       {/* Toolbar */}
@@ -350,28 +369,14 @@ export function EventsBrowse({
           </div>
         </div>
 
-        {/* Right panel: persistent map */}
-        <div className="flex-1">
-          <EventsMap
-            pins={pins}
-            highlightedEventId={highlightedEventId}
-            onPinHover={setHighlightedEventId}
-            onPinClick={handlePinClick}
-          />
-        </div>
+        {/* Right panel: persistent map (only rendered on desktop) */}
+        <div className="flex-1">{isDesktop && mapElement}</div>
       </div>
 
       {/* ── MOBILE: full-screen map + bottom sheet (<lg) ── */}
       <div className="relative min-h-0 flex-1 lg:hidden">
-        {/* Full-screen map */}
-        <div className="h-full w-full">
-          <EventsMap
-            pins={pins}
-            highlightedEventId={highlightedEventId}
-            onPinHover={setHighlightedEventId}
-            onPinClick={handlePinClick}
-          />
-        </div>
+        {/* Full-screen map (only rendered on mobile) */}
+        <div className="h-full w-full">{!isDesktop && mapElement}</div>
 
         {/* Bottom sheet drawer */}
         <EventsMobileSheet

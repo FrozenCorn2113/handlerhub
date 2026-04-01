@@ -1,21 +1,52 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+import { cn } from '@/lib/utils'
+
+import { Button } from '@/components/ui/button'
 
 import { StepShell } from '../step-shell'
 import { toast } from 'sonner'
 
 interface StepPhotoProps {
   value: string
-  onChange: (profileImage: string) => void
+  cropX: number
+  cropY: number
+  onChange: (profileImage: string, cropX: number, cropY: number) => void
 }
 
-export function StepPhoto({ value, onChange }: StepPhotoProps) {
+const CONTAINER_SIZE = 192
+const SCALE = 1.5 // Image is 150% of container so there's room to pan
+
+export function StepPhoto({ value, cropX, cropY, onChange }: StepPhotoProps) {
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string | null>(
     value ? getFullUrl(value) : null
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Drag state
+  const [offsetX, setOffsetX] = useState(cropX) // percentage -50 to 50
+  const [offsetY, setOffsetY] = useState(cropY)
+  const [locked, setLocked] = useState(value ? true : false)
+  const [dragging, setDragging] = useState(false)
+  const dragStart = useRef<{
+    x: number
+    y: number
+    ox: number
+    oy: number
+  } | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Sync crop values when props change (e.g. navigating back to this step)
+  useEffect(() => {
+    setOffsetX(cropX)
+    setOffsetY(cropY)
+  }, [cropX, cropY])
+
+  // When preview is set from a new upload, reset to unlocked so user can position
+  const justUploaded = useRef(false)
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -24,13 +55,16 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
         return
       }
 
-      // Show preview immediately
       const localPreview = URL.createObjectURL(file)
       setPreview(localPreview)
       setUploading(true)
+      // Reset crop on new upload
+      setOffsetX(0)
+      setOffsetY(0)
+      setLocked(false)
+      justUploaded.current = true
 
       try {
-        // Get presigned URL via Phase 0 image pipeline
         const presignedRes = await fetch('/api/upload/presigned-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -46,7 +80,6 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
 
         const { url: presignedUrl, key } = await presignedRes.json()
 
-        // Upload to R2
         const uploadRes = await fetch(presignedUrl, {
           method: 'PUT',
           body: file,
@@ -55,8 +88,8 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
 
         if (!uploadRes.ok) throw new Error('Upload failed')
 
-        onChange(key)
-        toast.success('Photo uploaded!')
+        onChange(key, 0, 0)
+        toast.success('Photo uploaded! Drag to reposition.')
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Upload failed')
         setPreview(null)
@@ -76,6 +109,89 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
     [handleFile]
   )
 
+  // --- Drag-to-reposition handlers ---
+
+  const clampOffset = (val: number) => {
+    // Max pan is limited by scale. At 1.5x, image overflows by 25% on each side
+    const maxPan = ((SCALE - 1) / SCALE) * 50
+    return Math.max(-maxPan, Math.min(maxPan, val))
+  }
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (locked || uploading || !preview) return
+      e.preventDefault()
+      e.stopPropagation()
+      setDragging(true)
+      dragStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        ox: offsetX,
+        oy: offsetY,
+      }
+      // Capture pointer for reliable tracking
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    },
+    [locked, uploading, preview, offsetX, offsetY]
+  )
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging || !dragStart.current) return
+      e.preventDefault()
+
+      const dx = e.clientX - dragStart.current.x
+      const dy = e.clientY - dragStart.current.y
+
+      // Convert pixel movement to percentage of container
+      const pctX = (dx / CONTAINER_SIZE) * 100
+      const pctY = (dy / CONTAINER_SIZE) * 100
+
+      setOffsetX(clampOffset(dragStart.current.ox + pctX))
+      setOffsetY(clampOffset(dragStart.current.oy + pctY))
+    },
+    [dragging]
+  )
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging) return
+      setDragging(false)
+      dragStart.current = null
+      ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
+    },
+    [dragging]
+  )
+
+  const handleLock = useCallback(() => {
+    setLocked(true)
+    // Pass the current key + crop position up
+    if (value) {
+      onChange(value, offsetX, offsetY)
+    }
+  }, [value, offsetX, offsetY, onChange])
+
+  const handleAdjust = useCallback(() => {
+    setLocked(false)
+  }, [])
+
+  const handleRemove = useCallback(() => {
+    setPreview(null)
+    setOffsetX(0)
+    setOffsetY(0)
+    setLocked(false)
+    onChange('', 0, 0)
+  }, [onChange])
+
+  // Compute the CSS transform for the image inside the circle
+  const scaledSize = CONTAINER_SIZE * SCALE
+  const translateX = (offsetX / 100) * CONTAINER_SIZE
+  const translateY = (offsetY / 100) * CONTAINER_SIZE
+
+  const showDragUI = preview && !uploading && !locked
+  const showLockButton = preview && !uploading && !locked
+  const showAdjustButton = preview && !uploading && locked
+
   return (
     <StepShell
       phase="Show Your Work"
@@ -88,22 +204,62 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
         onDrop={handleDrop}
       >
         {/* Circular drop zone / preview */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className={`relative flex size-48 items-center justify-center overflow-hidden rounded-full border-2 border-dashed transition-all ${
+        <div
+          ref={containerRef}
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            if (!preview && !uploading) {
+              fileInputRef.current?.click()
+            }
+          }}
+          onKeyDown={(e) => {
+            if (
+              !preview &&
+              !uploading &&
+              (e.key === 'Enter' || e.key === ' ')
+            ) {
+              fileInputRef.current?.click()
+            }
+          }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          className={cn(
+            'relative flex size-48 select-none items-center justify-center overflow-hidden rounded-full border-2 border-dashed transition-all',
             preview
               ? 'border-paddock-green'
-              : 'border-sand hover:border-paddock-green'
-          } ${uploading ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
+              : 'border-sand hover:border-paddock-green',
+            uploading && 'cursor-not-allowed opacity-70',
+            showDragUI
+              ? dragging
+                ? 'cursor-grabbing'
+                : 'cursor-grab'
+              : !preview
+                ? 'cursor-pointer'
+                : 'cursor-default'
+          )}
+          style={{
+            touchAction: 'none',
+            width: CONTAINER_SIZE,
+            height: CONTAINER_SIZE,
+          }}
         >
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={preview}
               alt="Profile preview"
-              className="size-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute"
+              style={{
+                width: scaledSize,
+                height: scaledSize,
+                objectFit: 'cover',
+                transform: `translate(${translateX}px, ${translateY}px)`,
+                left: (CONTAINER_SIZE - scaledSize) / 2,
+                top: (CONTAINER_SIZE - scaledSize) / 2,
+              }}
             />
           ) : (
             <div className="flex flex-col items-center gap-2 text-warm-gray">
@@ -158,7 +314,19 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
               </svg>
             </div>
           )}
-        </button>
+
+          {/* Drag hint overlay */}
+          {showDragUI && !dragging && (
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-3">
+              <span
+                className="rounded-full bg-black/50 px-2.5 py-0.5 text-xs text-white"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
+                Drag to reposition
+              </span>
+            </div>
+          )}
+        </div>
 
         <input
           ref={fileInputRef}
@@ -171,19 +339,41 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
           className="hidden"
         />
 
-        {preview && !uploading && (
-          <button
-            type="button"
-            onClick={() => {
-              setPreview(null)
-              onChange('')
-            }}
-            className="mt-4 text-sm text-warm-gray underline-offset-4 hover:text-ringside-black hover:underline"
-            style={{ fontFamily: 'var(--font-body)' }}
-          >
-            Remove and choose another
-          </button>
-        )}
+        {/* Lock / Adjust buttons */}
+        <div className="mt-4 flex flex-col items-center gap-2">
+          {showLockButton && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleLock}
+            >
+              Lock Position
+            </Button>
+          )}
+
+          {showAdjustButton && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAdjust}
+            >
+              Adjust
+            </Button>
+          )}
+
+          {preview && !uploading && (
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="text-sm text-warm-gray underline-offset-4 hover:text-ringside-black hover:underline"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              Remove and choose another
+            </button>
+          )}
+        </div>
       </div>
     </StepShell>
   )

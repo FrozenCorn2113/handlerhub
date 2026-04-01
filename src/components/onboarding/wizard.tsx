@@ -39,6 +39,8 @@ export interface OnboardingFormData {
   isInsured?: boolean
   isBonded?: boolean
   profileImage?: string
+  profileImageCropX?: number
+  profileImageCropY?: number
   galleryImages?: string[]
   ratePerShow?: number
   ratePerDay?: number
@@ -101,7 +103,7 @@ const STEPS: StepConfig[] = [
     id: 'photo',
     phase: 'Show Your Work',
     skippable: true,
-    fields: ['profileImage'],
+    fields: ['profileImage', 'profileImageCropX', 'profileImageCropY'],
   },
   {
     id: 'gallery',
@@ -198,6 +200,8 @@ export function OnboardingWizard({
         isInsured: (existingProfile.isInsured as boolean) ?? false,
         isBonded: (existingProfile.isBonded as boolean) ?? false,
         profileImage: (existingProfile.profileImage as string) ?? '',
+        profileImageCropX: (existingProfile.profileImageCropX as number) ?? 0,
+        profileImageCropY: (existingProfile.profileImageCropY as number) ?? 0,
         galleryImages: (existingProfile.galleryImages as string[]) ?? [],
         ratePerShow: (existingProfile.ratePerShow as number) ?? undefined,
         ratePerDay: (existingProfile.ratePerDay as number) ?? undefined,
@@ -442,7 +446,19 @@ export function OnboardingWizard({
             {step.id === 'photo' && (
               <StepPhoto
                 value={formData.profileImage ?? ''}
-                onChange={(profileImage) => updateFormData({ profileImage })}
+                cropX={formData.profileImageCropX ?? 0}
+                cropY={formData.profileImageCropY ?? 0}
+                onChange={(
+                  profileImage,
+                  profileImageCropX,
+                  profileImageCropY
+                ) =>
+                  updateFormData({
+                    profileImage,
+                    profileImageCropX,
+                    profileImageCropY,
+                  })
+                }
               />
             )}
             {step.id === 'gallery' && (

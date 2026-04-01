@@ -421,18 +421,17 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Typography</SectionTitle>
           <SectionDescription>
-            Fraunces for display headings, Inter for body and UI. Questrial
-            shown for comparison. The curvy, variable-weight Fraunces brings
-            warmth and personality.
+            Three heading font candidates side by side. Pick the one that feels
+            right for HandlerHub.
           </SectionDescription>
 
           <div className="space-y-6 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
             {/* Side-by-side Fraunces vs Questrial */}
             <div>
               <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Heading Comparison: Fraunces vs Questrial
+                Heading Comparison: Fraunces vs Questrial vs Sen
               </span>
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-3 gap-6">
                 {/* Fraunces column */}
                 <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
                   <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-paddock-green">
@@ -513,6 +512,63 @@ export default function OpsPreviewPage() {
                       className="text-2xl font-normal text-ringside-black"
                       style={{
                         fontFamily: "'Questrial', sans-serif",
+                        lineHeight: 1.2,
+                        letterSpacing: '-0.01em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Booking Confirmed
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Sen column */}
+                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
+                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-warm-brown">
+                    Sen
+                  </span>
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H1
+                    </span>
+                    <h1
+                      className="text-5xl font-bold text-ringside-black"
+                      style={{
+                        fontFamily: "'Sen', sans-serif",
+                        lineHeight: 0.95,
+                        letterSpacing: '-0.04em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Find Your Perfect Handler
+                    </h1>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H2
+                    </span>
+                    <h2
+                      className="text-3xl font-bold text-ringside-black"
+                      style={{
+                        fontFamily: "'Sen', sans-serif",
+                        lineHeight: 1.05,
+                        letterSpacing: '-0.02em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Westminster 2026
+                    </h2>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H3
+                    </span>
+                    <h3
+                      className="text-2xl font-semibold text-ringside-black"
+                      style={{
+                        fontFamily: "'Sen', sans-serif",
                         lineHeight: 1.2,
                         letterSpacing: '-0.01em',
                         marginBottom: 0,

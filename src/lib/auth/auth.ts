@@ -95,27 +95,8 @@ export const {
         return !existingUser?.emailVerified ? false : true
       }
 
-      // For OAuth providers (Google, GitHub, etc.), check if user needs onboarding
-      // A user needs onboarding if they have no HandlerProfile
-      try {
-        const profile = await prisma.handlerProfile.findUnique({
-          where: { userId: user.id },
-          select: { id: true, profileCompleteness: true },
-        })
-
-        // No profile at all, or profile completeness is very low -> onboarding
-        if (
-          !profile ||
-          !profile.profileCompleteness ||
-          profile.profileCompleteness <= 10
-        ) {
-          return '/onboarding'
-        }
-      } catch (error) {
-        // If DB query fails, allow sign-in normally rather than blocking
-        console.error('[NextAuth] Error checking onboarding status:', error)
-      }
-
+      // Allow OAuth sign-in to complete (session must be established first).
+      // Onboarding redirect is handled by the dashboard page after login.
       return true
     },
 

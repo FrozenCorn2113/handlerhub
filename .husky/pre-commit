@@ -1,4 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx pretty-quick --staged
+# Run prettier on staged files only.
+# Avoids pretty-quick which can crash (exit 7) when prettier's
+# built-in flow parser source leaks into stdout.
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.json' '*.css' '*.md' | sed 's| |\\ |g')
+
+if [ -n "$STAGED" ]; then
+  echo "$STAGED" | xargs npx prettier --write --ignore-unknown
+  echo "$STAGED" | xargs git add
+fi

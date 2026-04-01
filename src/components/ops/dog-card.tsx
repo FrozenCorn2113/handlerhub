@@ -14,12 +14,6 @@ interface DogCardProps {
   gradientClass?: string
 }
 
-const gradients = [
-  'from-[#1a8a5e] via-[#2d9d6e] to-[#1F6B4A]',
-  'from-[#5a4a9e] via-[#7b6bb5] to-[#4a3a8e]',
-  'from-[#b08040] via-[#c89850] to-[#a07030]',
-]
-
 export function DogCard({
   name,
   breed,
@@ -29,50 +23,11 @@ export function DogCard({
   shows,
   wins,
   rating,
-  gradientClass,
 }: DogCardProps) {
-  // Pick a gradient based on name hash if not provided
-  const gradientIdx =
-    name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) %
-    gradients.length
-  const gradient = gradientClass || gradients[gradientIdx]
-
   return (
-    <div
-      className={`group relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.25)]`}
-    >
-      {/* Glassmorphism edge effect */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20" />
-
-      {/* Rating badge - top right */}
-      {rating && (
-        <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 backdrop-blur-md">
-          <Star size={12} weight="fill" className="text-yellow-300" />
-          <span className="font-sans text-xs font-bold text-white">
-            {rating}
-          </span>
-        </div>
-      )}
-
-      {/* Titles badge - top left */}
-      {titles && titles.length > 0 && (
-        <div className="absolute left-3 top-3 z-10 flex gap-1">
-          {titles.map((title) => (
-            <span
-              key={title}
-              className="inline-flex items-center gap-0.5 rounded-full bg-black/20 px-2 py-0.5 backdrop-blur-md"
-            >
-              <Dog size={10} weight="fill" className="text-white/80" />
-              <span className="font-sans text-[10px] font-semibold text-white/90">
-                {title}
-              </span>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Large photo area - top 60% */}
-      <div className="relative h-56 overflow-hidden">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(28,18,8,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.18)]">
+      {/* Photo area - dominant, Airbnb-style */}
+      <div className="relative h-64 overflow-hidden">
         {photoUrl ? (
           <img
             src={photoUrl}
@@ -80,22 +35,52 @@ export function DogCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-              <Dog size={40} className="text-white/60" weight="duotone" />
+          <div className="flex h-full w-full items-center justify-center bg-light-sand">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sand">
+              <Dog size={40} className="text-warm-gray" weight="duotone" />
             </div>
           </div>
         )}
-        {/* Gradient overlay at bottom of image */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 to-transparent" />
+
+        {/* Frost gradient overlay at bottom of photo */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white/90 via-white/40 to-transparent backdrop-blur-[2px]" />
+        {/* Extra subtle frost across bottom edge */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-white/60" />
+
+        {/* Rating badge - top right */}
+        {rating && (
+          <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 shadow-[0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-md">
+            <Star size={12} weight="fill" className="text-yellow-500" />
+            <span className="font-sans text-xs font-bold text-ringside-black">
+              {rating}
+            </span>
+          </div>
+        )}
+
+        {/* Titles badge - top left */}
+        {titles && titles.length > 0 && (
+          <div className="absolute left-3 top-3 z-10 flex gap-1">
+            {titles.map((title) => (
+              <span
+                key={title}
+                className="inline-flex items-center gap-0.5 rounded-full bg-white/90 px-2.5 py-1 shadow-[0_2px_8px_rgba(0,0,0,0.1)] backdrop-blur-md"
+              >
+                <Dog size={10} weight="fill" className="text-paddock-green" />
+                <span className="font-sans text-[10px] font-semibold text-ringside-black">
+                  {title}
+                </span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Content area */}
-      <div className="relative flex flex-1 flex-col p-5">
-        <h4 className="truncate font-display text-xl font-semibold text-white">
+      {/* Content area - clean, below photo */}
+      <div className="flex flex-1 flex-col p-5">
+        <h4 className="truncate font-display text-xl font-semibold text-ringside-black">
           {name}
         </h4>
-        <p className="mt-0.5 truncate font-sans text-sm text-white/70">
+        <p className="mt-0.5 truncate font-sans text-sm text-warm-gray">
           {breed}
           {age ? ` \u00B7 ${age}` : ''}
         </p>
@@ -104,26 +89,29 @@ export function DogCard({
         <div className="mt-4 flex items-center gap-4">
           {shows !== undefined && (
             <div className="flex flex-col">
-              <span className="font-sans text-lg font-bold text-white">
+              <span className="font-sans text-lg font-bold text-ringside-black">
                 {shows}
               </span>
-              <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+              <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-warm-gray">
                 Shows
               </span>
             </div>
           )}
           {wins !== undefined && (
             <div className="flex flex-col">
-              <span className="font-sans text-lg font-bold text-white">
+              <span className="font-sans text-lg font-bold text-ringside-black">
                 {wins}
               </span>
-              <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+              <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-warm-gray">
                 Wins
               </span>
             </div>
           )}
           <div className="ml-auto">
-            <button className="flex items-center gap-1.5 rounded-full bg-white/20 px-4 py-2 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] backdrop-blur-sm transition-all duration-200 hover:scale-[1.02] hover:bg-white/30 hover:shadow-lg">
+            <button
+              className="flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-4 py-2 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_6px_rgba(31,107,74,0.25)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_16px_rgba(31,107,74,0.3)]"
+              style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}
+            >
               View Profile
             </button>
           </div>

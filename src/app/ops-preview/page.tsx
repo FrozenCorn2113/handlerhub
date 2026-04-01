@@ -7,11 +7,12 @@ import { DogCard } from '@/components/ops/dog-card'
 import { EmptyState } from '@/components/ops/empty-state'
 import { MobileTabBar } from '@/components/ops/mobile-tab-bar'
 import { OpsNav } from '@/components/ops/ops-nav'
-import { ServiceCard } from '@/components/ops/service-card'
+import { TierCard } from '@/components/ops/service-card'
 import { StatusBadge } from '@/components/ops/status-badge'
 
 import {
   ArrowRight,
+  Article,
   CalendarBlank,
   ChatCircle,
   CloudArrowUp,
@@ -21,11 +22,11 @@ import {
   MapPin,
   PaperPlaneRight,
   PawPrint,
-  Scissors,
   Star,
   Textbox,
   Trophy,
   Truck,
+  Users,
 } from '@phosphor-icons/react'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -285,66 +286,55 @@ function MessagingMockup() {
 }
 
 export default function OpsPreviewPage() {
-  const [selectedServices, setSelectedServices] = useState<Set<number>>(
-    new Set([0, 2])
-  )
+  const [selectedTier, setSelectedTier] = useState(1) // Standard selected by default
 
-  const services = [
+  const tiers = [
     {
-      name: 'Full Grooming',
-      price: 8500,
-      description:
-        'Complete breed-standard grooming including bath, blow-dry, and show-day finishing touches.',
-      features: [
-        'Breed-standard grooming',
+      tierName: 'Basic',
+      basePrice: 150,
+      description: 'Ring handling only. Perfect for experienced show dogs.',
+      included: [
+        'Professional ring handling',
+        'Pre-show ring practice',
+        'Day-of coordination',
+      ],
+      addOns: [
+        { name: 'Grooming prep', price: 50 },
+        { name: 'Transport', price: 75 },
+      ],
+    },
+    {
+      tierName: 'Standard',
+      basePrice: 250,
+      description: 'Ring handling plus grooming. Our most popular package.',
+      included: [
+        'Professional ring handling',
+        'Full breed-standard grooming',
         'Bath, blow-dry, and trimming',
+        'Day-of coordination',
+      ],
+      addOns: [
+        { name: 'Transport', price: 75 },
+        { name: 'Photo package', price: 40 },
+      ],
+    },
+    {
+      tierName: 'Premium',
+      basePrice: 400,
+      description: 'Full show day package. We handle everything.',
+      included: [
+        'Professional ring handling',
+        'Full breed-standard grooming',
+        'Door-to-door transport',
         'Show-day finishing touches',
+        'Post-show care',
       ],
-      icon: (
-        <Scissors size={20} weight="duotone" className="text-paddock-green" />
-      ),
-    },
-    {
-      name: 'Transport',
-      price: 15000,
-      description:
-        'Door-to-door transport for your dog to and from the show venue, climate-controlled vehicle.',
-      features: [
-        'Climate-controlled vehicle',
-        'Door-to-door service',
-        'GPS tracking available',
+      addOns: [
+        { name: 'Extra ring', price: 100 },
+        { name: 'Video highlights', price: 60 },
       ],
-      icon: <Truck size={20} weight="duotone" className="text-paddock-green" />,
-    },
-    {
-      name: 'Ring Training',
-      price: 12000,
-      description:
-        'One-on-one ring training sessions covering free-stacking, gaiting patterns, and etiquette.',
-      features: [
-        'One-on-one ring training',
-        'Free-stacking and gaiting',
-        'Show ring etiquette',
-      ],
-      icon: (
-        <Trophy size={20} weight="duotone" className="text-paddock-green" />
-      ),
     },
   ]
-
-  const toggleService = (idx: number) => {
-    setSelectedServices((prev) => {
-      const next = new Set(prev)
-      if (next.has(idx)) next.delete(idx)
-      else next.add(idx)
-      return next
-    })
-  }
-
-  const selectedTotal = services.reduce(
-    (sum, s, i) => (selectedServices.has(i) ? sum + s.price : sum),
-    0
-  )
 
   // Category pills for form section
   const [selectedCategory, setSelectedCategory] = useState('Sporting')
@@ -356,6 +346,52 @@ export default function OpsPreviewPage() {
     { name: 'Toy', icon: <PawPrint size={14} weight="fill" /> },
     { name: 'Non-Sporting', icon: <Dog size={14} weight="fill" /> },
     { name: 'Herding', icon: <PawPrint size={14} weight="fill" /> },
+  ]
+
+  // Profile card data
+  const profiles = [
+    {
+      name: 'Liam Roberts',
+      role: 'Professional Handler',
+      avatar: 'https://i.pravatar.cc/300?img=1',
+      followers: 527,
+      reviews: 92,
+    },
+    {
+      name: 'Sophia Johnson',
+      role: 'Grooming Specialist',
+      avatar: 'https://i.pravatar.cc/300?img=2',
+      followers: 413,
+      reviews: 76,
+    },
+    {
+      name: 'Noah Martinez',
+      role: 'Show Coordinator',
+      avatar: 'https://i.pravatar.cc/300?img=3',
+      followers: 612,
+      reviews: 88,
+    },
+    {
+      name: 'Emma Davis',
+      role: 'Professional Handler',
+      avatar: 'https://i.pravatar.cc/300?img=4',
+      followers: 489,
+      reviews: 95,
+    },
+    {
+      name: 'Oliver Wilson',
+      role: 'Transport Specialist',
+      avatar: 'https://i.pravatar.cc/300?img=5',
+      followers: 523,
+      reviews: 80,
+    },
+    {
+      name: 'Ava Thompson',
+      role: 'Ring Training Coach',
+      avatar: 'https://i.pravatar.cc/300?img=6',
+      followers: 455,
+      reviews: 90,
+    },
   ]
 
   return (
@@ -385,15 +421,116 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Typography</SectionTitle>
           <SectionDescription>
-            Fraunces for display headings, Inter for body and UI. The curvy,
-            variable-weight Fraunces brings warmth and personality.
+            Fraunces for display headings, Inter for body and UI. Questrial
+            shown for comparison. The curvy, variable-weight Fraunces brings
+            warmth and personality.
           </SectionDescription>
 
           <div className="space-y-6 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
-            {/* Fraunces headings */}
+            {/* Side-by-side Fraunces vs Questrial */}
             <div>
               <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Display / Fraunces
+                Heading Comparison: Fraunces vs Questrial
+              </span>
+              <div className="grid grid-cols-2 gap-8">
+                {/* Fraunces column */}
+                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
+                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-paddock-green">
+                    Fraunces
+                  </span>
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H1
+                    </span>
+                    <h1 className="font-display text-5xl font-light text-ringside-black">
+                      Find Your Perfect Handler
+                    </h1>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H2
+                    </span>
+                    <h2 className="font-display text-3xl font-light text-ringside-black">
+                      Westminster 2026
+                    </h2>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H3
+                    </span>
+                    <h3 className="font-display text-2xl font-light text-ringside-black">
+                      Booking Confirmed
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Questrial column */}
+                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
+                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-slate-blue">
+                    Questrial
+                  </span>
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H1
+                    </span>
+                    <h1
+                      className="text-5xl font-normal text-ringside-black"
+                      style={{
+                        fontFamily: "'Questrial', sans-serif",
+                        lineHeight: 0.95,
+                        letterSpacing: '-0.04em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Find Your Perfect Handler
+                    </h1>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H2
+                    </span>
+                    <h2
+                      className="text-3xl font-normal text-ringside-black"
+                      style={{
+                        fontFamily: "'Questrial', sans-serif",
+                        lineHeight: 1.05,
+                        letterSpacing: '-0.02em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Westminster 2026
+                    </h2>
+                  </div>
+                  <hr className="border-tan/40" />
+                  <div>
+                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                      H3
+                    </span>
+                    <h3
+                      className="text-2xl font-normal text-ringside-black"
+                      style={{
+                        fontFamily: "'Questrial', sans-serif",
+                        lineHeight: 1.2,
+                        letterSpacing: '-0.01em',
+                        marginBottom: 0,
+                      }}
+                    >
+                      Booking Confirmed
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-tan" />
+
+            {/* Fraunces headings (full showcase) */}
+            <div>
+              <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+                Display / Fraunces (full scale)
               </span>
               <div className="space-y-4">
                 <div>
@@ -877,7 +1014,6 @@ export default function OpsPreviewPage() {
                   wins={8}
                   rating={4.8}
                   titles={['GCH', 'BISS']}
-                  gradientClass="from-[#1a8a5e] via-[#2d9d6e] to-[#1F6B4A]"
                 />
                 <DogCard
                   name="Golden Hour"
@@ -888,7 +1024,6 @@ export default function OpsPreviewPage() {
                   wins={3}
                   rating={4.5}
                   titles={['CH']}
-                  gradientClass="from-[#5a4a9e] via-[#7b6bb5] to-[#4a3a8e]"
                 />
                 <DogCard
                   name="Morning Dew"
@@ -899,7 +1034,6 @@ export default function OpsPreviewPage() {
                   wins={11}
                   rating={4.9}
                   titles={['CH', 'RN']}
-                  gradientClass="from-[#b08040] via-[#c89850] to-[#a07030]"
                 />
               </div>
             </div>
@@ -914,53 +1048,27 @@ export default function OpsPreviewPage() {
           </div>
         </section>
 
-        {/* ======================== SERVICE ADD-ONS ======================== */}
+        {/* ======================== SERVICE TIERS ======================== */}
         <section>
-          <SectionTitle>Service Add-Ons</SectionTitle>
+          <SectionTitle>Service Tiers</SectionTitle>
           <SectionDescription>
-            Exhibitors customize their package by selecting add-on services.
-            Toggle cards to build your inquiry.
+            Fiverr-style tiered pricing. Handlers pick one tier, then customize
+            with selectable add-on pills inside each card.
           </SectionDescription>
 
-          <div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {services.map((service, i) => (
-                <ServiceCard
-                  key={service.name}
-                  name={service.name}
-                  price={service.price}
-                  pricePer="session"
-                  description={service.description}
-                  features={service.features}
-                  icon={service.icon}
-                  selected={selectedServices.has(i)}
-                  onToggle={() => toggleService(i)}
-                />
-              ))}
-            </div>
-
-            {/* Summary bar */}
-            <div className="mt-4 flex items-center justify-between rounded-2xl border border-tan/60 bg-white px-6 py-4 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
-              <div className="flex items-center gap-3">
-                <span className="font-sans text-sm font-medium text-warm-brown">
-                  Selected:{' '}
-                  <span className="font-bold text-ringside-black">
-                    {selectedServices.size} service
-                    {selectedServices.size !== 1 ? 's' : ''}
-                  </span>
-                </span>
-                <span className="font-sans text-lg font-bold text-paddock-green">
-                  ${(selectedTotal / 100).toFixed(0)} total
-                </span>
-              </div>
-              <button
-                className="flex items-center gap-2 rounded-full bg-gradient-to-b from-warm-brown to-ringside-black px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_6px_20px_rgba(28,18,8,0.35)]"
-                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
-              >
-                Inquire Now
-                <ArrowRight size={14} weight="bold" />
-              </button>
-            </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {tiers.map((tier, i) => (
+              <TierCard
+                key={tier.tierName}
+                tierName={tier.tierName}
+                basePrice={tier.basePrice}
+                description={tier.description}
+                included={tier.included}
+                addOns={tier.addOns}
+                selected={selectedTier === i}
+                onSelect={() => setSelectedTier(i)}
+              />
+            ))}
           </div>
         </section>
 
@@ -993,7 +1101,7 @@ export default function OpsPreviewPage() {
           </div>
         </section>
 
-        {/* ======================== FORM ELEMENTS (Cisco-style) ======================== */}
+        {/* ======================== FORM ELEMENTS ======================== */}
         <section>
           <SectionTitle>Form Elements</SectionTitle>
           <SectionDescription>
@@ -1001,7 +1109,7 @@ export default function OpsPreviewPage() {
             selectable category pills.
           </SectionDescription>
 
-          <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+          <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_4px_20px_rgba(28,18,8,0.08)]">
             {/* Stepper at top */}
             <div className="border-b border-tan/40 px-8 py-6">
               <div className="flex items-center justify-center gap-0">
@@ -1077,10 +1185,10 @@ export default function OpsPreviewPage() {
             {/* Split layout: form left, illustration right */}
             <div className="flex">
               {/* Left side - form fields (60%) */}
-              <div className="flex-[3] space-y-6 p-8">
+              <div className="flex-[3] space-y-8 p-10">
                 {/* Category pills */}
                 <div>
-                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
+                  <label className="mb-3 block font-sans text-[13px] font-medium text-ringside-black">
                     Breed Group
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1090,8 +1198,8 @@ export default function OpsPreviewPage() {
                         onClick={() => setSelectedCategory(cat.name)}
                         className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans text-xs font-medium transition-all duration-200 hover:scale-[1.02] ${
                           selectedCategory === cat.name
-                            ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_6px_rgba(31,107,74,0.25)]'
-                            : 'border border-tan bg-white text-warm-brown hover:border-paddock-green/40 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]'
+                            ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.25)]'
+                            : 'border border-tan bg-white text-warm-brown shadow-[0_1px_3px_rgba(28,18,8,0.06)] hover:border-paddock-green/40 hover:shadow-[0_2px_8px_rgba(28,18,8,0.1)]'
                         }`}
                       >
                         <span
@@ -1111,24 +1219,24 @@ export default function OpsPreviewPage() {
 
                 {/* Text Input */}
                 <div>
-                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
                     Dog&apos;s Registered Name
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. GCH Foxfire's Northern Star"
-                    className="w-full rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    className="w-full rounded-xl border border-tan bg-white px-4 py-3.5 font-sans text-sm text-ringside-black shadow-[0_2px_6px_rgba(28,18,8,0.06)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.12),0_2px_8px_rgba(31,107,74,0.08)] focus:outline-none"
                     style={{ borderLeftWidth: '3px' }}
                   />
                 </div>
 
                 {/* Select */}
                 <div>
-                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
                     Show Name
                   </label>
                   <select
-                    className="w-full appearance-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    className="w-full appearance-none rounded-xl border border-tan bg-white px-4 py-3.5 font-sans text-sm text-ringside-black shadow-[0_2px_6px_rgba(28,18,8,0.06)] transition-all duration-200 focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.12),0_2px_8px_rgba(31,107,74,0.08)] focus:outline-none"
                     style={{ borderLeftWidth: '3px' }}
                   >
                     <option>Select a show</option>
@@ -1141,19 +1249,19 @@ export default function OpsPreviewPage() {
 
                 {/* Textarea */}
                 <div>
-                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
                     Special Instructions
                   </label>
                   <textarea
                     rows={3}
                     placeholder="Any specific requirements for the handler..."
-                    className="w-full resize-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    className="w-full resize-none rounded-xl border border-tan bg-white px-4 py-3.5 font-sans text-sm text-ringside-black shadow-[0_2px_6px_rgba(28,18,8,0.06)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.12),0_2px_8px_rgba(31,107,74,0.08)] focus:outline-none"
                     style={{ borderLeftWidth: '3px' }}
                   />
                 </div>
 
                 {/* CTA */}
-                <div className="flex justify-end">
+                <div className="flex justify-end pt-2">
                   <button
                     className="flex items-center gap-2 rounded-full bg-gradient-to-b from-warm-brown to-ringside-black px-8 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_6px_20px_rgba(28,18,8,0.35)]"
                     style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
@@ -1165,7 +1273,7 @@ export default function OpsPreviewPage() {
               </div>
 
               {/* Right side - contextual info (40%) */}
-              <div className="flex flex-[2] flex-col items-center justify-center bg-gradient-to-br from-paddock-green/5 via-sage/20 to-pastel-sky/10 p-8">
+              <div className="flex flex-[2] flex-col items-center justify-center bg-gradient-to-br from-paddock-green/[0.06] via-sage/30 to-pastel-sky/20 p-8">
                 <div className="text-center">
                   <h3 className="font-display text-3xl font-light text-ringside-black">
                     About Your Dog
@@ -1177,8 +1285,8 @@ export default function OpsPreviewPage() {
                 </div>
 
                 {/* Decorative dog silhouette area */}
-                <div className="mt-8 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-paddock-green/10 to-sage/30">
-                  <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/60 backdrop-blur-sm">
+                <div className="mt-8 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-paddock-green/10 to-sage/30 shadow-[0_4px_20px_rgba(31,107,74,0.08)]">
+                  <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/60 shadow-[inset_0_2px_8px_rgba(28,18,8,0.04)] backdrop-blur-sm">
                     <PawPrint
                       size={48}
                       weight="duotone"
@@ -1189,10 +1297,10 @@ export default function OpsPreviewPage() {
 
                 {/* File Upload Zone */}
                 <div className="mt-6 w-full">
-                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
                     Dog Photo
                   </label>
-                  <div className="group/upload flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-tan bg-white/60 px-6 py-8 backdrop-blur-sm transition-all duration-300 hover:border-paddock-green/50 hover:shadow-[0_4px_16px_rgba(31,107,74,0.08)]">
+                  <div className="group/upload flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-tan bg-white/60 px-6 py-8 shadow-[0_2px_8px_rgba(28,18,8,0.04)] backdrop-blur-sm transition-all duration-300 hover:border-paddock-green/50 hover:shadow-[0_4px_16px_rgba(31,107,74,0.08)]">
                     <div className="mb-2 flex size-10 items-center justify-center rounded-full bg-white shadow-[0_2px_8px_rgba(28,18,8,0.08)] transition-transform duration-300 group-hover/upload:scale-110">
                       <CloudArrowUp
                         size={22}
@@ -1217,171 +1325,75 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Profile Cards</SectionTitle>
           <SectionDescription>
-            Gradient-style profile cards with real avatar photos, vibrant
-            backgrounds, and action buttons.
+            Clean, airy profile cards with large photos, stats, and action
+            buttons. White card background, generous rounded corners.
           </SectionDescription>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            {/* Handler profile - green gradient */}
-            <div className="group relative overflow-hidden rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
-              {/* Full gradient background */}
-              <div className="bg-gradient-to-br from-[#1a8a5e] via-[#2d9d6e] to-[#1F6B4A] p-6">
-                {/* Glassmorphism edge */}
-                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20" />
-
-                {/* Role badge */}
-                <span className="inline-block rounded-full bg-white/15 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-sm">
-                  Handler
-                </span>
-
-                {/* Avatar + Name */}
-                <div className="mt-5 flex items-center gap-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {profiles.map((profile) => (
+              <div
+                key={profile.name}
+                className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.12)]"
+              >
+                {/* Large photo at top */}
+                <div className="relative overflow-hidden">
                   <img
-                    src="https://i.pravatar.cc/200?img=12"
-                    alt="James Rodriguez"
-                    className="h-20 w-20 rounded-full border-4 border-white/30 object-cover shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                    src={profile.avatar}
+                    alt={profile.name}
+                    className="h-56 w-full rounded-t-xl object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div>
-                    <h4 className="font-display text-2xl font-semibold text-white">
-                      James Rodriguez
-                    </h4>
-                    <p className="mt-0.5 font-sans text-sm text-white/70">
-                      Professional Handler
-                    </p>
-                    <div className="mt-1.5 flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          weight={i <= 4 ? 'fill' : 'regular'}
-                          className={
-                            i <= 4 ? 'text-yellow-300' : 'text-white/30'
-                          }
-                        />
-                      ))}
-                      <span className="ml-1 font-sans text-xs text-white/70">
-                        4.8
-                      </span>
-                    </div>
-                  </div>
                 </div>
 
-                {/* Stats row */}
-                <div className="mt-5 flex gap-4">
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      47
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Shows
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      28
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Reviews
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      3
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Services
-                    </span>
-                  </div>
-                </div>
+                {/* Content below photo */}
+                <div className="flex flex-1 flex-col p-5">
+                  {/* Name bold */}
+                  <h4
+                    className="font-display text-lg font-semibold text-ringside-black"
+                    style={{ marginBottom: '0.25rem' }}
+                  >
+                    {profile.name}
+                  </h4>
+                  {/* Role/description muted */}
+                  <p className="font-sans text-sm text-warm-gray">
+                    {profile.role}
+                  </p>
 
-                {/* CTA */}
-                <button
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-white/25 to-white/15 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] hover:from-white/30 hover:to-white/20 hover:shadow-lg"
-                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
-                >
-                  <ChatCircle size={14} weight="fill" />
-                  Get In Touch
-                </button>
-              </div>
-            </div>
-
-            {/* Exhibitor profile - purple gradient */}
-            <div className="group relative overflow-hidden rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
-              {/* Full gradient background */}
-              <div className="bg-gradient-to-br from-[#5a4a9e] via-[#7b6bb5] to-[#4a3a8e] p-6">
-                {/* Glassmorphism edge */}
-                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20" />
-
-                {/* Role badge */}
-                <span className="inline-block rounded-full bg-white/15 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-sm">
-                  Exhibitor
-                </span>
-
-                {/* Avatar + Name */}
-                <div className="mt-5 flex items-center gap-4">
-                  <img
-                    src="https://i.pravatar.cc/200?img=5"
-                    alt="Sarah Mitchell"
-                    className="h-20 w-20 rounded-full border-4 border-white/30 object-cover shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
-                  />
-                  <div>
-                    <h4 className="font-display text-2xl font-semibold text-white">
-                      Sarah Mitchell
-                    </h4>
-                    <p className="mt-0.5 font-sans text-sm text-white/70">
-                      3 dogs registered
-                    </p>
-                    <div className="mt-1.5 flex items-center gap-1.5">
-                      <MapPin
-                        size={12}
+                  {/* Stats row */}
+                  <div className="mt-4 flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <Users
+                        size={14}
                         weight="fill"
-                        className="text-white/50"
+                        className="text-warm-gray"
                       />
-                      <span className="font-sans text-xs text-white/60">
-                        Portland, OR
+                      <span className="font-sans text-xs font-medium text-warm-brown">
+                        {profile.followers}
                       </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Article
+                        size={14}
+                        weight="fill"
+                        className="text-warm-gray"
+                      />
+                      <span className="font-sans text-xs font-medium text-warm-brown">
+                        {profile.reviews}
+                      </span>
+                    </div>
+
+                    {/* Connect + button at bottom-right */}
+                    <div className="ml-auto">
+                      <button
+                        className="flex items-center gap-1 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-4 py-2 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_6px_rgba(31,107,74,0.25)] transition-all duration-200 hover:scale-[1.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_16px_rgba(31,107,74,0.3)]"
+                        style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}
+                      >
+                        Connect +
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                {/* Stats row */}
-                <div className="mt-5 flex gap-4">
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      12
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Bookings
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      8
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Shows
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
-                    <span className="font-sans text-lg font-bold text-white">
-                      US
-                    </span>
-                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
-                      Country
-                    </span>
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <button
-                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-white/25 to-white/15 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] hover:from-white/30 hover:to-white/20 hover:shadow-lg"
-                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
-                >
-                  <ChatCircle size={14} weight="fill" />
-                  Message
-                </button>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 

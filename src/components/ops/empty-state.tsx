@@ -48,7 +48,7 @@ export function EmptyState({
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-paddock-green to-paddock-green/90 px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(31,107,74,0.25)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_6px_20px_rgba(31,107,74,0.3)]"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_20px_rgba(31,107,74,0.35)]"
         >
           {actionLabel}
           <ArrowRight size={14} weight="bold" />

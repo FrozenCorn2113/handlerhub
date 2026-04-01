@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db'
 
 import { BentoGrid, BentoGridItem } from '@/components/ui/bento-grid'
+import { Button } from '@/components/ui/button'
 
 import {
   ArrowRight,
@@ -111,23 +112,26 @@ export default async function ForHandlersPage() {
           >
             Grow your handling business with clients who find you
           </h1>
-          <Link
-            href="/register"
-            className="mb-2.5 mt-[90px] inline-flex items-center gap-2 rounded-full bg-[#15472F] px-8 py-4 font-body text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+          <Button
+            asChild
+            size="lg"
+            className="mb-2.5 mt-[90px] gap-2 font-body text-base font-bold"
           >
-            Create your profile
-            <ArrowRight size={18} weight="bold" />
-          </Link>
+            <Link href="/register">
+              Create your profile
+              <ArrowRight size={18} weight="bold" />
+            </Link>
+          </Button>
         </div>
       </section>
 
       {/* ---------------------------------------------------------- */}
       {/*  Section 2 — Why (Image Cards)                             */}
       {/* ---------------------------------------------------------- */}
-      <section className="bg-white py-20 lg:py-28">
+      <section className="bg-ring-cream py-20 lg:py-28">
         <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-14 w-[400px] text-left font-display text-[#14472F]"
+            className="mb-14 w-[400px] text-left font-display text-paddock-green"
             style={{
               fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
               fontWeight: 700,
@@ -197,7 +201,7 @@ export default async function ForHandlersPage() {
             ).map((card) => (
               <div
                 key={card.label}
-                className="group relative overflow-hidden rounded-2xl"
+                className="group relative overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ aspectRatio: '3 / 4' }}
               >
                 {/* Image or gradient placeholder */}
@@ -250,10 +254,10 @@ export default async function ForHandlersPage() {
       {/* ---------------------------------------------------------- */}
       {/*  Section 3 — Upcoming Shows                                */}
       {/* ---------------------------------------------------------- */}
-      <section className="border-t border-gray-100 bg-[#F8F4EE] py-20 lg:py-28">
+      <section className="border-t border-gray-100 bg-ring-cream py-20 lg:py-28">
         <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-14 text-center font-display text-[#14472F]"
+            className="mb-14 text-center font-display text-paddock-green"
             style={{
               fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
               fontWeight: 700,
@@ -267,12 +271,12 @@ export default async function ForHandlersPage() {
               {upcomingEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-gray-200 hover:shadow-lg"
+                  className="rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                 >
-                  <span className="mb-3 inline-block rounded-full bg-[#14472F] px-3 py-1 text-xs font-semibold text-white">
+                  <span className="mb-3 inline-block rounded-full bg-paddock-green px-3 py-1 text-xs font-semibold text-white">
                     {eventTypeLabel(event.eventType)}
                   </span>
-                  <h3 className="mb-2 font-display text-base font-bold leading-snug text-[#14472F]">
+                  <h3 className="mb-2 font-display text-base font-bold leading-snug text-paddock-green">
                     {event.clubName}
                   </h3>
                   <div className="flex flex-col gap-1 text-sm text-gray-600">
@@ -301,7 +305,7 @@ export default async function ForHandlersPage() {
           <div className="mt-10 text-center">
             <Link
               href="/events"
-              className="inline-flex items-center gap-2 text-base font-semibold text-[#14472F] transition-colors hover:text-[#1F6B4A]"
+              className="inline-flex items-center gap-2 text-base font-semibold text-paddock-green transition-colors hover:text-paddock-green/80"
             >
               Browse all events
               <ArrowRight size={16} weight="bold" />
@@ -313,10 +317,10 @@ export default async function ForHandlersPage() {
       {/* ---------------------------------------------------------- */}
       {/*  Section 4 — Community (Bento Grid)                        */}
       {/* ---------------------------------------------------------- */}
-      <section className="bg-white py-16 lg:py-20">
+      <section className="bg-ring-cream py-16 lg:py-20">
         <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
           <h2
-            className="mb-10 font-display text-[#14472F]"
+            className="mb-10 font-display text-paddock-green"
             style={{
               fontSize: 'clamp(1.5rem, 1.1rem + 1.5vw, 2.25rem)',
               fontWeight: 700,
@@ -338,7 +342,7 @@ export default async function ForHandlersPage() {
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               }
-              className="border-[#14472F]/10 md:col-span-1"
+              className="border-paddock-green/10 md:col-span-1"
             />
             <BentoGridItem
               title="Upcoming Shows"
@@ -352,7 +356,7 @@ export default async function ForHandlersPage() {
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
               }
-              className="border-[#14472F]/10 md:col-span-2"
+              className="border-paddock-green/10 md:col-span-2"
             />
             <BentoGridItem
               title="Our Story"
@@ -367,7 +371,7 @@ export default async function ForHandlersPage() {
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
               }
-              className="border-[#14472F]/10 md:col-span-2"
+              className="border-paddock-green/10 md:col-span-2"
             />
             <BentoGridItem
               title="Community"
@@ -382,19 +386,18 @@ export default async function ForHandlersPage() {
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               }
-              className="border-[#14472F]/10 md:col-span-1"
+              className="border-paddock-green/10 md:col-span-1"
             />
           </BentoGrid>
 
           {/* Final CTA */}
           <div className="mt-10 text-center">
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 rounded-full bg-[#1C1208] px-8 py-3.5 font-body text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
-            >
-              Get started
-              <ArrowRight size={16} weight="bold" />
-            </Link>
+            <Button asChild size="lg" className="gap-2 font-body font-bold">
+              <Link href="/register">
+                Get started
+                <ArrowRight size={16} weight="bold" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

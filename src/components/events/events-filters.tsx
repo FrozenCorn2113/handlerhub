@@ -83,7 +83,7 @@ function FilterPopover({
   return (
     <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1 rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm font-medium text-ringside-black transition-colors hover:border-paddock-green/40">
+        <button className="flex items-center gap-1 rounded-full border border-sand bg-white px-3 py-2 text-sm font-medium text-ringside-black shadow-sm transition-all hover:border-paddock-green/40 hover:shadow-md">
           {label}
           <FilterBadge count={badgeCount} />
           <CaretDown
@@ -96,7 +96,7 @@ function FilterPopover({
       <PopoverContent
         align="start"
         sideOffset={6}
-        className="w-64 rounded-xl border border-[#E8E0D4] bg-white p-3 shadow-lg"
+        className="w-64 rounded-2xl border border-sand bg-white p-3 shadow-lg"
       >
         {children}
       </PopoverContent>
@@ -163,7 +163,7 @@ export function EventsFilters({
           placeholder="Search by club, breed, city, or state..."
           value={filters.search}
           onChange={(e) => updateFilter('search', e.target.value)}
-          className="w-full rounded-xl border border-[#E8E0D4] bg-white py-2.5 pl-10 pr-4 text-sm text-ringside-black placeholder-warm-gray/60 transition-colors focus:border-paddock-green focus:outline-none focus:ring-2 focus:ring-paddock-green/20"
+          className="w-full rounded-2xl border border-sand bg-white py-2.5 pl-10 pr-4 text-sm text-ringside-black placeholder-warm-gray/60 transition-colors focus:border-paddock-green focus:outline-none focus:ring-2 focus:ring-paddock-green/20"
         />
       </div>
 
@@ -182,7 +182,7 @@ export function EventsFilters({
           <select
             value={filters.state}
             onChange={(e) => updateFilter('state', e.target.value)}
-            className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+            className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
           >
             <option value="">All States</option>
             {Object.entries(US_STATES).map(([code, name]) => (
@@ -208,7 +208,7 @@ export function EventsFilters({
               <select
                 value={filters.eventType}
                 onChange={(e) => updateFilter('eventType', e.target.value)}
-                className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+                className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
               >
                 <option value="">All Types</option>
                 {FILTERABLE_EVENT_TYPES.map((type) => (
@@ -225,7 +225,7 @@ export function EventsFilters({
               <select
                 value={filters.indoorOutdoor}
                 onChange={(e) => updateFilter('indoorOutdoor', e.target.value)}
-                className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+                className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
               >
                 <option value="">Any</option>
                 <option value="Indoors">Indoors</option>
@@ -248,7 +248,7 @@ export function EventsFilters({
           <select
             value={filters.entryStatus}
             onChange={(e) => updateFilter('entryStatus', e.target.value)}
-            className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+            className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
           >
             <option value="">Any Status</option>
             {(Object.keys(ENTRY_STATUS_CONFIG) as EntryStatus[]).map(
@@ -276,14 +276,14 @@ export function EventsFilters({
               type="date"
               value={filters.dateFrom}
               onChange={(e) => updateFilter('dateFrom', e.target.value)}
-              className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+              className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
               placeholder="From"
             />
             <input
               type="date"
               value={filters.dateTo}
               onChange={(e) => updateFilter('dateTo', e.target.value)}
-              className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+              className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
               placeholder="To"
             />
           </div>
@@ -303,7 +303,7 @@ export function EventsFilters({
             <select
               value={filters.breed}
               onChange={(e) => updateFilter('breed', e.target.value)}
-              className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+              className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
             >
               <option value="">All Breeds</option>
               {breeds.map((breed) => (
@@ -331,7 +331,7 @@ export function EventsFilters({
             <select
               value={filters.superintendent}
               onChange={(e) => updateFilter('superintendent', e.target.value)}
-              className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+              className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
             >
               <option value="">All</option>
               {superintendents.map((s) => (
@@ -349,7 +349,7 @@ export function EventsFilters({
           onOpenChange={(open) => setOpenPopover(open ? 'sort' : null)}
         >
           <PopoverTrigger asChild>
-            <button className="flex items-center gap-1 rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm font-medium text-warm-gray transition-colors hover:border-paddock-green/40">
+            <button className="flex items-center gap-1 rounded-full border border-sand bg-white px-3 py-2 text-sm font-medium text-warm-gray shadow-sm transition-all hover:border-paddock-green/40 hover:shadow-md">
               <SortAscending size={14} weight="bold" />
               Sort
               <CaretDown size={14} weight="bold" className="ml-0.5" />
@@ -358,7 +358,7 @@ export function EventsFilters({
           <PopoverContent
             align="start"
             sideOffset={6}
-            className="w-52 rounded-xl border border-[#E8E0D4] bg-white p-3 shadow-lg"
+            className="w-52 rounded-2xl border border-sand bg-white p-3 shadow-lg"
           >
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-warm-gray">
               Sort By
@@ -366,7 +366,7 @@ export function EventsFilters({
             <select
               value={filters.sortBy}
               onChange={(e) => updateFilter('sortBy', e.target.value)}
-              className="w-full rounded-lg border border-[#E8E0D4] bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
+              className="w-full rounded-lg border border-sand bg-white px-3 py-2 text-sm text-ringside-black focus:border-paddock-green focus:outline-none"
             >
               <option value="date">Show Date</option>
               <option value="closingDate">Entry Closing Date</option>

@@ -6,6 +6,8 @@ import dynamic from 'next/dynamic'
 
 import type { EventWithVenue } from '@/lib/events/queries'
 
+import { ErrorBoundary } from '@/components/ops/error-boundary'
+
 import { EventCard } from './event-card'
 import {
   EMPTY_FILTERS,
@@ -14,6 +16,7 @@ import {
 } from './events-filters'
 import type { VenuePin } from './events-map'
 import { EventsMobileSheet } from './events-mobile-sheet'
+import { MapPin } from '@phosphor-icons/react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
 // Dynamic import for map to avoid SSR issues with Leaflet
@@ -333,20 +336,32 @@ export function EventsBrowse({
     </>
   )
 
+  const mapFallback = (
+    <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-light-sand p-8 text-center">
+      <MapPin size={40} weight="light" className="mb-3 text-warm-gray" />
+      <p className="text-sm font-medium text-ringside-black">Map unavailable</p>
+      <p className="mt-1 text-xs text-warm-gray">
+        Events are still available in the list view below.
+      </p>
+    </div>
+  )
+
   const mapElement = (
-    <EventsMap
-      pins={pins}
-      highlightedEventId={highlightedEventId}
-      onPinHover={setHighlightedEventId}
-      onPinClick={handlePinClick}
-    />
+    <ErrorBoundary fallback={mapFallback}>
+      <EventsMap
+        pins={pins}
+        highlightedEventId={highlightedEventId}
+        onPinHover={setHighlightedEventId}
+        onPinClick={handlePinClick}
+      />
+    </ErrorBoundary>
   )
 
   return (
     <div className="flex h-[calc(100vh-140px)] flex-col overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-[#E8E0D4] bg-[#F8F4EE] px-4 py-3 sm:px-6">
-        <h1 className="text-lg font-bold text-ringside-black sm:text-xl">
+      <div className="flex items-center justify-between border-b border-sand bg-ring-cream px-4 py-3 sm:px-6">
+        <h1 className="font-display text-lg font-bold text-ringside-black sm:text-xl">
           Upcoming Dog Shows
         </h1>
       </div>
@@ -354,16 +369,16 @@ export function EventsBrowse({
       {/* ── DESKTOP: split layout (lg+) ── */}
       <div className="hidden min-h-0 flex-1 lg:flex">
         {/* Left panel: filters + scrollable virtualized list */}
-        <div className="flex w-[420px] flex-col border-r border-[#E8E0D4] xl:w-[480px]">
+        <div className="flex w-[420px] flex-col border-r border-sand xl:w-[480px]">
           {/* Filters */}
-          <div className="border-b border-[#E8E0D4] bg-white p-4">
+          <div className="border-b border-sand bg-white p-4">
             {filterContent}
           </div>
 
           {/* Virtualized event cards */}
           <div
             ref={listContainerRef}
-            className="flex-1 overflow-y-auto bg-[#FAFAF7]"
+            className="flex-1 overflow-y-auto bg-ring-cream"
           >
             {virtualizedListContent}
           </div>
@@ -388,7 +403,7 @@ export function EventsBrowse({
       </div>
 
       {/* AKC Attribution */}
-      <div className="hidden border-t border-[#E8E0D4] bg-[#F8F4EE] px-4 py-2 text-center text-xs text-warm-gray lg:block">
+      <div className="hidden border-t border-sand bg-ring-cream px-4 py-2 text-center text-xs text-warm-gray lg:block">
         Event data sourced from AKC
       </div>
     </div>

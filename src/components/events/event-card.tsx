@@ -39,17 +39,17 @@ export function EventCard({ event, isHighlighted, onHover }: EventCardProps) {
   return (
     <Link
       href={`/events/${event.slug}`}
-      className={`block rounded-xl border transition-all duration-200 ${
+      className={`block rounded-2xl border shadow-md transition-all duration-200 ${
         isHighlighted
           ? 'border-paddock-green shadow-lg ring-2 ring-paddock-green/20'
-          : 'border-[#E8E0D4] hover:border-paddock-green/40 hover:shadow-md'
+          : 'border-sand hover:-translate-y-0.5 hover:shadow-lg'
       } bg-white p-4`}
       onMouseEnter={() => onHover?.(event.id)}
       onMouseLeave={() => onHover?.(null)}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-ringside-black">
+          <h3 className="truncate font-display text-base font-semibold text-ringside-black">
             {event.clubName}
           </h3>
           <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -110,7 +110,7 @@ export function EventCard({ event, isHighlighted, onHover }: EventCardProps) {
       </div>
 
       {/* Handler hint */}
-      <div className="mt-3 flex items-center gap-1.5 border-t border-[#E8E0D4] pt-2.5 text-xs font-medium text-paddock-green">
+      <div className="mt-3 flex items-center gap-1.5 border-t border-sand pt-2.5 text-xs font-medium text-paddock-green">
         <PawPrint size={12} weight="bold" />
         <span>Handlers available near this show</span>
       </div>

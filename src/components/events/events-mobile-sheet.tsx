@@ -37,11 +37,11 @@ export function EventsMobileSheet({
         >
           {/* Handle */}
           <div className="flex justify-center pb-1 pt-3">
-            <div className="h-1.5 w-10 rounded-full bg-[#E8E0D4]" />
+            <div className="h-1.5 w-10 rounded-full bg-sand" />
           </div>
 
           {/* Peek header: filter summary + event count */}
-          <div className="flex items-center justify-between border-b border-[#E8E0D4] px-4 pb-3 pt-1">
+          <div className="flex items-center justify-between border-b border-sand px-4 pb-3 pt-1">
             <div className="flex items-center gap-2">
               <Funnel size={16} weight="bold" className="text-paddock-green" />
               <span className="text-sm font-medium text-ringside-black">
@@ -56,12 +56,12 @@ export function EventsMobileSheet({
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto" data-vaul-no-drag>
             {/* Filters section */}
-            <div className="border-b border-[#E8E0D4] bg-[#FAFAF7] p-4">
+            <div className="border-b border-sand bg-ring-cream p-4">
               {filterContent}
             </div>
 
             {/* Event list */}
-            <div className="bg-[#FAFAF7]">{listContent}</div>
+            <div className="bg-ring-cream">{listContent}</div>
           </div>
         </Drawer.Content>
       </Drawer.Portal>

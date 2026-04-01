@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   ENTRY_STATUS_CONFIG,
@@ -8,7 +8,7 @@ import {
   EVENT_TYPE_LABELS,
 } from '@/lib/events/constants'
 
-import { MapPin, NavigationArrow } from '@phosphor-icons/react'
+import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
 
 export interface VenuePin {
@@ -37,6 +37,57 @@ interface EventsMapProps {
   onPinClick?: (eventId: string) => void
 }
 
+/**
+ * Lazily loads Leaflet + MarkerCluster and injects required CSS.
+ * Returns the Leaflet `L` namespace or null if something goes wrong.
+ */
+async function loadLeaflet() {
+  if (typeof window === 'undefined') return null
+
+  const L = (await import('leaflet')).default
+
+  // markercluster mutates the global L, so expose it on window first
+  ;(window as any).L = L
+
+  // Dynamically import markercluster (side-effect import)
+  await import('leaflet.markercluster')
+
+  // Inject Leaflet core CSS
+  injectCSS(
+    'leaflet-core-css',
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+  )
+  // Inject MarkerCluster CSS
+  injectCSS(
+    'markercluster-css',
+    'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'
+  )
+  injectCSS(
+    'markercluster-default-css',
+    'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
+  )
+
+  // Fix default icon paths
+  delete (L.Icon.Default.prototype as any)._getIconUrl
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  })
+
+  return L
+}
+
+function injectCSS(id: string, href: string) {
+  if (document.getElementById(id)) return
+  const link = document.createElement('link')
+  link.id = id
+  link.rel = 'stylesheet'
+  link.href = href
+  document.head.appendChild(link)
+}
+
 export function EventsMap({
   pins,
   highlightedEventId,
@@ -45,8 +96,10 @@ export function EventsMap({
 }: EventsMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const leafletMapRef = useRef<any>(null)
+  const leafletRef = useRef<any>(null)
   const clusterGroupRef = useRef<any>(null)
   const markersRef = useRef<Map<string, any>>(new Map())
+  const [mapError, setMapError] = useState<string | null>(null)
 
   // Compute which venue is highlighted
   const highlightedVenueId = useMemo(() => {
@@ -59,86 +112,82 @@ export function EventsMap({
     return null
   }, [highlightedEventId, pins])
 
+  // Stable refs for callbacks used in markers
+  const onPinHoverRef = useRef(onPinHover)
+  const onPinClickRef = useRef(onPinClick)
+  useEffect(() => {
+    onPinHoverRef.current = onPinHover
+  }, [onPinHover])
+  useEffect(() => {
+    onPinClickRef.current = onPinClick
+  }, [onPinClick])
+
   useEffect(() => {
     if (!mapRef.current) return
 
-    let L: any
     let resizeObserver: ResizeObserver | null = null
+    let disposed = false
 
     const initMap = async () => {
-      L = (await import('leaflet')).default
+      try {
+        const L = await loadLeaflet()
+        if (!L || disposed) return
 
-      // Import marker cluster CSS
-      await import('leaflet.markercluster')
-      // Inject markercluster CSS via CDN
-      if (!document.getElementById('markercluster-css')) {
-        const defaultCss = document.createElement('link')
-        defaultCss.id = 'markercluster-css'
-        defaultCss.rel = 'stylesheet'
-        defaultCss.href =
-          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'
-        document.head.appendChild(defaultCss)
+        leafletRef.current = L
 
-        const customCss = document.createElement('link')
-        customCss.rel = 'stylesheet'
-        customCss.href =
-          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
-        document.head.appendChild(customCss)
+        if (leafletMapRef.current) {
+          leafletMapRef.current.remove()
+          leafletMapRef.current = null
+        }
+
+        const isMobile = window.innerWidth < 768
+
+        const map = L.map(mapRef.current!, {
+          center: [39.8283, -98.5795],
+          zoom: 4,
+          scrollWheelZoom: !isMobile,
+          zoomControl: true,
+        })
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom: 18,
+        }).addTo(map)
+
+        leafletMapRef.current = map
+
+        resizeObserver = new ResizeObserver(() => {
+          if (!disposed) map.invalidateSize()
+        })
+        resizeObserver.observe(mapRef.current!)
+
+        requestAnimationFrame(() => {
+          if (disposed) return
+          map.invalidateSize()
+          setTimeout(() => {
+            if (!disposed) map.invalidateSize()
+          }, 200)
+        })
+
+        updateMarkers(L, map)
+      } catch (err) {
+        console.error('[EventsMap] Failed to initialize map:', err)
+        setMapError('Map failed to load. Showing list view only.')
       }
-
-      // Fix default icon issue
-      delete (L.Icon.Default.prototype as any)._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      })
-
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
-      }
-
-      // Detect mobile for scroll wheel zoom
-      const isMobile = window.innerWidth < 768
-
-      const map = L.map(mapRef.current!, {
-        center: [39.8283, -98.5795],
-        zoom: 4,
-        scrollWheelZoom: !isMobile,
-        zoomControl: true,
-      })
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18,
-      }).addTo(map)
-
-      leafletMapRef.current = map
-
-      // Use ResizeObserver to handle container size changes
-      resizeObserver = new ResizeObserver(() => {
-        map.invalidateSize()
-      })
-      resizeObserver.observe(mapRef.current!)
-
-      // Multiple invalidateSize calls to catch late layout shifts
-      requestAnimationFrame(() => {
-        map.invalidateSize()
-        setTimeout(() => map.invalidateSize(), 200)
-      })
-
-      updateMarkers(L, map)
     }
 
     initMap()
 
     return () => {
+      disposed = true
       resizeObserver?.disconnect()
       if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
+        try {
+          leafletMapRef.current.remove()
+        } catch {
+          // Leaflet cleanup can throw if DOM is already gone
+        }
         leafletMapRef.current = null
       }
     }
@@ -147,15 +196,8 @@ export function EventsMap({
 
   // Update markers when pins change
   useEffect(() => {
-    if (!leafletMapRef.current) return
-
-    const loadAndUpdate = async () => {
-      const L = (await import('leaflet')).default
-      await import('leaflet.markercluster')
-      updateMarkers(L, leafletMapRef.current)
-    }
-
-    loadAndUpdate()
+    if (!leafletMapRef.current || !leafletRef.current) return
+    updateMarkers(leafletRef.current, leafletMapRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pins])
 
@@ -180,7 +222,7 @@ export function EventsMap({
     })
   }, [highlightedVenueId])
 
-  // Public method: pan to a specific venue
+  // Pan to highlighted venue
   useEffect(() => {
     if (!highlightedVenueId || !leafletMapRef.current) return
     const marker = markersRef.current.get(highlightedVenueId)
@@ -191,127 +233,141 @@ export function EventsMap({
   }, [highlightedVenueId])
 
   function updateMarkers(L: any, map: any) {
-    // Clear existing cluster group
-    if (clusterGroupRef.current) {
-      map.removeLayer(clusterGroupRef.current)
-    }
-    markersRef.current.clear()
+    try {
+      // Clear existing cluster group
+      if (clusterGroupRef.current) {
+        map.removeLayer(clusterGroupRef.current)
+      }
+      markersRef.current.clear()
 
-    if (pins.length === 0) return
+      if (pins.length === 0) return
 
-    // Create cluster group with HandlerHub styling
-    const clusterGroup = L.markerClusterGroup({
-      maxClusterRadius: 50,
-      spiderfyOnMaxZoom: true,
-      showCoverageOnHover: false,
-      zoomToBoundsOnClick: true,
-      iconCreateFunction: (cluster: any) => {
-        const count = cluster.getChildCount()
-        let size = 36
-        let fontSize = 13
-        if (count >= 100) {
-          size = 44
-          fontSize = 14
-        } else if (count >= 10) {
-          size = 40
-          fontSize = 13
-        }
-        return L.divIcon({
-          html: `<div style="
-            background: #1F6B4A;
-            color: white;
-            width: ${size}px;
-            height: ${size}px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: ${fontSize}px;
-            font-weight: 700;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-          ">${count}</div>`,
-          className: 'custom-cluster',
-          iconSize: [size, size],
-          iconAnchor: [size / 2, size / 2],
+      // Verify markerClusterGroup is available
+      if (typeof L.markerClusterGroup !== 'function') {
+        console.error('[EventsMap] L.markerClusterGroup is not a function')
+        setMapError('Map clustering failed to load.')
+        return
+      }
+
+      // Create cluster group with HandlerHub styling
+      const clusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        chunkedLoading: true,
+        chunkInterval: 100,
+        iconCreateFunction: (cluster: any) => {
+          const count = cluster.getChildCount()
+          let size = 36
+          let fontSize = 13
+          if (count >= 100) {
+            size = 44
+            fontSize = 14
+          } else if (count >= 10) {
+            size = 40
+            fontSize = 13
+          }
+          return L.divIcon({
+            html: `<div style="
+              background: #1F6B4A;
+              color: white;
+              width: ${size}px;
+              height: ${size}px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: ${fontSize}px;
+              font-weight: 700;
+              border: 3px solid white;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            ">${count}</div>`,
+            className: 'custom-cluster',
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2],
+          })
+        },
+      })
+
+      const bounds: [number, number][] = []
+
+      pins.forEach((pin) => {
+        bounds.push([pin.lat, pin.lng])
+
+        const primaryEvent = pin.events[0]
+        const color = primaryEvent
+          ? EVENT_TYPE_COLORS[primaryEvent.eventType]
+          : '#1F6B4A'
+
+        const isMulti = pin.eventCount > 1
+        const iconHtml = isMulti
+          ? `<div style="
+              background: ${color};
+              color: white;
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 13px;
+              font-weight: 700;
+              border: 2.5px solid white;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            ">${pin.eventCount}</div>`
+          : `<div style="
+              background: ${color};
+              width: 14px;
+              height: 14px;
+              border-radius: 50%;
+              border: 2.5px solid white;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            "></div>`
+
+        const icon = L.divIcon({
+          html: iconHtml,
+          className: 'custom-pin',
+          iconSize: isMulti ? [32, 32] : [14, 14],
+          iconAnchor: isMulti ? [16, 16] : [7, 7],
         })
-      },
-    })
 
-    const bounds: [number, number][] = []
+        const marker = L.marker([pin.lat, pin.lng], { icon })
+        ;(marker as any)._venueId = pin.venueId
 
-    pins.forEach((pin) => {
-      bounds.push([pin.lat, pin.lng])
+        const popupContent = buildPopupContent(pin)
+        marker.bindPopup(popupContent, {
+          maxWidth: 300,
+          className: 'event-popup',
+        })
 
-      const primaryEvent = pin.events[0]
-      const color = primaryEvent
-        ? EVENT_TYPE_COLORS[primaryEvent.eventType]
-        : '#1F6B4A'
+        marker.on('mouseover', () => {
+          if (pin.events.length > 0) {
+            onPinHoverRef.current?.(pin.events[0].id)
+          }
+        })
+        marker.on('mouseout', () => {
+          onPinHoverRef.current?.(null)
+        })
+        marker.on('click', () => {
+          if (pin.events.length > 0) {
+            onPinClickRef.current?.(pin.events[0].id)
+          }
+        })
 
-      const isMulti = pin.eventCount > 1
-      const iconHtml = isMulti
-        ? `<div style="
-            background: ${color};
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            border: 2.5px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-          ">${pin.eventCount}</div>`
-        : `<div style="
-            background: ${color};
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2.5px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-          "></div>`
-
-      const icon = L.divIcon({
-        html: iconHtml,
-        className: 'custom-pin',
-        iconSize: isMulti ? [32, 32] : [14, 14],
-        iconAnchor: isMulti ? [16, 16] : [7, 7],
+        clusterGroup.addLayer(marker)
+        markersRef.current.set(pin.venueId, marker)
       })
 
-      const marker = L.marker([pin.lat, pin.lng], { icon })
-      ;(marker as any)._venueId = pin.venueId
+      map.addLayer(clusterGroup)
+      clusterGroupRef.current = clusterGroup
 
-      const popupContent = buildPopupContent(pin)
-      marker.bindPopup(popupContent, {
-        maxWidth: 300,
-        className: 'event-popup',
-      })
-
-      marker.on('mouseover', () => {
-        if (pin.events.length > 0) {
-          onPinHover?.(pin.events[0].id)
-        }
-      })
-      marker.on('mouseout', () => {
-        onPinHover?.(null)
-      })
-      marker.on('click', () => {
-        if (pin.events.length > 0) {
-          onPinClick?.(pin.events[0].id)
-        }
-      })
-
-      clusterGroup.addLayer(marker)
-      markersRef.current.set(pin.venueId, marker)
-    })
-
-    map.addLayer(clusterGroup)
-    clusterGroupRef.current = clusterGroup
-
-    if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 })
+      if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 })
+      }
+    } catch (err) {
+      console.error('[EventsMap] Failed to update markers:', err)
+      setMapError('Map markers failed to load.')
     }
   }
 
@@ -362,13 +418,21 @@ export function EventsMap({
     `
   }
 
+  // If map errored out, show a graceful fallback
+  if (mapError) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-light-sand p-8 text-center">
+        <MapPin size={40} weight="light" className="mb-3 text-warm-gray" />
+        <p className="text-sm font-medium text-ringside-black">{mapError}</p>
+        <p className="mt-1 text-xs text-warm-gray">
+          Events are still available in the list view.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossOrigin=""
-      />
       <style>{`
         .custom-pin, .custom-cluster {
           background: transparent !important;

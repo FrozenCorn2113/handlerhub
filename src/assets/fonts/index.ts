@@ -1,13 +1,13 @@
-import { Cormorant_Garamond, Inter as FontSans } from 'next/font/google'
+import { Inter as FontSans, Fraunces } from 'next/font/google'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 })
 
-export const fontSerif = Cormorant_Garamond({
+export const fontSerif = Fraunces({
   subsets: ['latin'],
-  weight: ['300', '400', '600'],
+  weight: ['300', '400', '500', '600'],
   variable: '--font-display',
 })
 

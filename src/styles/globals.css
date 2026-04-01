@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@400;500;600&family=Quicksand:wght@300;500&family=Josefin+Sans:wght@300;400&family=Outfit:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
 
 /* Roca One — local font, not on Google Fonts */
 @font-face {
@@ -47,7 +47,7 @@
     --color-error: #b52a2a;
 
     /* Typography */
-    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
     /* Type scale */

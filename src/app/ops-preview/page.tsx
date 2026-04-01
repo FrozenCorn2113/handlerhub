@@ -328,30 +328,15 @@ export default function OpsPreviewPage() {
                   <span className="mb-2 block font-sans text-[10px] text-warm-gray">
                     Desktop (48px)
                   </span>
-                  <div className="inline-block">
-                    <span
-                      className="text-[48px] tracking-tight text-ringside-black"
-                      style={{
-                        fontFamily: "'Roca One', sans-serif",
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      Handler
-                    </span>
-                    <span
-                      className="text-[48px] tracking-tight text-paddock-green"
-                      style={{
-                        fontFamily: "'Roca One', sans-serif",
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      Hub
-                    </span>
-                    <div
-                      className="mt-[-2px] h-[3px] rounded-full bg-paddock-green"
-                      style={{ marginLeft: '60%', width: '40%' }}
-                    />
-                  </div>
+                  <span
+                    className="text-[48px] tracking-tight text-ringside-black"
+                    style={{
+                      fontFamily: "'Roca One', sans-serif",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    HandlerHub
+                  </span>
                 </div>
 
                 {/* Mobile size */}
@@ -359,30 +344,15 @@ export default function OpsPreviewPage() {
                   <span className="mb-2 block font-sans text-[10px] text-warm-gray">
                     Mobile (32px)
                   </span>
-                  <div className="inline-block">
-                    <span
-                      className="text-[32px] tracking-tight text-ringside-black"
-                      style={{
-                        fontFamily: "'Roca One', sans-serif",
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      Handler
-                    </span>
-                    <span
-                      className="text-[32px] tracking-tight text-paddock-green"
-                      style={{
-                        fontFamily: "'Roca One', sans-serif",
-                        lineHeight: 1.1,
-                      }}
-                    >
-                      Hub
-                    </span>
-                    <div
-                      className="mt-[-2px] h-[2px] rounded-full bg-paddock-green"
-                      style={{ marginLeft: '60%', width: '40%' }}
-                    />
-                  </div>
+                  <span
+                    className="text-[32px] tracking-tight text-ringside-black"
+                    style={{
+                      fontFamily: "'Roca One', sans-serif",
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    HandlerHub
+                  </span>
                 </div>
               </div>
             </div>

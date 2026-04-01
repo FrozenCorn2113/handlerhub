@@ -1,6 +1,5 @@
 import { siteConfig } from '@/config/site'
 
-import { env } from '@/root/env.mjs'
 import {
   Body,
   Container,
@@ -19,7 +18,7 @@ interface EmailLayoutProps {
   unsubscribeUrl?: string
 }
 
-const baseUrl = env.NEXT_PUBLIC_APP_URL ?? ''
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
 
 export function EmailLayout({
   previewText,
@@ -246,6 +245,9 @@ export const emailStyles = {
     color: '#1C1208',
     margin: '0 0 12px 0',
     lineHeight: '1.4',
+    fontWeight: 500 as const,
+  },
+}
     fontWeight: 500 as const,
   },
 }

@@ -3,8 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { siteLogoLight } from '@/config/site'
-
+import { Button } from '@/components/ui/button'
 import { MissionCard } from '@/components/ui/card-21'
 import { HandlerCard } from '@/components/ui/handler-card'
 
@@ -41,11 +40,11 @@ function ScrollReveal({
 /* ------------------------------------------------------------------ */
 function HeroSection() {
   return (
-    <section className="bg-white pb-0 pt-12 lg:pt-20">
+    <section className="bg-ring-cream pb-0 pt-12 lg:pt-20">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1
-            className="mb-6 font-display text-[#14472F]"
+            className="mb-6 font-display text-paddock-green"
             style={{
               fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
               lineHeight: 1.08,
@@ -58,31 +57,29 @@ function HeroSection() {
             meet great handlers
           </h1>
 
-          <p className="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-600">
+          <p className="mx-auto mb-8 max-w-xl font-body text-lg leading-relaxed text-warm-brown/70">
             Find the perfect handler for your breed. Search by specialty,
             location, or show circuit.
           </p>
 
           {/* CTAs */}
           <div className="mb-8 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/handlers"
-              className="inline-flex items-center gap-2 rounded-full bg-[#14472F] px-8 py-4 font-display text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-            >
-              Find a Handler
-              <ArrowRight size={18} weight="bold" />
-            </Link>
-            <Link
-              href="/for-handlers"
-              className="inline-flex items-center gap-2 rounded-full border-2 border-[#14472F] px-8 py-4 font-display text-base font-bold text-[#14472F] transition-all hover:-translate-y-0.5 hover:bg-[#14472F]/5"
-            >
-              Become a Handler
-            </Link>
+            <Button asChild size="lg" variant="default">
+              <Link href="/handlers" className="gap-2 font-display font-bold">
+                Find a Handler
+                <ArrowRight size={18} weight="bold" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/for-handlers" className="font-display font-bold">
+                Become a Handler
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Dog lineup banner — narrower + tighter to CTAs so dogs read as the hero baseline */}
+      {/* Dog lineup banner */}
       <div className="mt-6 flex justify-center lg:mt-8">
         <Image
           src="/images/dog-lineup.png"
@@ -133,15 +130,14 @@ const missionCards = [
 
 function MissionSection() {
   return (
-    <section className="border-t border-gray-100 bg-[#F8F4EE] py-20 lg:py-28">
+    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <h2
-            className="mx-auto mb-14 max-w-3xl text-center font-display text-[#14472F]"
+            className="mx-auto mb-14 max-w-3xl text-center font-display italic text-paddock-green"
             style={{
               fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
               fontWeight: 700,
-              fontStyle: 'italic',
             }}
           >
             A sport built on passion deserves a platform built on trust
@@ -196,16 +192,16 @@ const mockRequests = [
 
 function RequestBoardSection() {
   return (
-    <section className="border-t border-gray-100 bg-[#FAFAF8] py-20 lg:py-28">
+    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-12 flex items-end justify-between">
             <div>
-              <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#4A6F8A]">
+              <p className="mb-3 font-body text-base font-semibold uppercase tracking-[0.15em] text-slate-blue">
                 Request board
               </p>
               <h2
-                className="font-display text-[#14472F]"
+                className="font-display text-paddock-green"
                 style={{
                   fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
                   fontWeight: 700,
@@ -216,7 +212,7 @@ function RequestBoardSection() {
             </div>
             <Link
               href="/requests"
-              className="hidden items-center gap-2 text-base font-semibold text-[#14472F] transition-colors hover:text-[#1F6B4A] sm:flex"
+              className="hidden items-center gap-2 font-body text-base font-semibold text-paddock-green transition-colors hover:text-paddock-green/80 sm:flex"
             >
               View all
               <ArrowRight size={16} weight="bold" />
@@ -228,22 +224,24 @@ function RequestBoardSection() {
           {mockRequests.map((req, i) => (
             <ScrollReveal key={req.title} delay={i * 0.08}>
               <Link href="/requests" className="group block">
-                <div className="rounded-2xl border border-gray-100 bg-white p-6 transition-all duration-300 hover:border-gray-200 hover:shadow-lg">
+                <div className="rounded-2xl border border-sand bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
                   <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-[#14472F] px-3 py-1 text-sm font-semibold text-white">
+                    <span className="rounded-full bg-paddock-green px-3 py-1 text-sm font-semibold text-white">
                       {req.service}
                     </span>
-                    <span className="rounded-full border border-[#4A6F8A]/30 bg-[#4A6F8A]/10 px-2.5 py-0.5 text-sm font-medium text-[#4A6F8A]">
+                    <span className="rounded-full border border-slate-blue/30 bg-slate-blue/10 px-2.5 py-0.5 text-sm font-medium text-slate-blue">
                       Example
                     </span>
                   </div>
 
-                  <h4 className="mb-1 font-display text-base font-bold text-[#14472F]">
+                  <h4 className="mb-1 font-display text-base font-bold text-paddock-green">
                     {req.title}
                   </h4>
-                  <p className="mb-4 text-base text-gray-600">{req.event}</p>
+                  <p className="mb-4 font-body text-base text-warm-brown/70">
+                    {req.event}
+                  </p>
 
-                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="flex items-center gap-3 font-body text-sm text-warm-brown/60">
                     <span className="flex items-center gap-1">
                       <PawPrint size={14} weight="bold" />
                       {req.breed}
@@ -263,7 +261,7 @@ function RequestBoardSection() {
           <div className="mt-8 text-center sm:hidden">
             <Link
               href="/requests"
-              className="inline-flex items-center gap-2 text-base font-semibold text-[#14472F]"
+              className="inline-flex items-center gap-2 font-body text-base font-semibold text-paddock-green"
             >
               View all requests
               <ArrowRight size={16} weight="bold" />
@@ -280,14 +278,9 @@ function RequestBoardSection() {
 /* ------------------------------------------------------------------ */
 function FoundingCtaSection() {
   return (
-    <section className="bg-[#14472F] py-20 lg:py-28">
+    <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <img
-            src={siteLogoLight}
-            alt="HandlerHub"
-            className="mx-auto mb-8 h-24 w-auto object-contain"
-          />
           <h2
             className="mb-4 font-display text-white"
             style={{
@@ -298,24 +291,26 @@ function FoundingCtaSection() {
           >
             Join the Founding 100
           </h2>
-          <p className="mx-auto mb-10 max-w-lg text-lg leading-relaxed text-white/80">
+          <p className="mx-auto mb-10 max-w-lg font-body text-lg leading-relaxed text-white/80">
             We&apos;re building HandlerHub with our first members. Get in early,
             shape the platform, and be the first name exhibitors see.
           </p>
 
-          <Link
-            href="/register"
-            className="group inline-flex items-center gap-3 rounded-full bg-white px-10 py-4 font-display text-lg font-bold text-[#14472F] transition-all hover:-translate-y-1 hover:shadow-2xl"
-          >
-            Create your free profile
-            <ArrowRight
-              size={20}
-              weight="bold"
-              className="transition-transform group-hover:translate-x-1"
-            />
-          </Link>
+          <Button asChild size="lg" variant="accent">
+            <Link
+              href="/register"
+              className="gap-3 font-display text-lg font-bold"
+            >
+              Create your free profile
+              <ArrowRight
+                size={20}
+                weight="bold"
+                className="transition-transform group-hover:translate-x-1"
+              />
+            </Link>
+          </Button>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-base text-white/70">
+          <div className="mt-8 flex items-center justify-center gap-6 font-body text-base text-white/70">
             <span className="flex items-center gap-2">
               <Star size={14} weight="fill" />
               Free to join
@@ -336,12 +331,12 @@ function FoundingCtaSection() {
 /* ------------------------------------------------------------------ */
 function FeaturedHandlersSection() {
   return (
-    <section className="border-t border-gray-100 bg-white py-20 lg:py-28">
+    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-12 text-center">
             <h2
-              className="font-display text-[#14472F]"
+              className="font-display text-paddock-green"
               style={{
                 fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
                 fontWeight: 700,
@@ -369,39 +364,33 @@ function FeaturedHandlersSection() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
+            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-sand bg-white p-8 text-center shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div>
-                <p className="mb-2 text-lg font-semibold text-gray-400">
+                <p className="mb-2 font-display text-lg font-semibold text-warm-brown/50">
                   Your profile here
                 </p>
-                <p className="mb-4 text-sm text-gray-400">
+                <p className="mb-4 font-body text-sm text-warm-brown/40">
                   Be one of the founding 100
                 </p>
-                <a
-                  href="/register"
-                  className="inline-flex items-center rounded-full bg-[#14472F] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-                >
-                  Join Now
-                </a>
+                <Button asChild size="sm" variant="default">
+                  <Link href="/register">Join Now</Link>
+                </Button>
               </div>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
+            <div className="flex h-full w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-sand bg-white p-8 text-center shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
               <div>
-                <p className="mb-2 text-lg font-semibold text-gray-400">
+                <p className="mb-2 font-display text-lg font-semibold text-warm-brown/50">
                   Your profile here
                 </p>
-                <p className="mb-4 text-sm text-gray-400">
+                <p className="mb-4 font-body text-sm text-warm-brown/40">
                   Be one of the founding 100
                 </p>
-                <a
-                  href="/register"
-                  className="inline-flex items-center rounded-full bg-[#14472F] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#1a5438] hover:shadow-lg"
-                >
-                  Join Now
-                </a>
+                <Button asChild size="sm" variant="default">
+                  <Link href="/register">Join Now</Link>
+                </Button>
               </div>
             </div>
           </ScrollReveal>
@@ -416,7 +405,7 @@ function FeaturedHandlersSection() {
 /* ------------------------------------------------------------------ */
 export default function LandingHome() {
   return (
-    <div>
+    <div className="bg-ring-cream">
       <HeroSection />
       <FeaturedHandlersSection />
       <MissionSection />

@@ -133,10 +133,7 @@ export function SignInWithPasswordForm(): JSX.Element {
             </FormItem>
           )}
         />
-        <Button
-          disabled={isPending}
-          className="w-full bg-forest text-white hover:bg-forest/90"
-        >
+        <Button disabled={isPending} className="w-full">
           {isPending ? (
             <>
               <Icons.spinner

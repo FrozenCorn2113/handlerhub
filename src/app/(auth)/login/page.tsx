@@ -43,10 +43,7 @@ export default async function SignInPage({
     <>
       <div className="mx-auto w-full max-w-[420px]">
         {/* Heading */}
-        <h1
-          className="mb-2 text-4xl font-bold tracking-tight text-gray-900"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
+        <h1 className="mb-2 font-display text-4xl font-bold tracking-tight text-gray-900">
           Sign in
         </h1>
         <p className="mb-8 text-sm text-gray-500">

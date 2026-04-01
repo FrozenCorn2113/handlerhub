@@ -1,6 +1,15 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+const RocaWordmark = ({ className = '' }: { className?: string }) => (
+  <span
+    style={{ fontFamily: "'Roca One'" }}
+    className={`text-2xl ${className}`}
+  >
+    HandlerHub
+  </span>
+)
+
 interface AuthLayoutProps {
   children: React.ReactNode
 }
@@ -16,14 +25,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           background: 'linear-gradient(135deg, #14472F 0%, #1F6B4A 100%)',
         }}
       >
-        <Image
-          src="/handler-hub-logo-light.png"
-          width={160}
-          height={74}
-          alt="HandlerHub"
-          className="h-12 w-auto object-contain"
-          priority
-        />
+        <RocaWordmark className="text-[#F8F4EE]" />
       </Link>
 
       {/* Left side - Hero image panel (desktop only) */}
@@ -42,10 +44,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Content */}
         <div className="relative z-10 flex flex-1 flex-col items-center justify-end px-12 pb-16">
           <div className="flex w-full max-w-md flex-col items-center text-center">
-            <h2
-              className="mb-4 text-4xl font-bold leading-tight tracking-tight text-white"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
+            <h2 className="mb-4 font-display text-4xl font-bold leading-tight tracking-tight text-white">
               Where great dogs meet great handlers
             </h2>
 
@@ -54,14 +53,11 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             </p>
 
             {/* Founding 100 card */}
-            <div className="w-full rounded-2xl border border-white/15 bg-white/10 p-8 text-center backdrop-blur-md">
+            <div className="w-full rounded-2xl border border-white/15 bg-white/10 p-8 text-center shadow-lg backdrop-blur-md">
               <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-amber-400">
                 Early Access
               </p>
-              <p
-                className="mb-3 text-xl font-bold text-white"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
+              <p className="mb-3 font-display text-xl font-bold text-white">
                 Join the Founding 100
               </p>
               <p className="text-base leading-relaxed text-white/70">
@@ -77,13 +73,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       <div className="relative flex w-full flex-1 flex-col items-center justify-center px-6 py-12 lg:w-1/2 lg:px-16 xl:px-24">
         {/* Logo / home link (desktop) */}
         <Link href="/" className="mb-10 hidden lg:block">
-          <Image
-            src="/handler-hub-logo-dark.png"
-            width={140}
-            height={65}
-            alt="HandlerHub"
-            className="h-10 w-auto object-contain"
-          />
+          <RocaWordmark className="text-[#1F6B4A]" />
         </Link>
         {children}
       </div>

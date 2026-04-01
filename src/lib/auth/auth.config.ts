@@ -17,22 +17,34 @@ var bcryptjs = require('bcryptjs')
 
 const resendFromEmail = env.RESEND_FROM_EMAIL ?? siteConfig.mailSupport
 
+const oauthProviders = [
+  ...(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+    ? [
+        Google({
+          id: 'google',
+          name: 'Google',
+          clientId: env.GOOGLE_CLIENT_ID,
+          clientSecret: env.GOOGLE_CLIENT_SECRET,
+          allowDangerousEmailAccountLinking: true,
+        }),
+      ]
+    : []),
+  ...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
+    ? [
+        GitHubProvider({
+          id: 'github',
+          name: 'GitHub',
+          clientId: env.GITHUB_CLIENT_ID,
+          clientSecret: env.GITHUB_CLIENT_SECRET,
+          allowDangerousEmailAccountLinking: true,
+        }),
+      ]
+    : []),
+]
+
 export default {
   providers: [
-    Google({
-      id: 'google',
-      name: 'Google',
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
-    GitHubProvider({
-      id: 'github',
-      name: 'GitHub',
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
+    ...oauthProviders,
     Credentials({
       id: 'credentials',
       name: 'Credentials',

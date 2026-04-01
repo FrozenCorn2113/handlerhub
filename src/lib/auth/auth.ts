@@ -7,6 +7,52 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { UserRole } from '@prisma/client'
 import NextAuth from 'next-auth'
 
+// Wrap the PrismaAdapter to handle orphaned Account records.
+// An orphan occurs when an Account row exists but its linked User has
+// been deleted.  The default adapter crashes with a "Configuration"
+// error in that case.  This wrapper detects the orphan, deletes the
+// stale Account row, and returns null so NextAuth treats the sign-in
+// as a brand-new account link.
+const baseAdapter = PrismaAdapter(prisma)
+
+const adapter = {
+  ...baseAdapter,
+  async getUserByAccount(
+    providerAccountId: Parameters<
+      NonNullable<typeof baseAdapter.getUserByAccount>
+    >[0]
+  ) {
+    // Look up the Account row directly
+    const account = await prisma.account.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider: providerAccountId.provider,
+          providerAccountId: providerAccountId.providerAccountId,
+        },
+      },
+      include: { user: true },
+    })
+
+    if (!account) return null
+
+    // Account exists but User is gone -> orphan
+    if (!account.user) {
+      console.warn(
+        '[NextAuth] Deleting orphaned Account record for provider',
+        providerAccountId.provider,
+        'providerAccountId',
+        providerAccountId.providerAccountId
+      )
+      await prisma.account.delete({
+        where: { id: account.id },
+      })
+      return null
+    }
+
+    return account.user
+  },
+}
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -16,7 +62,7 @@ export const {
   ...authConfig,
   trustHost: true,
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
-  adapter: PrismaAdapter(prisma),
+  adapter,
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',

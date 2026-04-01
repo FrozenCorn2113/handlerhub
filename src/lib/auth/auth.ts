@@ -13,7 +13,9 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  ...authConfig,
   trustHost: true,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   pages: {
@@ -81,6 +83,25 @@ export const {
       return token
     },
   },
-  ...authConfig,
   debug: process.env.NODE_ENV !== 'production',
+  logger: {
+    error(error: any) {
+      // Always log errors, even in production, so we can diagnose
+      // "Configuration" errors in Vercel function logs.
+      console.error(
+        '[NextAuth][error]',
+        error?.name ?? 'Unknown',
+        error?.message ?? error,
+        error?.cause ?? ''
+      )
+    },
+    warn(code: string) {
+      console.warn('[NextAuth][warn]', code)
+    },
+    debug(code: string, metadata: unknown) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[NextAuth][debug]', code, metadata)
+      }
+    },
+  },
 })

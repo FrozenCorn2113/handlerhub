@@ -7,7 +7,8 @@ export const env = createEnv({
       default: 'development',
     }),
     POSTGRES_DATABASE_URL: z.string().url(),
-    NEXTAUTH_SECRET: z.string().min(1),
+    AUTH_SECRET: z.string().min(1).optional(),
+    NEXTAUTH_SECRET: z.string().min(1).optional(),
     GOOGLE_CLIENT_ID: z.string().min(1).optional(),
     GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
     GITHUB_CLIENT_SECRET: z.string().min(1).optional(),
@@ -42,6 +43,7 @@ export const env = createEnv({
     POSTGRES_DATABASE_URL: process.env.POSTGRES_DATABASE_URL,
     NEXT_PUBLIC_ANALITYCS_ID: process.env.NEXT_PUBLIC_ANALITYCS_ID,
     // Auth v5
+    AUTH_SECRET: process.env.AUTH_SECRET,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,

@@ -44,7 +44,7 @@ export function StepRates({
                 )
               }
               placeholder="e.g. 150"
-              className="w-full rounded-xl border-2 border-sand bg-white py-3 pl-8 pr-4 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+              className="w-full rounded-lg border-2 border-sand bg-white py-3 pl-8 pr-4 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
               style={{ fontFamily: 'var(--font-body)' }}
               autoFocus
             />
@@ -76,7 +76,7 @@ export function StepRates({
                 )
               }
               placeholder="e.g. 250"
-              className="w-full rounded-xl border-2 border-sand bg-white py-3 pl-8 pr-4 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+              className="w-full rounded-lg border-2 border-sand bg-white py-3 pl-8 pr-4 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
               style={{ fontFamily: 'var(--font-body)' }}
             />
           </div>

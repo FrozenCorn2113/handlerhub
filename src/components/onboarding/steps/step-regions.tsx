@@ -63,7 +63,7 @@ export function StepRegions({
                   onClick={() => toggleRegion(region)}
                   className={`rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-all ${
                     selected
-                      ? 'border-paddock-green bg-sage text-paddock-green'
+                      ? 'border-paddock-green bg-paddock-green text-white'
                       : 'border-sand bg-white text-warm-gray hover:border-paddock-green'
                   }`}
                   style={{ fontFamily: 'var(--font-body)' }}
@@ -91,10 +91,10 @@ export function StepRegions({
                   key={option}
                   type="button"
                   onClick={() => toggleTravel(option)}
-                  className={`rounded-xl border-2 bg-white px-4 py-3 text-sm font-medium transition-all hover:border-paddock-green ${
+                  className={`rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all ${
                     selected
-                      ? 'border-paddock-green text-paddock-green'
-                      : 'border-sand text-warm-gray'
+                      ? 'border-paddock-green bg-paddock-green text-white'
+                      : 'border-sand bg-white text-warm-gray hover:border-paddock-green'
                   }`}
                   style={{ fontFamily: 'var(--font-body)' }}
                 >

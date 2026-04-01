@@ -131,13 +131,15 @@ export function StepServices({ value, onChange }: StepServicesProps) {
               key={service}
               type="button"
               onClick={() => toggleService(service)}
-              className={`relative flex flex-col items-center gap-2 rounded-xl border-2 bg-white p-4 text-center transition-all hover:border-paddock-green ${
-                selected ? 'border-paddock-green shadow-sm' : 'border-sand'
+              className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition-all ${
+                selected
+                  ? 'border-paddock-green bg-paddock-green shadow-sm'
+                  : 'border-sand bg-white hover:border-paddock-green'
               }`}
             >
               {/* Checkmark for selected */}
               {selected && (
-                <div className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-full bg-paddock-green">
+                <div className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-full bg-white/20">
                   <svg
                     className="size-3 text-white"
                     fill="none"
@@ -155,7 +157,7 @@ export function StepServices({ value, onChange }: StepServicesProps) {
               )}
               <div
                 className={`transition-colors ${
-                  selected ? 'text-paddock-green' : 'text-warm-gray'
+                  selected ? 'text-white' : 'text-warm-gray'
                 }`}
               >
                 {SERVICE_ICONS[service] ?? (
@@ -164,7 +166,7 @@ export function StepServices({ value, onChange }: StepServicesProps) {
               </div>
               <span
                 className={`text-xs font-medium leading-tight ${
-                  selected ? 'text-ringside-black' : 'text-warm-gray'
+                  selected ? 'text-white' : 'text-warm-gray'
                 }`}
                 style={{ fontFamily: 'var(--font-body)' }}
               >

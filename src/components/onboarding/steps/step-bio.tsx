@@ -23,7 +23,7 @@ export function StepBio({ value, onChange }: StepBioProps) {
           onChange={(e) => onChange(e.target.value.slice(0, maxChars))}
           placeholder="Tell exhibitors about yourself..."
           rows={5}
-          className="w-full resize-none rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+          className="w-full resize-none rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
           style={{ fontFamily: 'var(--font-body)' }}
           autoFocus
         />

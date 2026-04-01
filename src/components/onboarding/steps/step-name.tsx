@@ -26,7 +26,7 @@ export function StepName({ fullName, businessName, onChange }: StepNameProps) {
             value={fullName}
             onChange={(e) => onChange(e.target.value, businessName)}
             placeholder="e.g. Sarah Johnson"
-            className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+            className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
             style={{ fontFamily: 'var(--font-body)' }}
             autoFocus
           />
@@ -46,7 +46,7 @@ export function StepName({ fullName, businessName, onChange }: StepNameProps) {
             value={businessName}
             onChange={(e) => onChange(fullName, e.target.value)}
             placeholder="e.g. Johnson Show Dogs"
-            className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+            className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
             style={{ fontFamily: 'var(--font-body)' }}
           />
         </div>

@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
+
 import { StepShell } from '../step-shell'
 
 interface StepRoleProps {
@@ -70,8 +72,10 @@ export function StepRole({
               key={option.role}
               type="button"
               onClick={() => onChange(option.role)}
-              className={`relative rounded-2xl border-2 bg-white p-6 text-left transition-all hover:border-paddock-green hover:shadow-md ${
-                selected ? 'border-paddock-green shadow-md' : 'border-sand'
+              className={`relative rounded-2xl border-2 p-6 text-left transition-all hover:border-paddock-green hover:shadow-md ${
+                selected
+                  ? 'border-paddock-green bg-paddock-green/5 shadow-md'
+                  : 'border-sand bg-white'
               }`}
             >
               {/* Checkbox indicator */}
@@ -102,7 +106,7 @@ export function StepRole({
               <div className="mb-4 text-paddock-green">{option.icon}</div>
               <h2
                 className="mb-1.5 text-lg font-semibold text-ringside-black"
-                style={{ fontFamily: 'var(--font-body)', fontWeight: 600 }}
+                style={{ fontFamily: 'var(--font-display)' }}
               >
                 {option.title}
               </h2>
@@ -119,15 +123,15 @@ export function StepRole({
 
       {/* Next button */}
       <div className="mt-8 flex justify-end">
-        <button
+        <Button
           type="button"
           onClick={onContinue}
           disabled={!value}
-          className="inline-flex items-center justify-center rounded-xl bg-paddock-green px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-forest disabled:cursor-not-allowed disabled:opacity-40"
-          style={{ fontFamily: 'var(--font-body)' }}
+          size="lg"
+          className="rounded-xl px-8"
         >
           Next
-        </button>
+        </Button>
       </div>
     </StepShell>
   )

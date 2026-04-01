@@ -99,7 +99,7 @@ export function StepLocation({
               value={city}
               onChange={(e) => onChange(e.target.value, state, contactEmail)}
               placeholder="e.g. Portland"
-              className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+              className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
               style={{ fontFamily: 'var(--font-body)' }}
               autoFocus
             />
@@ -116,7 +116,7 @@ export function StepLocation({
               id="state"
               value={state}
               onChange={(e) => onChange(city, e.target.value, contactEmail)}
-              className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors focus:border-paddock-green"
+              className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               <option value="">Select</option>
@@ -143,7 +143,7 @@ export function StepLocation({
             value={contactEmail}
             onChange={(e) => onChange(city, state, e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+            className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
             style={{ fontFamily: 'var(--font-body)' }}
           />
           <p

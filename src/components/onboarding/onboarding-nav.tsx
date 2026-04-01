@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
+
 interface OnboardingNavProps {
   onBack?: () => void
   onSkip?: () => void
@@ -54,14 +56,14 @@ export function OnboardingNav({
           )}
         </div>
 
-        {/* Continue button */}
+        {/* Continue button - gradient via Button component */}
         <div className="w-32 text-right">
-          <button
+          <Button
             type="button"
             onClick={onContinue}
             disabled={continueDisabled || saving}
-            className="inline-flex items-center justify-center rounded-xl bg-paddock-green px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-forest disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ fontFamily: 'var(--font-body)' }}
+            size="default"
+            className="rounded-xl px-6"
           >
             {saving ? (
               <svg
@@ -87,7 +89,7 @@ export function OnboardingNav({
             ) : (
               continueLabel
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
+
 import type { OnboardingFormData } from '../wizard'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
@@ -131,7 +133,7 @@ export function StepComplete({ formData }: StepCompleteProps) {
               {formData.services.map((service) => (
                 <span
                   key={service}
-                  className="rounded-full bg-sage px-2.5 py-0.5 text-xs font-medium text-paddock-green"
+                  className="rounded-full bg-paddock-green px-2.5 py-0.5 text-xs font-medium text-white"
                 >
                   {service}
                 </span>
@@ -147,20 +149,17 @@ export function StepComplete({ formData }: StepCompleteProps) {
           transition={{ delay: 1.2 }}
           className="flex flex-col gap-3 sm:flex-row"
         >
-          <Link
-            href="/dashboard/profile"
-            className="flex-1 rounded-xl bg-paddock-green px-6 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-forest"
-            style={{ fontFamily: 'var(--font-body)' }}
+          <Button asChild size="lg" className="flex-1 rounded-xl">
+            <Link href="/dashboard/profile">View your profile</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="flex-1 rounded-xl"
           >
-            View your profile
-          </Link>
-          <Link
-            href="/requests"
-            className="flex-1 rounded-xl border-2 border-sand bg-white px-6 py-3 text-center text-sm font-semibold text-ringside-black transition-colors hover:border-paddock-green"
-            style={{ fontFamily: 'var(--font-body)' }}
-          >
-            Browse open requests
-          </Link>
+            <Link href="/requests">Browse open requests</Link>
+          </Button>
         </motion.div>
       </div>
     </div>

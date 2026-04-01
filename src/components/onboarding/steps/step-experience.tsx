@@ -20,8 +20,10 @@ export function StepExperience({ value, onChange }: StepExperienceProps) {
               key={range.value}
               type="button"
               onClick={() => onChange(range.value)}
-              className={`flex w-full items-center gap-4 rounded-xl border-2 bg-white p-4 text-left transition-all hover:border-paddock-green ${
-                selected ? 'border-paddock-green shadow-sm' : 'border-sand'
+              className={`flex w-full items-center gap-4 rounded-xl border-2 p-4 text-left transition-all ${
+                selected
+                  ? 'border-paddock-green bg-paddock-green/5 shadow-sm'
+                  : 'border-sand bg-white hover:border-paddock-green'
               }`}
             >
               <div

@@ -38,7 +38,7 @@ export function StepBreeds({ value, onChange }: StepBreedsProps) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search breeds..."
-          className="w-full rounded-xl border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green"
+          className="w-full rounded-lg border-2 border-sand bg-white px-4 py-3 text-base text-ringside-black outline-none transition-colors placeholder:text-tan focus:border-paddock-green focus:ring-2 focus:ring-[#1F6B4A]/30"
           style={{ fontFamily: 'var(--font-body)' }}
         />
 
@@ -48,13 +48,13 @@ export function StepBreeds({ value, onChange }: StepBreedsProps) {
             {value.map((breed) => (
               <span
                 key={breed}
-                className="inline-flex items-center gap-1 rounded-full bg-sage px-3 py-1 text-xs font-medium text-paddock-green"
+                className="inline-flex items-center gap-1 rounded-full bg-paddock-green px-3 py-1 text-xs font-medium text-white"
               >
                 {breed}
                 <button
                   type="button"
                   onClick={() => toggleBreed(breed)}
-                  className="ml-0.5 hover:text-forest"
+                  className="ml-0.5 hover:text-white/70"
                 >
                   <svg
                     className="size-3"
@@ -86,7 +86,7 @@ export function StepBreeds({ value, onChange }: StepBreedsProps) {
                 onClick={() => toggleBreed(breed)}
                 className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                   selected
-                    ? 'bg-sage text-paddock-green'
+                    ? 'bg-paddock-green/10 text-paddock-green'
                     : 'text-ringside-black hover:bg-ring-cream'
                 }`}
                 style={{ fontFamily: 'var(--font-body)' }}

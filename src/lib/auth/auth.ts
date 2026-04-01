@@ -6,6 +6,7 @@ import { getUserById as actionGetUserById } from '@/actions/user'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { UserRole } from '@prisma/client'
 import NextAuth from 'next-auth'
+import type { Adapter, AdapterUser } from 'next-auth/adapters'
 
 // Wrap the PrismaAdapter to handle orphaned Account records.
 // An orphan occurs when an Account row exists but its linked User has
@@ -15,13 +16,13 @@ import NextAuth from 'next-auth'
 // as a brand-new account link.
 const baseAdapter = PrismaAdapter(prisma)
 
-const adapter = {
+const adapter: Adapter = {
   ...baseAdapter,
   async getUserByAccount(
-    providerAccountId: Parameters<
-      NonNullable<typeof baseAdapter.getUserByAccount>
-    >[0]
-  ) {
+    providerAccountId: Pick<
+      import('next-auth/adapters').AdapterAccount, 'provider' | 'providerAccountId'
+    >
+  ): Promise<AdapterUser | null> {
     // Look up the Account row directly
     const account = await prisma.account.findUnique({
       where: {
@@ -49,7 +50,7 @@ const adapter = {
       return null
     }
 
-    return account.user
+    return account.user as AdapterUser
   },
 }
 

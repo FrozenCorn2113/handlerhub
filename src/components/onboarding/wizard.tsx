@@ -254,12 +254,15 @@ export function OnboardingWizard({
   const goNext = useCallback(async () => {
     if (currentStep >= STEPS.length - 1) return
 
+    // Read step config directly from the array to avoid stale closures
+    const currentStepConfig = STEPS[currentStep]
+
     setSaving(true)
     try {
       await saveStepData(currentStep)
 
       // If role is EXHIBITOR, redirect to handlers page
-      if (step.id === 'role' && formData.role === 'EXHIBITOR') {
+      if (currentStepConfig.id === 'role' && formData.role === 'EXHIBITOR') {
         router.push('/handlers')
         return
       }
@@ -274,7 +277,7 @@ export function OnboardingWizard({
     } finally {
       setSaving(false)
     }
-  }, [currentStep, saveStepData, step.id, formData.role, router])
+  }, [currentStep, saveStepData, formData.role, router])
 
   const goBack = useCallback(() => {
     if (currentStep <= 0) return

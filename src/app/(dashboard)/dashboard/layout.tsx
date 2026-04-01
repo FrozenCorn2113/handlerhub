@@ -1,11 +1,8 @@
 import { redirect } from 'next/navigation'
 
-import { dashboardConfig } from '@/config/dashboard'
-
 import { getCurrentUser } from '@/lib/session'
 
-import { DashboardNav } from '@/components/layout/navigation/main/nav'
-import { NavBar } from '@/components/layout/navigation/main/navbar'
+import { DashboardNavBar } from '@/components/layout/navigation/dashboard-nav-bar'
 import { SiteFooter } from '@/components/layout/site-footer'
 
 interface DashboardLayoutProps {
@@ -22,17 +19,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col space-y-6">
-      <NavBar items={dashboardConfig.mainNav} scroll={false} />
+    <div className="flex min-h-screen flex-col">
+      <DashboardNavBar />
 
-      <div className="container grid flex-1 gap-12 md:grid-cols-[200px_1fr]">
-        <aside className="hidden w-[200px] flex-col md:flex">
-          <DashboardNav items={dashboardConfig.sidebarNav} />
-        </aside>
-        <main className="flex w-full flex-1 flex-col overflow-hidden">
-          {children}
-        </main>
-      </div>
+      <main className="container flex-1 py-8">{children}</main>
+
       <SiteFooter className="border-t" />
     </div>
   )

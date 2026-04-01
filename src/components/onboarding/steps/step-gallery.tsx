@@ -35,12 +35,15 @@ export function StepGallery({ value, onChange }: StepGalleryProps) {
 
       try {
         for (const file of imageFiles) {
-          const uniqueKey = `gallery/${crypto.randomUUID()}-${file.name}`
-
           const presignedRes = await fetch('/api/upload/presigned-url', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: uniqueKey }),
+            body: JSON.stringify({
+              contentType: file.type,
+              contentLength: file.size,
+              target: 'handler-gallery',
+              entityId: 'onboarding',
+            }),
           })
 
           if (!presignedRes.ok) throw new Error('Failed to get upload URL')

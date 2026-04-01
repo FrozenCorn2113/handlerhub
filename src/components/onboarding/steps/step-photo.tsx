@@ -30,13 +30,16 @@ export function StepPhoto({ value, onChange }: StepPhotoProps) {
       setUploading(true)
 
       try {
-        const uniqueKey = `profile/${crypto.randomUUID()}-${file.name}`
-
-        // Get presigned URL
+        // Get presigned URL via Phase 0 image pipeline
         const presignedRes = await fetch('/api/upload/presigned-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: uniqueKey }),
+          body: JSON.stringify({
+            contentType: file.type,
+            contentLength: file.size,
+            target: 'handler-profile',
+            entityId: 'onboarding',
+          }),
         })
 
         if (!presignedRes.ok) throw new Error('Failed to get upload URL')

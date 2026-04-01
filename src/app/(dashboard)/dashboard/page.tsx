@@ -8,8 +8,8 @@ import {
 } from '@/lib/profile-completeness'
 import { getCurrentUser } from '@/lib/session'
 
-import { Button } from '@/components/ui/button-ui'
 import { Button as BrandButton } from '@/components/ui/button'
+import { Button } from '@/components/ui/button-ui'
 import {
   Card,
   CardContent,
@@ -321,9 +321,9 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
                 Ready to find the perfect handler for your dog? Post a request
                 and let experienced professionals come to you.
               </p>
-              <Link href="/handlers">
-                <BrandButton size="lg">Find Handlers</BrandButton>
-              </Link>
+              <BrandButton asChild variant="default" size="lg">
+                <Link href="/handlers">Find Handlers</Link>
+              </BrandButton>
             </div>
           ) : (
             <div className="space-y-3">

@@ -16,9 +16,14 @@ interface StepCompleteProps {
 
 export function StepComplete({ formData }: StepCompleteProps) {
   const [finalized, setFinalized] = useState(false)
+  const isExhibitor = formData.role === 'EXHIBITOR'
 
-  // Set isAvailable: true on mount
+  // Set isAvailable: true on mount (handlers only)
   useEffect(() => {
+    if (isExhibitor) {
+      setFinalized(true)
+      return
+    }
     async function finalize() {
       try {
         await fetch('/api/handler-profile', {
@@ -32,7 +37,7 @@ export function StepComplete({ formData }: StepCompleteProps) {
       }
     }
     finalize()
-  }, [])
+  }, [isExhibitor])
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-12">
@@ -77,7 +82,9 @@ export function StepComplete({ formData }: StepCompleteProps) {
           className="mb-2 text-3xl font-bold tracking-tight text-ringside-black md:text-4xl"
           style={{ fontFamily: 'var(--font-display)' }}
         >
-          Your profile is live!
+          {isExhibitor
+            ? "You're ready to find a handler"
+            : 'Your profile is live!'}
         </motion.h1>
 
         <motion.p
@@ -87,60 +94,64 @@ export function StepComplete({ formData }: StepCompleteProps) {
           className="mb-8 text-base text-warm-gray"
           style={{ fontFamily: 'var(--font-body)' }}
         >
-          Exhibitors can now find and reach out to you.
+          {isExhibitor
+            ? 'Start by adding your first dog.'
+            : 'Exhibitors can now find and reach out to you.'}
         </motion.p>
 
         {/* Preview card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="mb-8 rounded-2xl border-2 border-sand bg-white p-6 text-left"
-        >
-          <div className="flex items-center gap-4">
-            {formData.profileImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={getFullUrl(formData.profileImage)}
-                alt="Profile"
-                className="size-14 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex size-14 items-center justify-center rounded-full bg-sage text-lg font-bold text-paddock-green">
-                {(formData.fullName ?? '?')[0]?.toUpperCase()}
-              </div>
-            )}
-            <div>
-              <p
-                className="text-lg font-semibold text-ringside-black"
-                style={{ fontFamily: 'var(--font-body)' }}
-              >
-                {formData.fullName || 'Your Name'}
-              </p>
-              {(formData.city || formData.state) && (
+        {!isExhibitor && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className="mb-8 rounded-2xl border-2 border-sand bg-white p-6 text-left"
+          >
+            <div className="flex items-center gap-4">
+              {formData.profileImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={getFullUrl(formData.profileImage)}
+                  alt="Profile"
+                  className="size-14 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex size-14 items-center justify-center rounded-full bg-sage text-lg font-bold text-paddock-green">
+                  {(formData.fullName ?? '?')[0]?.toUpperCase()}
+                </div>
+              )}
+              <div>
                 <p
-                  className="text-sm text-warm-gray"
+                  className="text-lg font-semibold text-ringside-black"
                   style={{ fontFamily: 'var(--font-body)' }}
                 >
-                  {[formData.city, formData.state].filter(Boolean).join(', ')}
+                  {formData.fullName || 'Your Name'}
                 </p>
-              )}
+                {(formData.city || formData.state) && (
+                  <p
+                    className="text-sm text-warm-gray"
+                    style={{ fontFamily: 'var(--font-body)' }}
+                  >
+                    {[formData.city, formData.state].filter(Boolean).join(', ')}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
 
-          {formData.services && formData.services.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {formData.services.map((service) => (
-                <span
-                  key={service}
-                  className="rounded-full bg-paddock-green px-2.5 py-0.5 text-xs font-medium text-white"
-                >
-                  {service}
-                </span>
-              ))}
-            </div>
-          )}
-        </motion.div>
+            {formData.services && formData.services.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {formData.services.map((service) => (
+                  <span
+                    key={service}
+                    className="rounded-full bg-paddock-green px-2.5 py-0.5 text-xs font-medium text-white"
+                  >
+                    {service}
+                  </span>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* CTAs */}
         <motion.div
@@ -149,17 +160,27 @@ export function StepComplete({ formData }: StepCompleteProps) {
           transition={{ delay: 1.2 }}
           className="flex flex-col gap-3 sm:flex-row"
         >
-          <Button asChild size="lg" className="flex-1 rounded-xl">
-            <Link href="/dashboard/profile">View your profile</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="flex-1 rounded-xl"
-          >
-            <Link href="/requests">Browse open requests</Link>
-          </Button>
+          {isExhibitor ? (
+            <Button asChild size="lg" className="flex-1 rounded-xl">
+              <Link href="/dashboard/dogs?onboarding=1">
+                Add your first dog
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button asChild size="lg" className="flex-1 rounded-xl">
+                <Link href="/dashboard/profile">View your profile</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="flex-1 rounded-xl"
+              >
+                <Link href="/requests">Browse open requests</Link>
+              </Button>
+            </>
+          )}
         </motion.div>
       </div>
     </div>

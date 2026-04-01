@@ -6,33 +6,52 @@ import { StepShell } from '../step-shell'
 
 interface StepWelcomeProps {
   userName: string
+  role?: 'HANDLER' | 'EXHIBITOR'
   onContinue: () => void
 }
 
-const WELCOME_STEPS = [
+const HANDLER_WELCOME_STEPS = [
   { label: 'Who you are', desc: 'Name and location' },
   { label: 'What you do', desc: 'Services, breeds, and experience' },
   { label: 'Show your work', desc: 'Photos and portfolio' },
   { label: 'Rates and reach', desc: 'Pricing and service areas' },
 ]
 
-export function StepWelcome({ userName, onContinue }: StepWelcomeProps) {
+const EXHIBITOR_WELCOME_STEPS = [
+  { label: 'Who you are', desc: 'Name and location' },
+  { label: 'About your dogs', desc: 'Breeds you show' },
+  { label: 'Your photo', desc: 'A profile picture' },
+  { label: 'About you', desc: 'A short bio' },
+]
+
+export function StepWelcome({ userName, role, onContinue }: StepWelcomeProps) {
+  const isExhibitor = role === 'EXHIBITOR'
+  const steps = isExhibitor ? EXHIBITOR_WELCOME_STEPS : HANDLER_WELCOME_STEPS
+
   return (
     <StepShell
-      question={`Let's build your handler profile, ${userName}`}
-      subtitle="This takes about 5 minutes. Your answers help exhibitors find and trust you."
+      question={
+        isExhibitor
+          ? `Let's set up your profile, ${userName}`
+          : `Let's build your handler profile, ${userName}`
+      }
+      subtitle={
+        isExhibitor
+          ? 'This takes about 2 minutes. Your profile helps handlers understand your needs.'
+          : 'This takes about 5 minutes. Your answers help exhibitors find and trust you.'
+      }
     >
       <div className="space-y-6">
         {/* Numbered stepper with dashed connectors */}
         <div className="space-y-0">
-          {WELCOME_STEPS.map((item, i) => (
+          {steps.map((item, i) => (
             <div key={item.label} className="flex items-start gap-4">
               {/* Stepper column: circle + dashed line */}
               <div className="flex flex-col items-center">
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-paddock-green bg-white text-sm font-bold text-paddock-green">
                   {i + 1}
                 </div>
-                {i < WELCOME_STEPS.length - 1 && (
+                {i < steps.length - 1 && (
                   <div className="h-8 w-0 border-l-2 border-dashed border-sand" />
                 )}
               </div>

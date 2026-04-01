@@ -51,6 +51,7 @@ interface StepConfig {
   id: string
   phase: string | null
   skippable: boolean
+  handlerOnly?: boolean
   fields: (keyof OnboardingFormData)[]
 }
 
@@ -73,6 +74,7 @@ const STEPS: StepConfig[] = [
     id: 'services',
     phase: 'What You Do',
     skippable: false,
+    handlerOnly: true,
     fields: ['services'],
   },
   {
@@ -85,12 +87,14 @@ const STEPS: StepConfig[] = [
     id: 'experience',
     phase: 'What You Do',
     skippable: false,
+    handlerOnly: true,
     fields: ['yearsExperience'],
   },
   {
     id: 'credentials',
     phase: 'What You Do',
     skippable: true,
+    handlerOnly: true,
     fields: ['kennelClubMemberships', 'isInsured', 'isBonded'],
   },
   {
@@ -103,18 +107,21 @@ const STEPS: StepConfig[] = [
     id: 'gallery',
     phase: 'Show Your Work',
     skippable: true,
+    handlerOnly: true,
     fields: ['galleryImages'],
   },
   {
     id: 'rates',
     phase: 'Rates & Reach',
     skippable: false,
+    handlerOnly: true,
     fields: ['ratePerShow', 'ratePerDay'],
   },
   {
     id: 'regions',
     phase: 'Rates & Reach',
     skippable: false,
+    handlerOnly: true,
     fields: ['regions', 'travelWillingness'],
   },
   {
@@ -126,11 +133,18 @@ const STEPS: StepConfig[] = [
   { id: 'complete', phase: null, skippable: false, fields: [] },
 ]
 
-const PHASES: Phase[] = [
+const HANDLER_PHASES: Phase[] = [
   { id: 'who', label: 'Who You Are', steps: [2, 3] },
   { id: 'what', label: 'What You Do', steps: [4, 5, 6, 7] },
   { id: 'show', label: 'Show Your Work', steps: [8, 9] },
   { id: 'rates', label: 'Rates & Reach', steps: [10, 11, 12] },
+]
+
+const EXHIBITOR_PHASES: Phase[] = [
+  { id: 'who', label: 'Who You Are', steps: [2, 3] },
+  { id: 'what', label: 'About Your Dogs', steps: [5] },
+  { id: 'show', label: 'Your Photo', steps: [8] },
+  { id: 'rates', label: 'About You', steps: [12] },
 ]
 
 interface OnboardingWizardProps {
@@ -261,17 +275,19 @@ export function OnboardingWizard({
     try {
       await saveStepData(currentStep)
 
-      // If role is EXHIBITOR, redirect to handlers page
-      if (currentStepConfig.id === 'role' && formData.role === 'EXHIBITOR') {
-        router.push('/handlers')
-        return
-      }
-
       setCompletedSteps((prev) =>
         prev.includes(currentStep) ? prev : [...prev, currentStep]
       )
       setDirection(1)
-      setCurrentStep((prev) => prev + 1)
+      setCurrentStep((prev) => {
+        let next = prev + 1
+        if (formData.role === 'EXHIBITOR') {
+          while (next < STEPS.length && STEPS[next].handlerOnly) {
+            next++
+          }
+        }
+        return next
+      })
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -282,16 +298,35 @@ export function OnboardingWizard({
   const goBack = useCallback(() => {
     if (currentStep <= 0) return
     setDirection(-1)
-    setCurrentStep((prev) => prev - 1)
-  }, [currentStep])
+    setCurrentStep((prev) => {
+      let next = prev - 1
+      if (formData.role === 'EXHIBITOR') {
+        while (next > 0 && STEPS[next].handlerOnly) {
+          next--
+        }
+      }
+      return next
+    })
+  }, [currentStep, formData.role])
 
   const goSkip = useCallback(() => {
     if (currentStep >= STEPS.length - 1) return
     setDirection(1)
-    setCurrentStep((prev) => prev + 1)
-  }, [currentStep])
+    setCurrentStep((prev) => {
+      let next = prev + 1
+      if (formData.role === 'EXHIBITOR') {
+        while (next < STEPS.length && STEPS[next].handlerOnly) {
+          next++
+        }
+      }
+      return next
+    })
+  }, [currentStep, formData.role])
 
-  // Show progress bar only for handler wizard steps (not role, welcome, or complete)
+  const activePhases =
+    formData.role === 'EXHIBITOR' ? EXHIBITOR_PHASES : HANDLER_PHASES
+
+  // Show progress bar only for wizard content steps (not role, welcome, or complete)
   const showProgressBar = currentStep >= 2 && currentStep <= 12
 
   const showNav = step.id !== 'complete'
@@ -318,7 +353,7 @@ export function OnboardingWizard({
     <div className="flex min-h-[calc(100vh-72px)] flex-col">
       {showProgressBar && (
         <ProgressBar
-          phases={PHASES}
+          phases={activePhases}
           currentStep={currentStep}
           completedSteps={completedSteps}
         />
@@ -345,7 +380,11 @@ export function OnboardingWizard({
               />
             )}
             {step.id === 'welcome' && (
-              <StepWelcome userName={userName} onContinue={goNext} />
+              <StepWelcome
+                userName={userName}
+                role={formData.role}
+                onContinue={goNext}
+              />
             )}
             {step.id === 'name' && (
               <StepName

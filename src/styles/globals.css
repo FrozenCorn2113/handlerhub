@@ -328,6 +328,49 @@ html {
   animation: hero-bounce 2s ease-in-out infinite;
 }
 
+/* Brand Button Primitives — gradient fills, inner shadow, hover scale */
+@layer components {
+  .btn-brand-base {
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transition: all 200ms ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+  .btn-brand-base:hover {
+    transform: scale(1.02);
+  }
+  .btn-brand-base:active {
+    transform: scale(0.98);
+  }
+
+  .btn-gradient-primary {
+    background: linear-gradient(to bottom, #1f6b4a, #14472f);
+  }
+  .btn-gradient-primary:hover {
+    background: linear-gradient(to bottom, #237a54, #185433);
+  }
+
+  .btn-gradient-accent {
+    background: linear-gradient(to bottom, #4a6f8a, #3a5a70);
+  }
+  .btn-gradient-accent:hover {
+    background: linear-gradient(to bottom, #547d98, #42657a);
+  }
+
+  .btn-gradient-dark {
+    background: linear-gradient(to bottom, #1c1208, #2a1d10);
+  }
+  .btn-gradient-dark:hover {
+    background: linear-gradient(to bottom, #2a1d10, #382818);
+  }
+
+  .btn-gradient-destructive {
+    background: linear-gradient(to bottom, #dc2626, #b91c1c);
+  }
+  .btn-gradient-destructive:hover {
+    background: linear-gradient(to bottom, #ef4444, #dc2626);
+  }
+}
+
 @layer utilities {
   .step {
     counter-increment: step;

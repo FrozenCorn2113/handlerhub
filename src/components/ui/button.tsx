@@ -9,26 +9,28 @@ import { SexyBorder } from '@/components/ui/sexy-border'
 import { type VariantProps, cva } from 'class-variance-authority'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paddock-green/50 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+  'inline-flex items-center justify-center rounded-full text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paddock-green/50 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
   {
     variants: {
       variant: {
-        default: 'bg-paddock-green text-[#F8F4EE] hover:bg-forest',
-        destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        default: 'btn-brand-base btn-gradient-primary text-[#F8F4EE]',
+        destructive: 'btn-brand-base btn-gradient-destructive text-white',
         outline:
-          'border border-paddock-green text-paddock-green bg-transparent hover:bg-paddock-green/10',
-        secondary: 'bg-light-sand text-[#1C1208] hover:bg-sand',
+          'border border-sand text-warm-brown bg-transparent hover:bg-sand/50 transition-all duration-200',
+        secondary:
+          'border border-sand text-warm-brown bg-transparent hover:bg-sand/50 transition-all duration-200',
         ghost:
-          'bg-transparent text-warm-brown hover:bg-warm-brown/10 hover:text-[#1C1208]',
-        link: 'underline-offset-4 hover:underline text-paddock-green',
-        orange: 'bg-slate-blue hover:bg-slate-blue/90 text-white',
-        sexy: 'transition-all text-white hover:bg-opacity-0',
+          'bg-transparent text-warm-brown hover:bg-sand/30 hover:text-[#1C1208] transition-all duration-200',
+        link: 'underline-offset-4 hover:underline text-paddock-green transition-colors duration-200',
+        accent: 'btn-brand-base btn-gradient-accent text-white',
+        dark: 'btn-brand-base btn-gradient-dark text-white',
+        orange: 'btn-brand-base btn-gradient-accent text-white',
+        sexy: 'btn-brand-base transition-all text-white hover:bg-opacity-0',
       },
       size: {
-        default: 'h-10 py-2 px-4',
-        sm: 'h-9 px-3',
-        lg: 'h-11 px-8',
+        default: 'h-10 px-6 text-sm',
+        sm: 'h-8 px-4 text-sm',
+        lg: 'h-12 px-8 text-base',
         icon: 'h-9 w-9',
       },
     },

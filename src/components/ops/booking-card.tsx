@@ -104,7 +104,7 @@ export function BookingCard({
           {status === 'pending' && onAccept && (
             <button
               onClick={onAccept}
-              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-ringside-black px-4 py-2.5 font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(28,18,8,0.2)] transition-all hover:bg-warm-brown hover:shadow-[0_4px_12px_rgba(28,18,8,0.25)]"
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-4 py-2.5 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_20px_rgba(31,107,74,0.35)]"
             >
               Accept
               <ArrowRight size={14} weight="bold" />
@@ -113,7 +113,7 @@ export function BookingCard({
           {status === 'pending' && onDecline && (
             <button
               onClick={onDecline}
-              className="rounded-full border border-tan px-4 py-2.5 font-sans text-xs font-semibold text-warm-brown transition-all hover:border-warm-brown hover:bg-light-sand"
+              className="rounded-full bg-gradient-to-b from-red-500 to-red-600 px-4 py-2.5 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(220,38,38,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_20px_rgba(220,38,38,0.35)]"
             >
               Decline
             </button>
@@ -121,7 +121,7 @@ export function BookingCard({
           {onMessage && (
             <button
               onClick={onMessage}
-              className="flex items-center gap-1.5 rounded-full border border-tan px-4 py-2.5 font-sans text-xs font-semibold text-warm-brown transition-all hover:border-warm-brown hover:bg-light-sand"
+              className="flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#5a83a0] to-slate-blue px-4 py-2.5 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(74,111,138,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_20px_rgba(74,111,138,0.35)]"
             >
               <ChatCircle size={14} weight="regular" />
               Message

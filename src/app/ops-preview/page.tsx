@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { BookingCard } from '@/components/ops/booking-card'
 import { DogCard } from '@/components/ops/dog-card'
 import { EmptyState } from '@/components/ops/empty-state'
@@ -7,18 +9,23 @@ import { MobileTabBar } from '@/components/ops/mobile-tab-bar'
 import { OpsNav } from '@/components/ops/ops-nav'
 import { ServiceCard } from '@/components/ops/service-card'
 import { StatusBadge } from '@/components/ops/status-badge'
-import { ThreadCard } from '@/components/ops/thread-card'
 
 import {
   ArrowRight,
   CalendarBlank,
   ChatCircle,
   CloudArrowUp,
+  Dog,
   Envelope,
+  MagnifyingGlass,
   MapPin,
+  PaperPlaneRight,
   PawPrint,
+  Scissors,
   Star,
+  Textbox,
   Trophy,
+  Truck,
 } from '@phosphor-icons/react'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -58,7 +65,299 @@ function ColorSwatch({
   )
 }
 
+/* ============================================================
+   MESSAGING MOCKUP
+   ============================================================ */
+function MessagingMockup() {
+  const conversations = [
+    {
+      name: 'Sarah Mitchell',
+      avatar: 'https://i.pravatar.cc/80?img=5',
+      preview: 'Can we confirm the grooming details for...',
+      time: '2m',
+      unread: 3,
+      active: true,
+    },
+    {
+      name: 'Michael Chen',
+      avatar: 'https://i.pravatar.cc/80?img=11',
+      preview: "Thanks for accepting! I'll bring the crate...",
+      time: '1h',
+      unread: 0,
+      active: false,
+    },
+    {
+      name: 'Emily Rodriguez',
+      avatar: 'https://i.pravatar.cc/80?img=9',
+      preview: 'Can we schedule a practice run before...',
+      time: '3h',
+      unread: 1,
+      active: false,
+    },
+    {
+      name: 'David Park',
+      avatar: 'https://i.pravatar.cc/80?img=12',
+      preview: 'The show schedule just got updated, check...',
+      time: '1d',
+      unread: 0,
+      active: false,
+    },
+    {
+      name: 'Lisa Thompson',
+      avatar: 'https://i.pravatar.cc/80?img=20',
+      preview: 'Great job at Westminster! Amazing results.',
+      time: '2d',
+      unread: 0,
+      active: false,
+    },
+  ]
+
+  const messages = [
+    {
+      sent: false,
+      text: 'Hi James! I wanted to confirm the grooming details for Northern Star before the show next week.',
+      time: '10:32 AM',
+    },
+    {
+      sent: false,
+      text: "She'll need the full breed standard groom -- bath, blow-dry, and trimming. Can you also do the show-day finishing touches?",
+      time: '10:33 AM',
+    },
+    {
+      sent: true,
+      text: 'Hi Sarah! Absolutely, I have everything lined up. Full groom plus finishing touches on show day.',
+      time: '10:45 AM',
+    },
+    {
+      sent: true,
+      text: "I'd recommend bringing her in the evening before so we can do the bath and blow-dry without rushing. Then just touch-ups morning of.",
+      time: '10:46 AM',
+    },
+    {
+      sent: false,
+      text: "That sounds perfect! I'll drop her off Friday evening. What time works best?",
+      time: '11:02 AM',
+    },
+  ]
+
+  return (
+    <div
+      className="flex overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_4px_20px_rgba(28,18,8,0.08)]"
+      style={{ height: 480 }}
+    >
+      {/* Left sidebar - conversation list */}
+      <div className="flex w-72 shrink-0 flex-col border-r border-tan/60">
+        <div className="border-b border-tan/40 p-4">
+          <h3 className="mb-3 font-display text-lg font-semibold text-ringside-black">
+            Messages
+          </h3>
+          <div className="relative">
+            <MagnifyingGlass
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-warm-gray"
+            />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              className="w-full rounded-lg border border-tan/60 bg-ring-cream py-2 pl-9 pr-3 font-sans text-xs text-ringside-black placeholder:text-warm-gray focus:border-paddock-green focus:outline-none"
+            />
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {conversations.map((convo) => (
+            <div
+              key={convo.name}
+              className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition-all ${
+                convo.active
+                  ? 'border-l-[3px] border-l-paddock-green bg-paddock-green/5'
+                  : 'border-l-[3px] border-l-transparent hover:bg-ring-cream/60'
+              }`}
+            >
+              <img
+                src={convo.avatar}
+                alt={convo.name}
+                className="h-10 w-10 shrink-0 rounded-full object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`truncate font-sans text-sm ${
+                      convo.unread > 0
+                        ? 'font-bold text-ringside-black'
+                        : 'font-medium text-warm-brown'
+                    }`}
+                  >
+                    {convo.name}
+                  </span>
+                  <span
+                    className={`ml-2 shrink-0 font-sans text-[11px] ${
+                      convo.unread > 0
+                        ? 'font-medium text-paddock-green'
+                        : 'text-warm-gray'
+                    }`}
+                  >
+                    {convo.time}
+                  </span>
+                </div>
+                <p className="truncate font-sans text-xs text-warm-gray">
+                  {convo.preview}
+                </p>
+              </div>
+              {convo.unread > 0 && (
+                <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#24845a] to-paddock-green px-1 font-sans text-[10px] font-bold text-white">
+                  {convo.unread}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel - active conversation */}
+      <div className="flex flex-1 flex-col">
+        {/* Conversation header */}
+        <div className="flex items-center gap-3 border-b border-tan/40 px-5 py-3">
+          <img
+            src="https://i.pravatar.cc/80?img=5"
+            alt="Sarah Mitchell"
+            className="h-9 w-9 rounded-full object-cover"
+          />
+          <div>
+            <p className="font-sans text-sm font-semibold text-ringside-black">
+              Sarah Mitchell
+            </p>
+            <p className="font-sans text-[11px] text-paddock-green">Online</p>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          <div className="mb-4 text-center">
+            <span className="rounded-full bg-ring-cream px-3 py-1 font-sans text-[11px] text-warm-gray">
+              Today
+            </span>
+          </div>
+          <div className="space-y-3">
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.sent ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                    msg.sent
+                      ? 'rounded-br-md bg-gradient-to-br from-[#24845a] to-paddock-green text-white shadow-[0_2px_8px_rgba(31,107,74,0.2)]'
+                      : 'rounded-bl-md bg-light-sand text-ringside-black'
+                  }`}
+                >
+                  <p className="font-sans text-sm leading-relaxed">
+                    {msg.text}
+                  </p>
+                  <p
+                    className={`mt-1 text-right font-sans text-[10px] ${
+                      msg.sent ? 'text-white/60' : 'text-warm-gray'
+                    }`}
+                  >
+                    {msg.time}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Message input */}
+        <div className="border-t border-tan/40 px-4 py-3">
+          <div className="flex items-center gap-2 rounded-xl border border-tan/60 bg-ring-cream px-4 py-2.5">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="flex-1 bg-transparent font-sans text-sm text-ringside-black placeholder:text-warm-gray focus:outline-none"
+            />
+            <button className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#24845a] to-paddock-green shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-105 hover:shadow-lg">
+              <PaperPlaneRight size={16} weight="fill" className="text-white" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function OpsPreviewPage() {
+  const [selectedServices, setSelectedServices] = useState<Set<number>>(
+    new Set([0, 2])
+  )
+
+  const services = [
+    {
+      name: 'Full Grooming',
+      price: 8500,
+      description:
+        'Complete breed-standard grooming including bath, blow-dry, and show-day finishing touches.',
+      features: [
+        'Breed-standard grooming',
+        'Bath, blow-dry, and trimming',
+        'Show-day finishing touches',
+      ],
+      icon: (
+        <Scissors size={20} weight="duotone" className="text-paddock-green" />
+      ),
+    },
+    {
+      name: 'Transport',
+      price: 15000,
+      description:
+        'Door-to-door transport for your dog to and from the show venue, climate-controlled vehicle.',
+      features: [
+        'Climate-controlled vehicle',
+        'Door-to-door service',
+        'GPS tracking available',
+      ],
+      icon: <Truck size={20} weight="duotone" className="text-paddock-green" />,
+    },
+    {
+      name: 'Ring Training',
+      price: 12000,
+      description:
+        'One-on-one ring training sessions covering free-stacking, gaiting patterns, and etiquette.',
+      features: [
+        'One-on-one ring training',
+        'Free-stacking and gaiting',
+        'Show ring etiquette',
+      ],
+      icon: (
+        <Trophy size={20} weight="duotone" className="text-paddock-green" />
+      ),
+    },
+  ]
+
+  const toggleService = (idx: number) => {
+    setSelectedServices((prev) => {
+      const next = new Set(prev)
+      if (next.has(idx)) next.delete(idx)
+      else next.add(idx)
+      return next
+    })
+  }
+
+  const selectedTotal = services.reduce(
+    (sum, s, i) => (selectedServices.has(i) ? sum + s.price : sum),
+    0
+  )
+
+  // Category pills for form section
+  const [selectedCategory, setSelectedCategory] = useState('Sporting')
+  const categories = [
+    { name: 'Sporting', icon: <PawPrint size={14} weight="fill" /> },
+    { name: 'Hound', icon: <Dog size={14} weight="fill" /> },
+    { name: 'Working', icon: <Trophy size={14} weight="fill" /> },
+    { name: 'Terrier', icon: <Star size={14} weight="fill" /> },
+    { name: 'Toy', icon: <PawPrint size={14} weight="fill" /> },
+    { name: 'Non-Sporting', icon: <Dog size={14} weight="fill" /> },
+    { name: 'Herding', icon: <PawPrint size={14} weight="fill" /> },
+  ]
+
   return (
     <div className="min-h-screen bg-ring-cream">
       <div className="mx-auto max-w-6xl space-y-16 px-6 py-12">
@@ -271,7 +570,8 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>OpsNav</SectionTitle>
           <SectionDescription>
-            Top navigation bar for handler and exhibitor roles.
+            Top navigation with notification bell, settings, and profile card
+            dropdown.
           </SectionDescription>
 
           <div className="space-y-4">
@@ -424,13 +724,13 @@ export default function OpsPreviewPage() {
                 Secondary
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full border border-tan px-5 py-2.5 font-sans text-xs font-semibold text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.06)] transition-all duration-200 hover:scale-[1.02] hover:border-warm-brown hover:bg-light-sand hover:shadow-[0_2px_8px_rgba(28,18,8,0.1)]">
+                <button className="rounded-full bg-gradient-to-b from-[#F0EAE0] to-sand px-5 py-2.5 font-sans text-xs font-semibold text-ringside-black shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_1px_4px_rgba(28,18,8,0.1)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_12px_rgba(28,18,8,0.15)]">
                   Small
                 </button>
-                <button className="rounded-full border border-tan px-7 py-3 font-sans text-[13px] font-semibold text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.06)] transition-all duration-200 hover:scale-[1.02] hover:border-warm-brown hover:bg-light-sand hover:shadow-[0_2px_8px_rgba(28,18,8,0.1)]">
+                <button className="rounded-full bg-gradient-to-b from-[#F0EAE0] to-sand px-7 py-3 font-sans text-[13px] font-semibold text-ringside-black shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_1px_4px_rgba(28,18,8,0.1)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_12px_rgba(28,18,8,0.15)]">
                   Medium
                 </button>
-                <button className="rounded-full border border-tan px-9 py-3.5 font-sans text-sm font-semibold text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.06)] transition-all duration-200 hover:scale-[1.02] hover:border-warm-brown hover:bg-light-sand hover:shadow-[0_2px_8px_rgba(28,18,8,0.1)]">
+                <button className="rounded-full bg-gradient-to-b from-[#F0EAE0] to-sand px-9 py-3.5 font-sans text-sm font-semibold text-ringside-black shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_1px_4px_rgba(28,18,8,0.1)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_12px_rgba(28,18,8,0.15)]">
                   Large
                 </button>
               </div>
@@ -442,13 +742,13 @@ export default function OpsPreviewPage() {
                 Ghost
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full px-5 py-2.5 font-sans text-xs font-semibold text-warm-brown transition-all duration-200 hover:bg-sand/40 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
+                <button className="rounded-full bg-gradient-to-b from-transparent to-transparent px-5 py-2.5 font-sans text-xs font-semibold text-warm-brown shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:from-sand/30 hover:to-sand/50 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
                   Small
                 </button>
-                <button className="rounded-full px-7 py-3 font-sans text-[13px] font-semibold text-warm-brown transition-all duration-200 hover:bg-sand/40 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
+                <button className="rounded-full bg-gradient-to-b from-transparent to-transparent px-7 py-3 font-sans text-[13px] font-semibold text-warm-brown shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:from-sand/30 hover:to-sand/50 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
                   Medium
                 </button>
-                <button className="rounded-full px-9 py-3.5 font-sans text-sm font-semibold text-warm-brown transition-all duration-200 hover:bg-sand/40 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
+                <button className="rounded-full bg-gradient-to-b from-transparent to-transparent px-9 py-3.5 font-sans text-sm font-semibold text-warm-brown shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:from-sand/30 hover:to-sand/50 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]">
                   Large
                 </button>
               </div>
@@ -531,7 +831,7 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Cards</SectionTitle>
           <SectionDescription>
-            Booking, dog, and thread cards with hover lift and depth.
+            Booking, dog, and messaging cards with depth and delight.
           </SectionDescription>
 
           <div className="space-y-8">
@@ -569,99 +869,98 @@ export default function OpsPreviewPage() {
               </span>
               <div className="grid gap-4 sm:grid-cols-3">
                 <DogCard
-                  name="GCH Foxfire's Northern Star"
+                  name="Northern Star"
                   breed="Golden Retriever"
+                  age="3 years"
+                  photoUrl="https://placedog.net/400/500?id=1"
+                  shows={12}
+                  wins={8}
+                  rating={4.8}
                   titles={['GCH', 'BISS']}
+                  gradientClass="from-[#1a8a5e] via-[#2d9d6e] to-[#1F6B4A]"
                 />
                 <DogCard
-                  name="CH Lakewood's Golden Hour"
+                  name="Golden Hour"
                   breed="Cavalier King Charles Spaniel"
-                  titles={['CH', 'RN']}
+                  age="2 years"
+                  photoUrl="https://placedog.net/400/500?id=2"
+                  shows={6}
+                  wins={3}
+                  rating={4.5}
+                  titles={['CH']}
+                  gradientClass="from-[#5a4a9e] via-[#7b6bb5] to-[#4a3a8e]"
                 />
                 <DogCard
-                  name="Bellwood's Morning Dew"
+                  name="Morning Dew"
                   breed="Standard Poodle"
-                  titles={['CH']}
+                  age="4 years"
+                  photoUrl="https://placedog.net/400/500?id=3"
+                  shows={18}
+                  wins={11}
+                  rating={4.9}
+                  titles={['CH', 'RN']}
+                  gradientClass="from-[#b08040] via-[#c89850] to-[#a07030]"
                 />
               </div>
             </div>
 
-            {/* Thread Cards */}
+            {/* Messaging Interface */}
             <div>
               <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Thread Cards
+                Messaging
               </span>
-              <div className="space-y-3">
-                <ThreadCard
-                  name="Sarah Mitchell"
-                  preview="Hi! I wanted to confirm the grooming details for next week's show..."
-                  time="2m ago"
-                  unread
-                  unreadCount={3}
-                />
-                <ThreadCard
-                  name="Michael Chen"
-                  preview="Thanks for accepting! I'll bring the crate setup early."
-                  time="1h ago"
-                />
-                <ThreadCard
-                  name="Emily Rodriguez"
-                  preview="Can we schedule a practice run before the show?"
-                  time="3h ago"
-                  unread
-                  unreadCount={1}
-                />
-              </div>
+              <MessagingMockup />
             </div>
           </div>
         </section>
 
-        {/* ======================== SERVICE PACKAGES ======================== */}
+        {/* ======================== SERVICE ADD-ONS ======================== */}
         <section>
-          <SectionTitle>Service Packages</SectionTitle>
+          <SectionTitle>Service Add-Ons</SectionTitle>
           <SectionDescription>
-            Pricing cards for handler services.
+            Exhibitors customize their package by selecting add-on services.
+            Toggle cards to build your inquiry.
           </SectionDescription>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ServiceCard
-              name="Conformation Handling"
-              price={15000}
-              pricePer="show"
-              description="Professional ring presentation including pre-show grooming, gaiting, and stacking for breed and group competition."
-              tiers={[
-                { name: 'Breed', price: 15000, pricePer: 'show' },
-                { name: 'Group', price: 20000, pricePer: 'show' },
-                { name: 'Best in Show', price: 25000, pricePer: 'show' },
-              ]}
-              features={[
-                'Professional ring presentation',
-                'Pre-show grooming and stacking',
-                'Breed and group competition',
-              ]}
-            />
-            <ServiceCard
-              name="Full Grooming"
-              price={8500}
-              pricePer="session"
-              description="Complete breed-standard grooming including bath, blow-dry, trimming, and show-day finishing touches."
-              features={[
-                'Breed-standard grooming',
-                'Bath, blow-dry, and trimming',
-                'Show-day finishing touches',
-              ]}
-            />
-            <ServiceCard
-              name="Training"
-              price={12000}
-              pricePer="hour"
-              description="One-on-one ring training sessions covering free-stacking, gaiting patterns, and show ring etiquette."
-              features={[
-                'One-on-one ring training',
-                'Free-stacking and gaiting patterns',
-                'Show ring etiquette',
-              ]}
-            />
+          <div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {services.map((service, i) => (
+                <ServiceCard
+                  key={service.name}
+                  name={service.name}
+                  price={service.price}
+                  pricePer="session"
+                  description={service.description}
+                  features={service.features}
+                  icon={service.icon}
+                  selected={selectedServices.has(i)}
+                  onToggle={() => toggleService(i)}
+                />
+              ))}
+            </div>
+
+            {/* Summary bar */}
+            <div className="mt-4 flex items-center justify-between rounded-2xl border border-tan/60 bg-white px-6 py-4 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+              <div className="flex items-center gap-3">
+                <span className="font-sans text-sm font-medium text-warm-brown">
+                  Selected:{' '}
+                  <span className="font-bold text-ringside-black">
+                    {selectedServices.size} service
+                    {selectedServices.size !== 1 ? 's' : ''}
+                  </span>
+                </span>
+                <span className="font-sans text-lg font-bold text-paddock-green">
+                  ${(selectedTotal / 100).toFixed(0)} total
+                </span>
+              </div>
+              <button
+                className="flex items-center gap-2 rounded-full bg-gradient-to-b from-warm-brown to-ringside-black px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_6px_20px_rgba(28,18,8,0.35)]"
+                style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+              >
+                Inquire Now
+                <ArrowRight size={14} weight="bold" />
+              </button>
+            </div>
           </div>
         </section>
 
@@ -694,20 +993,17 @@ export default function OpsPreviewPage() {
           </div>
         </section>
 
-        {/* ======================== FORM ELEMENTS ======================== */}
+        {/* ======================== FORM ELEMENTS (Cisco-style) ======================== */}
         <section>
           <SectionTitle>Form Elements</SectionTitle>
           <SectionDescription>
-            Inputs, selects, textareas, stepper, and file upload with brand
-            styling.
+            Split-panel form layout with contextual illustration, stepper, and
+            selectable category pills.
           </SectionDescription>
 
-          <div className="space-y-8 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
-            {/* Multi-step stepper */}
-            <div>
-              <span className="mb-5 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-                Form Stepper
-              </span>
+          <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+            {/* Stepper at top */}
+            <div className="border-b border-tan/40 px-8 py-6">
               <div className="flex items-center justify-center gap-0">
                 {[
                   { num: 1, label: 'Dog Info', active: true, complete: true },
@@ -723,14 +1019,19 @@ export default function OpsPreviewPage() {
                     active: false,
                     complete: false,
                   },
-                  { num: 4, label: 'Review', active: false, complete: false },
+                  {
+                    num: 4,
+                    label: 'Review',
+                    active: false,
+                    complete: false,
+                  },
                 ].map((step, i) => (
                   <div key={step.num} className="flex items-center">
                     <div className="flex flex-col items-center">
                       <div
                         className={`flex size-10 items-center justify-center rounded-full font-sans text-sm font-bold transition-all duration-200 ${
                           step.complete
-                            ? 'bg-gradient-to-br from-paddock-green to-forest text-white shadow-[0_2px_8px_rgba(31,107,74,0.3)]'
+                            ? 'bg-gradient-to-br from-[#24845a] to-paddock-green text-white shadow-[0_2px_8px_rgba(31,107,74,0.3)]'
                             : step.active
                               ? 'border-2 border-paddock-green bg-white text-paddock-green shadow-[0_2px_8px_rgba(31,107,74,0.15)]'
                               : 'border-2 border-tan bg-ring-cream text-warm-gray'
@@ -763,8 +1064,8 @@ export default function OpsPreviewPage() {
                     </div>
                     {i < 3 && (
                       <div
-                        className={`mx-3 mt-[-20px] h-0.5 w-16 rounded-full ${
-                          step.complete ? 'bg-paddock-green' : 'bg-tan'
+                        className={`mx-3 mt-[-20px] h-0 w-16 border-t-2 border-dashed ${
+                          step.complete ? 'border-paddock-green' : 'border-tan'
                         }`}
                       />
                     )}
@@ -773,73 +1074,140 @@ export default function OpsPreviewPage() {
               </div>
             </div>
 
-            <hr className="border-tan/40" />
+            {/* Split layout: form left, illustration right */}
+            <div className="flex">
+              {/* Left side - form fields (60%) */}
+              <div className="flex-[3] space-y-6 p-8">
+                {/* Category pills */}
+                <div>
+                  <label className="mb-2 block font-sans text-[13px] font-medium text-ringside-black">
+                    Breed Group
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat.name}
+                        onClick={() => setSelectedCategory(cat.name)}
+                        className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans text-xs font-medium transition-all duration-200 hover:scale-[1.02] ${
+                          selectedCategory === cat.name
+                            ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_6px_rgba(31,107,74,0.25)]'
+                            : 'border border-tan bg-white text-warm-brown hover:border-paddock-green/40 hover:shadow-[0_1px_4px_rgba(28,18,8,0.08)]'
+                        }`}
+                      >
+                        <span
+                          className={
+                            selectedCategory === cat.name
+                              ? 'text-white/80'
+                              : 'text-warm-gray'
+                          }
+                        >
+                          {cat.icon}
+                        </span>
+                        {cat.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Text Input */}
-            <div>
-              <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
-                Full Name
-              </label>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                className="w-full rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
-                style={{ borderLeftWidth: '3px' }}
-              />
-            </div>
-
-            {/* Select */}
-            <div>
-              <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
-                Breed Group
-              </label>
-              <select
-                className="w-full appearance-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
-                style={{ borderLeftWidth: '3px' }}
-              >
-                <option>Select a breed group</option>
-                <option>Sporting</option>
-                <option>Hound</option>
-                <option>Working</option>
-                <option>Terrier</option>
-                <option>Toy</option>
-                <option>Non-Sporting</option>
-                <option>Herding</option>
-              </select>
-            </div>
-
-            {/* Textarea */}
-            <div>
-              <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
-                Bio
-              </label>
-              <textarea
-                rows={4}
-                placeholder="Tell exhibitors about your experience..."
-                className="w-full resize-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
-                style={{ borderLeftWidth: '3px' }}
-              />
-            </div>
-
-            {/* File Upload Zone */}
-            <div>
-              <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
-                Profile Photo
-              </label>
-              <div className="group/upload flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-tan bg-gradient-to-b from-ring-cream to-white px-6 py-12 transition-all duration-300 hover:border-paddock-green/50 hover:bg-gradient-to-b hover:from-sage/20 hover:to-white hover:shadow-[0_4px_16px_rgba(31,107,74,0.08)]">
-                <div className="mb-3 flex size-14 items-center justify-center rounded-full bg-white shadow-[0_2px_8px_rgba(28,18,8,0.08)] transition-transform duration-300 group-hover/upload:scale-110">
-                  <CloudArrowUp
-                    size={28}
-                    className="text-slate-blue transition-colors duration-200 group-hover/upload:text-paddock-green"
-                    weight="duotone"
+                {/* Text Input */}
+                <div>
+                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                    Dog&apos;s Registered Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. GCH Foxfire's Northern Star"
+                    className="w-full rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    style={{ borderLeftWidth: '3px' }}
                   />
                 </div>
-                <p className="font-sans text-sm font-medium text-warm-brown">
-                  Drop file here or click to upload
-                </p>
-                <p className="mt-1 font-sans text-xs text-warm-gray">
-                  PNG, JPG up to 5MB
-                </p>
+
+                {/* Select */}
+                <div>
+                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                    Show Name
+                  </label>
+                  <select
+                    className="w-full appearance-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    style={{ borderLeftWidth: '3px' }}
+                  >
+                    <option>Select a show</option>
+                    <option>Westminster Kennel Club</option>
+                    <option>Beverly Hills Dog Show</option>
+                    <option>National Dog Show</option>
+                    <option>AKC National Championship</option>
+                  </select>
+                </div>
+
+                {/* Textarea */}
+                <div>
+                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                    Special Instructions
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Any specific requirements for the handler..."
+                    className="w-full resize-none rounded-xl border border-tan bg-white px-4 py-3 font-sans text-sm text-ringside-black shadow-[0_1px_2px_rgba(28,18,8,0.04)] transition-all duration-200 placeholder:text-warm-gray focus:border-paddock-green focus:shadow-[0_0_0_3px_rgba(31,107,74,0.1)] focus:outline-none"
+                    style={{ borderLeftWidth: '3px' }}
+                  />
+                </div>
+
+                {/* CTA */}
+                <div className="flex justify-end">
+                  <button
+                    className="flex items-center gap-2 rounded-full bg-gradient-to-b from-warm-brown to-ringside-black px-8 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_6px_20px_rgba(28,18,8,0.35)]"
+                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                  >
+                    Continue
+                    <ArrowRight size={14} weight="bold" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Right side - contextual info (40%) */}
+              <div className="flex flex-[2] flex-col items-center justify-center bg-gradient-to-br from-paddock-green/5 via-sage/20 to-pastel-sky/10 p-8">
+                <div className="text-center">
+                  <h3 className="font-display text-3xl font-light text-ringside-black">
+                    About Your Dog
+                  </h3>
+                  <p className="mx-auto mt-3 max-w-xs font-sans text-sm leading-relaxed text-warm-brown">
+                    Tell us about your dog so we can match you with the perfect
+                    handler for your next show.
+                  </p>
+                </div>
+
+                {/* Decorative dog silhouette area */}
+                <div className="mt-8 flex h-40 w-40 items-center justify-center rounded-full bg-gradient-to-br from-paddock-green/10 to-sage/30">
+                  <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/60 backdrop-blur-sm">
+                    <PawPrint
+                      size={48}
+                      weight="duotone"
+                      className="text-paddock-green/40"
+                    />
+                  </div>
+                </div>
+
+                {/* File Upload Zone */}
+                <div className="mt-6 w-full">
+                  <label className="mb-1.5 block font-sans text-[13px] font-medium text-ringside-black">
+                    Dog Photo
+                  </label>
+                  <div className="group/upload flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-tan bg-white/60 px-6 py-8 backdrop-blur-sm transition-all duration-300 hover:border-paddock-green/50 hover:shadow-[0_4px_16px_rgba(31,107,74,0.08)]">
+                    <div className="mb-2 flex size-10 items-center justify-center rounded-full bg-white shadow-[0_2px_8px_rgba(28,18,8,0.08)] transition-transform duration-300 group-hover/upload:scale-110">
+                      <CloudArrowUp
+                        size={22}
+                        className="text-slate-blue transition-colors duration-200 group-hover/upload:text-paddock-green"
+                        weight="duotone"
+                      />
+                    </div>
+                    <p className="font-sans text-xs font-medium text-warm-brown">
+                      Drop file or click to upload
+                    </p>
+                    <p className="mt-0.5 font-sans text-[10px] text-warm-gray">
+                      PNG, JPG up to 5MB
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -849,166 +1217,168 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Profile Cards</SectionTitle>
           <SectionDescription>
-            How each role views the other&apos;s profile summary. Inspired by
-            modern profile cards with gradient banners and overlapping avatars.
+            Gradient-style profile cards with real avatar photos, vibrant
+            backgrounds, and action buttons.
           </SectionDescription>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            {/* Handler viewing exhibitor */}
-            <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)]">
-              {/* Gradient banner */}
-              <div className="h-20 bg-gradient-to-br from-paddock-green/30 via-sage to-pastel-sky/40" />
-              {/* Content */}
-              <div className="relative px-6 pb-6 pt-0">
-                {/* Avatar overlapping banner */}
-                <div className="-mt-8 mb-4 flex items-end justify-between">
-                  <div className="flex size-16 items-center justify-center rounded-full border-4 border-white bg-sage font-sans text-lg font-bold text-paddock-green shadow-[0_2px_8px_rgba(28,18,8,0.1)]">
-                    SM
+            {/* Handler profile - green gradient */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
+              {/* Full gradient background */}
+              <div className="bg-gradient-to-br from-[#1a8a5e] via-[#2d9d6e] to-[#1F6B4A] p-6">
+                {/* Glassmorphism edge */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20" />
+
+                {/* Role badge */}
+                <span className="inline-block rounded-full bg-white/15 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-sm">
+                  Handler
+                </span>
+
+                {/* Avatar + Name */}
+                <div className="mt-5 flex items-center gap-4">
+                  <img
+                    src="https://i.pravatar.cc/200?img=12"
+                    alt="James Rodriguez"
+                    className="h-20 w-20 rounded-full border-4 border-white/30 object-cover shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                  />
+                  <div>
+                    <h4 className="font-display text-2xl font-semibold text-white">
+                      James Rodriguez
+                    </h4>
+                    <p className="mt-0.5 font-sans text-sm text-white/70">
+                      Professional Handler
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Star
+                          key={i}
+                          size={14}
+                          weight={i <= 4 ? 'fill' : 'regular'}
+                          className={
+                            i <= 4 ? 'text-yellow-300' : 'text-white/30'
+                          }
+                        />
+                      ))}
+                      <span className="ml-1 font-sans text-xs text-white/70">
+                        4.8
+                      </span>
+                    </div>
                   </div>
-                  <span className="font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-                    Exhibitor
-                  </span>
                 </div>
 
-                <p className="font-sans text-base font-bold text-ringside-black">
-                  Sarah Mitchell
-                </p>
-                <p className="mt-0.5 font-sans text-xs text-warm-brown">
-                  3 dogs registered
-                </p>
-
-                {/* Stats row with icons */}
-                <div className="mt-4 flex gap-3">
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-light-sand px-3 py-2.5">
-                    <CalendarBlank size={16} className="text-warm-gray" />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-ringside-black">
-                        12
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Bookings
-                      </p>
-                    </div>
+                {/* Stats row */}
+                <div className="mt-5 flex gap-4">
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      47
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Shows
+                    </span>
                   </div>
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-light-sand px-3 py-2.5">
-                    <Trophy size={16} className="text-warm-gray" />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-ringside-black">
-                        8
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Shows
-                      </p>
-                    </div>
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      28
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Reviews
+                    </span>
                   </div>
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-paddock-green/10 px-3 py-2.5">
-                    <PawPrint
-                      size={16}
-                      className="text-paddock-green"
-                      weight="fill"
-                    />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-paddock-green">
-                        Active
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Status
-                      </p>
-                    </div>
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      3
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Services
+                    </span>
                   </div>
                 </div>
 
                 {/* CTA */}
-                <button className="mt-4 w-full rounded-full bg-gradient-to-b from-warm-brown to-ringside-black py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.2)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_rgba(28,18,8,0.25)]">
-                  <span className="flex items-center justify-center gap-2">
-                    <ChatCircle size={14} weight="fill" />
-                    Message
-                  </span>
+                <button
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-white/25 to-white/15 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] hover:from-white/30 hover:to-white/20 hover:shadow-lg"
+                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                >
+                  <ChatCircle size={14} weight="fill" />
+                  Get In Touch
                 </button>
               </div>
             </div>
 
-            {/* Exhibitor viewing handler */}
-            <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)]">
-              {/* Gradient banner */}
-              <div className="h-20 bg-gradient-to-br from-slate-blue/30 via-pastel-sky to-sage/30" />
-              {/* Content */}
-              <div className="relative px-6 pb-6 pt-0">
-                {/* Avatar overlapping banner */}
-                <div className="-mt-8 mb-4 flex items-end justify-between">
-                  <div className="flex size-16 items-center justify-center rounded-full border-4 border-white bg-pastel-sky font-sans text-lg font-bold text-[#1A4A7A] shadow-[0_2px_8px_rgba(28,18,8,0.1)]">
-                    JR
+            {/* Exhibitor profile - purple gradient */}
+            <div className="group relative overflow-hidden rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
+              {/* Full gradient background */}
+              <div className="bg-gradient-to-br from-[#5a4a9e] via-[#7b6bb5] to-[#4a3a8e] p-6">
+                {/* Glassmorphism edge */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/20" />
+
+                {/* Role badge */}
+                <span className="inline-block rounded-full bg-white/15 px-3 py-1 font-sans text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-sm">
+                  Exhibitor
+                </span>
+
+                {/* Avatar + Name */}
+                <div className="mt-5 flex items-center gap-4">
+                  <img
+                    src="https://i.pravatar.cc/200?img=5"
+                    alt="Sarah Mitchell"
+                    className="h-20 w-20 rounded-full border-4 border-white/30 object-cover shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                  />
+                  <div>
+                    <h4 className="font-display text-2xl font-semibold text-white">
+                      Sarah Mitchell
+                    </h4>
+                    <p className="mt-0.5 font-sans text-sm text-white/70">
+                      3 dogs registered
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-1.5">
+                      <MapPin
+                        size={12}
+                        weight="fill"
+                        className="text-white/50"
+                      />
+                      <span className="font-sans text-xs text-white/60">
+                        Portland, OR
+                      </span>
+                    </div>
                   </div>
-                  <span className="font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-                    Handler
-                  </span>
                 </div>
 
-                <p className="font-sans text-base font-bold text-ringside-black">
-                  James Rodriguez
-                </p>
-                <p className="mt-0.5 font-sans text-xs text-warm-brown">
-                  Professional Handler &middot; AKC Registered
-                </p>
-
-                {/* Rating */}
-                <div className="mt-2 flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      weight={i <= 4 ? 'fill' : 'regular'}
-                      className={i <= 4 ? 'text-slate-blue' : 'text-tan'}
-                    />
-                  ))}
-                  <span className="ml-1 font-sans text-xs font-medium text-warm-brown">
-                    4.0 (28 reviews)
-                  </span>
-                </div>
-
-                {/* Stats row with icons */}
-                <div className="mt-4 flex gap-3">
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-light-sand px-3 py-2.5">
-                    <PawPrint size={16} className="text-warm-gray" />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-ringside-black">
-                        3
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Services
-                      </p>
-                    </div>
+                {/* Stats row */}
+                <div className="mt-5 flex gap-4">
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      12
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Bookings
+                    </span>
                   </div>
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-light-sand px-3 py-2.5">
-                    <Trophy size={16} className="text-warm-gray" />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-ringside-black">
-                        47
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Shows
-                      </p>
-                    </div>
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      8
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Shows
+                    </span>
                   </div>
-                  <div className="flex flex-1 items-center gap-2 rounded-xl bg-light-sand px-3 py-2.5">
-                    <Star size={16} className="text-warm-gray" />
-                    <div>
-                      <p className="font-sans text-sm font-bold text-ringside-black">
-                        28
-                      </p>
-                      <p className="font-sans text-[10px] text-warm-gray">
-                        Reviews
-                      </p>
-                    </div>
+                  <div className="flex flex-1 flex-col items-center rounded-xl bg-white/10 py-3 backdrop-blur-sm">
+                    <span className="font-sans text-lg font-bold text-white">
+                      US
+                    </span>
+                    <span className="font-sans text-[10px] font-medium uppercase tracking-wider text-white/60">
+                      Country
+                    </span>
                   </div>
                 </div>
 
                 {/* CTA */}
-                <button className="mt-4 w-full rounded-full bg-gradient-to-b from-warm-brown to-ringside-black py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_2px_8px_rgba(28,18,8,0.2)] transition-all duration-200 hover:scale-[1.01] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_rgba(28,18,8,0.25)]">
-                  <span className="flex items-center justify-center gap-2">
-                    <ChatCircle size={14} weight="fill" />
-                    Get In Touch
-                  </span>
+                <button
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-white/25 to-white/15 py-3 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] hover:from-white/30 hover:to-white/20 hover:shadow-lg"
+                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                >
+                  <ChatCircle size={14} weight="fill" />
+                  Message
                 </button>
               </div>
             </div>

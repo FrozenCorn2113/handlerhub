@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  Bell,
   CalendarBlank,
   CaretDown,
   ChartBar,
   ChatCircle,
   Envelope,
+  Gear,
   House,
   Receipt,
   Trophy,
@@ -160,9 +162,27 @@ function NavDropdown({
 export function OpsNav({ role }: OpsNavProps) {
   const items = role === 'handler' ? handlerNav : exhibitorNav
   const [activeTab, setActiveTab] = useState(items[0].label)
-  const initials = role === 'handler' ? 'JH' : 'SE'
+  const [profileOpen, setProfileOpen] = useState(false)
+  const profileRef = useRef<HTMLDivElement>(null)
 
-  // Check if a nav item or its children is active
+  const firstName = role === 'handler' ? 'James' : 'Sarah'
+  const initials = role === 'handler' ? 'JR' : 'SM'
+  const roleName = role === 'handler' ? 'Handler' : 'Exhibitor'
+  const notificationCount = role === 'handler' ? 3 : 1
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target as Node)
+      ) {
+        setProfileOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   function isItemActive(item: NavItem) {
     if (item.label === activeTab) return true
     if (item.children?.some((c) => c.label === activeTab)) return true
@@ -193,9 +213,56 @@ export function OpsNav({ role }: OpsNavProps) {
         ))}
       </div>
 
-      {/* Avatar */}
-      <div className="ml-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paddock-green font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(31,107,74,0.3)]">
-        {initials}
+      {/* Right cluster: notifications, settings, profile */}
+      <div className="ml-4 flex items-center gap-2">
+        {/* Notification bell */}
+        <button className="relative flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 hover:bg-light-sand">
+          <Bell size={20} weight="regular" className="text-warm-brown" />
+          {notificationCount > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-gradient-to-br from-[#24845a] to-paddock-green px-1 font-sans text-[10px] font-bold text-white shadow-[0_1px_4px_rgba(31,107,74,0.3)]">
+              {notificationCount}
+            </span>
+          )}
+        </button>
+
+        {/* Settings */}
+        <button className="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 hover:bg-light-sand">
+          <Gear size={20} weight="regular" className="text-warm-brown" />
+        </button>
+
+        {/* Profile card element */}
+        <div ref={profileRef} className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center gap-2.5 rounded-full border border-tan/80 bg-white py-1.5 pl-1.5 pr-4 shadow-[0_1px_4px_rgba(28,18,8,0.06)] transition-all duration-200 hover:border-tan hover:shadow-[0_2px_8px_rgba(28,18,8,0.1)]"
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#24845a] to-paddock-green font-sans text-[11px] font-bold text-white">
+              {initials}
+            </div>
+            <span className="font-sans text-[13px] font-medium text-ringside-black">
+              {firstName}
+            </span>
+            <div className="h-2 w-2 rounded-full bg-emerald-400" />
+          </button>
+          {profileOpen && (
+            <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-tan/80 bg-white py-2 shadow-[0_8px_30px_rgba(28,18,8,0.14)]">
+              <div className="border-b border-tan/40 px-4 py-3">
+                <p className="font-sans text-sm font-semibold text-ringside-black">
+                  {firstName} {role === 'handler' ? 'Rodriguez' : 'Mitchell'}
+                </p>
+                <p className="font-sans text-xs text-warm-gray">{roleName}</p>
+              </div>
+              <button className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-sans text-[13px] font-medium text-warm-brown transition-all hover:bg-paddock-green/5">
+                <User size={15} className="text-warm-gray" />
+                View Profile
+              </button>
+              <button className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-sans text-[13px] font-medium text-warm-brown transition-all hover:bg-paddock-green/5">
+                <Gear size={15} className="text-warm-gray" />
+                Settings
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   )

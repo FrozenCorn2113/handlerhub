@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 
 import { Toaster } from '@/components/ui/toaster'
 
+import { CookieConsent } from '@/components/cookie-consent'
 import { ModalProvider } from '@/components/modals/modal-provider'
 import { Providers } from '@/components/providers'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
@@ -103,6 +104,7 @@ export default function RootLayout({ children, modal }: RootLayoutProps) {
           <Toaster richColors closeButton position="top-center" />
           <ModalProvider />
           <TailwindIndicator />
+          <CookieConsent />
         </Providers>
       </body>
     </html>

@@ -142,7 +142,7 @@ export default async function StatusPage() {
     <DashboardShell>
       <DashboardHeader heading="Users" text="Manage your users." />
       <section className="grid gap-8">
-        <div className="min-w-full overflow-x-auto rounded border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div className="min-w-full overflow-x-auto rounded-2xl border border-sand bg-white shadow-md">
           <table className="min-w-full align-middle text-sm dark:bg-gray-800">
             <thead className="dark:text-white">
               <tr className="bg-gray-50 dark:bg-gray-700">

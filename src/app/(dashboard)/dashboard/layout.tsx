@@ -22,7 +22,9 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen flex-col">
       <DashboardNavBar />
 
-      <main className="container flex-1 py-8">{children}</main>
+      <main className="flex-1 bg-ring-cream py-8">
+        <div className="container">{children}</div>
+      </main>
 
       <SiteFooter className="border-t" />
     </div>

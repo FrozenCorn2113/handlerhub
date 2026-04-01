@@ -9,7 +9,7 @@ export function EmptyPlaceholder({
 }) {
   return (
     <div
-      className={`flex min-h-[400px] flex-col items-center justify-center rounded-md border border-dashed p-8 text-center animate-in fade-in-50 ${className}`}
+      className={`flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-dashed border-sand bg-white/60 p-8 text-center animate-in fade-in-50 ${className}`}
     >
       <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
         {children}
@@ -28,7 +28,7 @@ EmptyPlaceholder.Icon = function EmptyPlaceHolderIcon({
   const Icon = Icons[name]
   return (
     <div
-      className={`flex size-20 items-center justify-center rounded-full bg-muted ${className}`}
+      className={`flex size-20 items-center justify-center rounded-full bg-light-sand ${className}`}
     >
       <Icon className="size-10" />
     </div>
@@ -40,7 +40,11 @@ EmptyPlaceholder.Title = function EmptyPlaceholderTitle({
 }: {
   children?: React.ReactNode
 }) {
-  return <h3 className="mt-4 text-lg font-semibold">{children}</h3>
+  return (
+    <h3 className="mt-4 font-display text-lg font-light text-ringside-black">
+      {children}
+    </h3>
+  )
 }
 
 EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
@@ -48,7 +52,9 @@ EmptyPlaceholder.Description = function EmptyPlaceholderDescription({
 }: {
   children?: React.ReactNode
 }) {
-  return <p className="mb-4 mt-2 text-sm text-muted-foreground">{children}</p>
+  return (
+    <p className="mb-4 mt-2 font-body text-sm text-warm-gray">{children}</p>
+  )
 }
 
 export default EmptyPlaceholder

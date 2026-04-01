@@ -175,7 +175,12 @@ async function HandlerDashboard({ userId }: { userId: string }) {
           </CardHeader>
           <CardContent>
             {recentConversations.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No messages yet.</p>
+              <div className="rounded-xl bg-ring-cream/60 p-6 text-center">
+                <p className="font-body text-sm text-warm-gray">
+                  Your inbox is quiet for now. Once you connect with exhibitors
+                  or handlers, conversations will appear here.
+                </p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {recentConversations.map((conv) => {
@@ -184,7 +189,7 @@ async function HandlerDashboard({ userId }: { userId: string }) {
                     <Link
                       key={conv.id}
                       href="/dashboard/messages"
-                      className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+                      className="block rounded-xl border border-sand p-3 transition-all hover:bg-ring-cream hover:shadow-sm"
                     >
                       <p className="text-sm font-medium">
                         {lastMsg?.sender?.name || 'Unknown'}
@@ -220,14 +225,15 @@ async function HandlerDashboard({ userId }: { userId: string }) {
           </CardHeader>
           <CardContent>
             {!profile ? (
-              <div className="rounded-md bg-muted p-4 text-center">
-                <p className="mb-3 text-sm text-muted-foreground">
+              <div className="rounded-xl bg-ring-cream/60 p-6 text-center">
+                <p className="mb-3 font-body text-sm text-warm-gray">
                   Complete your profile to see matching requests from
-                  exhibitors.
+                  exhibitors. The more details you share, the better your
+                  matches will be.
                 </p>
                 <Link
                   href="/dashboard/profile"
-                  className="text-sm font-medium text-primary hover:underline"
+                  className="font-body text-sm font-medium text-paddock-green hover:underline"
                 >
                   Complete Your Profile
                 </Link>
@@ -235,12 +241,18 @@ async function HandlerDashboard({ userId }: { userId: string }) {
             ) : matchingRequests.length > 0 ? (
               <DashboardRequestList requests={matchingRequests} />
             ) : (
-              <p className="text-sm text-muted-foreground">
-                No matching requests right now.{' '}
-                <Link href="/requests" className="text-paddock-green underline">
-                  Browse all requests
-                </Link>
-              </p>
+              <div className="rounded-xl bg-ring-cream/60 p-6 text-center">
+                <p className="font-body text-sm text-warm-gray">
+                  No matching requests right now, but new ones come in all the
+                  time.{' '}
+                  <Link
+                    href="/requests"
+                    className="font-medium text-paddock-green hover:underline"
+                  >
+                    Browse all requests
+                  </Link>
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -303,9 +315,10 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
         </CardHeader>
         <CardContent>
           {myRequests.length === 0 ? (
-            <div className="text-center">
-              <p className="mb-3 text-sm text-muted-foreground">
-                You have not posted any requests yet.
+            <div className="rounded-xl bg-ring-cream/60 p-6 text-center">
+              <p className="mb-4 font-body text-sm text-warm-gray">
+                Ready to find the perfect handler for your dog? Post a request
+                and let experienced professionals come to you.
               </p>
               <Link href="/handlers">
                 <Button variant="primary">Find Handlers</Button>
@@ -314,7 +327,10 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
           ) : (
             <div className="space-y-3">
               {myRequests.map((req) => (
-                <div key={req.id} className="rounded-lg border p-3">
+                <div
+                  key={req.id}
+                  className="rounded-xl border border-sand p-3 transition-all hover:bg-ring-cream/40"
+                >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">{req.title}</p>
                     <span
@@ -346,19 +362,25 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
         </CardHeader>
         <CardContent>
           {bookingRequests.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No bookings yet.{' '}
-              <Link href="/handlers" className="text-paddock-green underline">
-                Browse handlers
-              </Link>
-            </p>
+            <div className="rounded-xl bg-ring-cream/60 p-6 text-center">
+              <p className="font-body text-sm text-warm-gray">
+                No bookings yet. When you are ready, browse our network of
+                trusted handlers to get started.{' '}
+                <Link
+                  href="/handlers"
+                  className="font-medium text-paddock-green hover:underline"
+                >
+                  Browse handlers
+                </Link>
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {bookingRequests.map((booking) => (
                 <Link
                   key={booking.id}
                   href="/dashboard/bookings"
-                  className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+                  className="block rounded-xl border border-sand p-3 transition-all hover:bg-ring-cream/40 hover:shadow-sm"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">

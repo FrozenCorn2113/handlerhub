@@ -58,10 +58,10 @@ export default async function DogProfilesPage() {
         {dogProfiles.length === 0 ? (
           <EmptyPlaceholder>
             <EmptyPlaceholder.Icon name="dog" />
-            <EmptyPlaceholder.Title>No dog profiles yet</EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Title>Add your first dog</EmptyPlaceholder.Title>
             <EmptyPlaceholder.Description>
-              Create your first dog profile to quickly book handlers without
-              re-entering information each time.
+              Save your dog&apos;s details here so booking a handler is quick
+              and easy every time.
             </EmptyPlaceholder.Description>
             <Link href="/dashboard/dogs/new">
               <Button>
@@ -74,7 +74,7 @@ export default async function DogProfilesPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {dogProfiles.map((dog) => (
               <Link key={dog.id} href={`/dashboard/dogs/${dog.id}`}>
-                <Card className="cursor-pointer transition-colors hover:bg-accent">
+                <Card className="cursor-pointer">
                   <CardHeader>
                     <CardTitle>{dog.name}</CardTitle>
                     <CardDescription>

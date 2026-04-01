@@ -26,7 +26,7 @@ export default async function StatusPage() {
         <div className="grid gap-8">
           <>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-8">
-              <div className="flex flex-col overflow-hidden rounded border bg-white dark:bg-gray-800 dark:text-gray-100">
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-sand bg-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="flex grow items-center justify-between p-5">
                   <dl className="space-y-1">
                     <dt className="text-2xl font-bold">146</dt>
@@ -52,12 +52,12 @@ export default async function StatusPage() {
                 </div>
                 <a
                   href="#"
-                  className="block bg-gray-50 p-3 text-center text-sm font-medium text-blue-600 hover:bg-gray-100 hover:text-blue-700/70 active:bg-gray-50 dark:bg-gray-900/50 dark:text-blue-400 dark:hover:bg-gray-900/75 dark:hover:text-blue-300 dark:active:bg-gray-900/50"
+                  className="block bg-ring-cream/50 p-3 text-center font-body text-sm font-medium text-paddock-green hover:bg-ring-cream"
                 >
                   View All Sales
                 </a>
               </div>
-              <div className="flex flex-col overflow-hidden rounded border bg-white dark:bg-gray-800 dark:text-gray-100">
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-sand bg-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="flex grow items-center justify-between p-5">
                   <dl className="space-y-1">
                     <dt className="text-2xl font-bold">$5,128</dt>
@@ -83,12 +83,12 @@ export default async function StatusPage() {
                 </div>
                 <a
                   href="#"
-                  className="block bg-gray-50 p-3 text-center text-sm font-medium text-blue-600 hover:bg-gray-100 hover:text-blue-700/70 active:bg-gray-50 dark:bg-gray-900/50 dark:text-blue-400 dark:hover:bg-gray-900/75 dark:hover:text-blue-300 dark:active:bg-gray-900/50"
+                  className="block bg-ring-cream/50 p-3 text-center font-body text-sm font-medium text-paddock-green hover:bg-ring-cream"
                 >
                   View all Earnings
                 </a>
               </div>
-              <div className="flex flex-col overflow-hidden rounded border bg-white dark:bg-gray-800 dark:text-gray-100">
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-sand bg-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg">
                 <div className="flex grow items-center justify-between p-5">
                   <dl className="space-y-1">
                     <dt className="text-2xl font-bold">$2,670</dt>
@@ -114,7 +114,7 @@ export default async function StatusPage() {
                 </div>
                 <a
                   href="#"
-                  className="block bg-gray-50 p-3 text-center text-sm font-medium text-blue-600 hover:bg-gray-100 hover:text-blue-700/70 active:bg-gray-50 dark:bg-gray-900/50 dark:text-blue-400 dark:hover:bg-gray-900/75 dark:hover:text-blue-300 dark:active:bg-gray-900/50"
+                  className="block bg-ring-cream/50 p-3 text-center font-body text-sm font-medium text-paddock-green hover:bg-ring-cream"
                 >
                   Check your Balance
                 </a>
@@ -125,11 +125,13 @@ export default async function StatusPage() {
       </section>
       <section>
         <div className="mx-auto w-full xl:mb-0">
-          <div className="relative mb-6 flex w-full min-w-0 flex-col break-words rounded border bg-white dark:bg-gray-800">
+          <div className="relative mb-6 flex w-full min-w-0 flex-col break-words rounded-2xl border border-sand bg-white shadow-md">
             <div className="mb-0 rounded-t border-0 px-4 py-3">
               <div className="flex flex-wrap items-center">
                 <div className="relative w-full max-w-full flex-1 grow">
-                  <h3 className="text-base font-semibold">Page Visits</h3>
+                  <h3 className="font-display text-base font-light text-ringside-black">
+                    Page Visits
+                  </h3>
                 </div>
                 <div className="relative w-full max-w-full flex-1 grow px-4 text-right">
                   <button
@@ -143,7 +145,7 @@ export default async function StatusPage() {
             </div>
 
             <div className="block w-full overflow-x-auto">
-              <table className="w-full border-collapse items-center bg-transparent ">
+              <table className="w-full border-collapse items-center bg-transparent">
                 <thead>
                   <tr>
                     <th className="bg-blueGray-50 text-blueGray-500 border-blueGray-100 whitespace-nowrap border border-x-0 border-solid px-6 py-3 text-left align-middle text-xs font-semibold uppercase">

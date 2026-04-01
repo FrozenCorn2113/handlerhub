@@ -4,12 +4,15 @@ import { cn } from '@/lib/utils'
 
 import { type VariantProps, cva } from 'class-variance-authority'
 
-const cardVariants = cva('rounded-lg shadow-sm', {
+const cardVariants = cva('rounded-2xl shadow-md transition-all duration-200', {
   variants: {
     variant: {
-      default: 'border bg-card text-card-foreground',
-      background: 'text-background-foreground border bg-background',
+      default:
+        'border border-sand bg-white text-card-foreground hover:shadow-lg hover:-translate-y-0.5',
+      background:
+        'text-background-foreground border border-sand bg-background hover:shadow-lg hover:-translate-y-0.5',
       error: 'border border-destructive bg-card text-foreground',
+      static: 'border border-sand bg-white text-card-foreground',
     },
   },
   defaultVariants: {
@@ -48,7 +51,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      'text-2xl font-semibold leading-none tracking-tight',
+      'font-display text-2xl font-light leading-none tracking-tight text-ringside-black',
       className
     )}
     {...props}

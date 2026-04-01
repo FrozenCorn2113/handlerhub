@@ -95,14 +95,16 @@ export default async function BookingsPage() {
         {bookingRequests.length === 0 ? (
           <Card>
             <CardContent className="py-10 text-center">
-              <p className="text-muted-foreground">
+              <p className="font-body text-warm-gray">
                 {user.role === 'HANDLER'
-                  ? 'No booking requests yet. Make sure your profile is complete!'
-                  : 'No booking requests yet. Browse handlers to get started!'}
+                  ? 'No booking requests yet. A complete profile helps exhibitors find and trust you -- make sure yours is up to date.'
+                  : 'No bookings yet. Browse our network of trusted handlers to find the perfect match for your dog.'}
               </p>
               {user.role === 'EXHIBITOR' && (
-                <div className="mt-4 flex justify-center gap-2">
-                  <Button href="/handlers">Browse Handlers</Button>
+                <div className="mt-4 flex justify-center gap-3">
+                  <Button href="/handlers" variant="primary">
+                    Browse Handlers
+                  </Button>
                   <Button href="/dashboard/bookings/new" variant="secondary">
                     New Request
                   </Button>
@@ -111,7 +113,7 @@ export default async function BookingsPage() {
               {user.role === 'HANDLER' && (
                 <Button
                   href="/dashboard/profile"
-                  variant="secondary"
+                  variant="primary"
                   className="mt-4"
                 >
                   Complete Profile

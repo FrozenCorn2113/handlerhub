@@ -134,7 +134,7 @@ function MissionSection() {
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <h2
-            className="mx-auto mb-14 max-w-3xl text-center font-display italic text-paddock-green"
+            className="mx-auto mb-14 max-w-3xl text-center font-display text-paddock-green"
             style={{
               fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
               fontWeight: 700,

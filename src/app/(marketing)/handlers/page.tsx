@@ -3,10 +3,13 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import {
+  Camera,
+  Car,
   CaretDown,
   Dog,
   Funnel,
@@ -14,6 +17,8 @@ import {
   MagnifyingGlass,
   MapPin,
   Money,
+  Scissors,
+  SealCheck,
   SpinnerGap,
   Star,
   Trophy,
@@ -29,7 +34,9 @@ interface Handler {
   id: string
   name: string
   profileImage: string | null
+  coverImage: string | null
   serviceType: string
+  serviceTypes: string[]
   breeds: string[]
   regions: string[]
   city: string | null
@@ -42,6 +49,7 @@ interface Handler {
   isInsured: boolean
   isBonded: boolean
   registries: string[]
+  tagline: string | null
   bio: string | null
 }
 
@@ -50,6 +58,13 @@ interface SearchResponse {
   total: number
   page: number
   totalPages: number
+}
+
+interface EventSuggestion {
+  id: string
+  name: string
+  date: string
+  location: string
 }
 
 /* ------------------------------------------------------------------ */
@@ -74,6 +89,13 @@ const HandlerMap = dynamic(
 /* ------------------------------------------------------------------ */
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
+
+const SERVICE_TYPES = [
+  { label: 'Handler', value: 'HANDLING', icon: Dog },
+  { label: 'Groomer', value: 'GROOMING', icon: Scissors },
+  { label: 'Transport', value: 'TRANSPORT', icon: Car },
+  { label: 'Photographer', value: 'PHOTOGRAPHY', icon: Camera },
+] as const
 
 const US_STATES = [
   'AL',
@@ -174,11 +196,11 @@ function FilterDropdown({
         onClick={() => setOpen(!open)}
         className={`flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
           isActive
-            ? 'border-forest bg-forest/10 text-forest'
-            : 'border-tan bg-white text-warm-brown hover:border-forest hover:shadow-sm'
+            ? 'border-paddock-green bg-paddock-green text-white'
+            : 'border-sand bg-white text-warm-brown hover:border-paddock-green hover:shadow-sm'
         }`}
       >
-        <Icon size={16} weight="bold" className="text-forest" />
+        <Icon size={16} weight="bold" />
         {label}
         <CaretDown
           size={12}
@@ -187,7 +209,7 @@ function FilterDropdown({
         />
       </button>
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-2 min-w-[200px] rounded-xl border border-sand bg-white p-2 shadow-lg">
+        <div className="absolute left-0 top-full z-30 mt-2 min-w-[200px] rounded-2xl border border-sand bg-white p-2 shadow-lg">
           {children}
         </div>
       )}
@@ -196,25 +218,135 @@ function FilterDropdown({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Service badge color helper                                         */
+/*  Event Autocomplete                                                 */
 /* ------------------------------------------------------------------ */
 
-function serviceBadgeClasses(serviceType: string): string {
-  const lower = serviceType.toLowerCase()
-  if (lower.includes('campaign')) return 'bg-slate-blue/10 text-slate-blue'
-  if (
-    lower.includes('handling') ||
-    lower.includes('ringside') ||
-    lower.includes('conformation')
+function EventAutocomplete({
+  onSelect,
+  selectedEvent,
+  onClear,
+}: {
+  onSelect: (event: EventSuggestion) => void
+  selectedEvent: EventSuggestion | null
+  onClear: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<EventSuggestion[]>([])
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const debounceRef = useRef<NodeJS.Timeout>()
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleInput(value: string) {
+    setQuery(value)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (value.length < 2) {
+      setSuggestions([])
+      setOpen(false)
+      return
+    }
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(
+          `/api/events/search?q=${encodeURIComponent(value)}`
+        )
+        const data = await res.json()
+        setSuggestions(data.events || [])
+        setOpen(data.events?.length > 0)
+      } catch {
+        setSuggestions([])
+      } finally {
+        setLoading(false)
+      }
+    }, 300)
+  }
+
+  if (selectedEvent) {
+    return (
+      <div className="flex items-center gap-2 rounded-full border border-paddock-green bg-paddock-green/5 px-4 py-2 text-sm">
+        <Trophy
+          size={16}
+          weight="bold"
+          className="shrink-0 text-paddock-green"
+        />
+        <span className="truncate font-medium text-paddock-green">
+          {selectedEvent.name}
+        </span>
+        <button
+          onClick={onClear}
+          className="ml-auto shrink-0 rounded-full p-0.5 text-paddock-green hover:bg-paddock-green/10"
+        >
+          <X size={14} weight="bold" />
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="relative">
+        <Trophy
+          size={16}
+          weight="bold"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-warm-gray"
+        />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => handleInput(e.target.value)}
+          onFocus={() => suggestions.length > 0 && setOpen(true)}
+          placeholder="Attending a show? Search events..."
+          className="w-full rounded-full border border-sand bg-white py-2 pl-10 pr-4 text-sm text-ringside-black placeholder:text-warm-gray/60 focus:border-paddock-green focus:outline-none focus:ring-2 focus:ring-paddock-green/20"
+        />
+        {loading && (
+          <SpinnerGap
+            size={14}
+            className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-warm-gray"
+          />
+        )}
+      </div>
+      {open && suggestions.length > 0 && (
+        <div className="absolute left-0 top-full z-30 mt-2 w-full rounded-2xl border border-sand bg-white p-2 shadow-lg">
+          {suggestions.map((event) => (
+            <button
+              key={event.id}
+              onClick={() => {
+                onSelect(event)
+                setQuery('')
+                setOpen(false)
+              }}
+              className="flex w-full flex-col rounded-lg px-3 py-2 text-left hover:bg-light-sand"
+            >
+              <span className="text-sm font-medium text-ringside-black">
+                {event.name}
+              </span>
+              <span className="text-xs text-warm-gray">
+                {new Date(event.date).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+                {event.location ? ` \u00b7 ${event.location}` : ''}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   )
-    return 'bg-forest/10 text-forest'
-  if (lower.includes('groom')) return 'bg-pastel-sky/40 text-warm-brown'
-  if (lower.includes('train')) return 'bg-pastel-mint/40 text-paddock-green'
-  return 'bg-light-sand text-warm-brown'
 }
 
 /* ------------------------------------------------------------------ */
-/*  Handler card                                                       */
+/*  Handler card (Fiverr-style)                                        */
 /* ------------------------------------------------------------------ */
 
 function HandlerCard({
@@ -236,103 +368,116 @@ function HandlerCard({
   return (
     <Link
       href={`/handlers/${handler.id}`}
-      className={`group block rounded-xl border p-5 transition-all ${
+      className={`group block overflow-hidden rounded-2xl border shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg ${
         isHighlighted
-          ? 'border-forest shadow-lg ring-2 ring-forest/20'
-          : 'border-sand/60 bg-white hover:border-tan hover:shadow-lg'
+          ? 'border-paddock-green ring-2 ring-paddock-green/20'
+          : 'border-sand bg-white'
       }`}
     >
-      {/* Top row: avatar + name + rating */}
-      <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-center gap-3">
+      {/* Cover photo area */}
+      <div className="relative h-36 w-full bg-gradient-to-br from-light-sand to-sand">
+        {handler.coverImage ? (
+          <img
+            src={handler.coverImage}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        ) : handler.profileImage ? (
+          <div className="h-full w-full bg-gradient-to-br from-forest/20 to-paddock-green/10" />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-light-sand via-sand to-tan" />
+        )}
+      </div>
+
+      {/* Avatar overlapping cover */}
+      <div className="relative px-4 pb-4">
+        <div className="-mt-8 mb-2 flex items-end gap-3">
           {handler.profileImage ? (
             <img
               src={handler.profileImage}
               alt={handler.name}
-              className="size-12 shrink-0 rounded-full object-cover"
+              className="size-16 shrink-0 rounded-full border-[3px] border-white object-cover shadow-md"
             />
           ) : (
-            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-forest text-sm font-bold text-white">
+            <div className="flex size-16 shrink-0 items-center justify-center rounded-full border-[3px] border-white bg-forest text-lg font-bold text-white shadow-md">
               {initials}
             </div>
           )}
-          <div>
-            <h3 className="font-display text-base font-semibold text-ringside-black">
-              {handler.name}
-            </h3>
+          <div className="min-w-0 pb-1">
+            <div className="flex items-center gap-1.5">
+              <h3 className="truncate font-display text-base font-semibold text-ringside-black">
+                {handler.name}
+              </h3>
+              {handler.isInsured && (
+                <SealCheck
+                  size={18}
+                  weight="fill"
+                  className="shrink-0 text-paddock-green"
+                />
+              )}
+            </div>
             <p className="text-xs text-warm-gray">
               {handler.yearsExperience
-                ? `${handler.yearsExperience} years experience`
-                : handler.experienceLevel}
+                ? `${handler.yearsExperience} yrs experience`
+                : handler.experienceLevel.charAt(0) +
+                  handler.experienceLevel.slice(1).toLowerCase()}
             </p>
           </div>
         </div>
-        {handler.rating && (
-          <div className="flex items-center gap-1">
-            <Star size={14} weight="fill" className="text-slate-blue" />
-            <span className="text-sm font-semibold text-ringside-black">
-              {handler.rating.toFixed(1)}
-            </span>
-            {handler.reviewCount > 0 && (
-              <span className="text-xs text-warm-gray">
-                ({handler.reviewCount})
+
+        {/* Tagline or bio snippet */}
+        {(handler.tagline || handler.bio) && (
+          <p className="mb-3 line-clamp-2 text-sm leading-snug text-warm-brown">
+            {handler.tagline || handler.bio}
+          </p>
+        )}
+
+        {/* Breed chips */}
+        {handler.breeds.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {handler.breeds.slice(0, 3).map((breed) => (
+              <span
+                key={breed}
+                className="rounded-full bg-light-sand px-2.5 py-0.5 text-xs text-warm-brown"
+              >
+                {breed}
+              </span>
+            ))}
+            {handler.breeds.length > 3 && (
+              <span className="rounded-full bg-light-sand px-2.5 py-0.5 text-xs text-warm-gray">
+                +{handler.breeds.length - 3}
               </span>
             )}
           </div>
         )}
-      </div>
 
-      {/* Service badge + trust signals */}
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span
-          className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${serviceBadgeClasses(handler.serviceType)}`}
-        >
-          {handler.serviceType}
-        </span>
-        {handler.isInsured && (
-          <span className="rounded-full bg-paddock-green/10 px-2 py-0.5 text-[10px] font-semibold text-paddock-green">
-            Insured
-          </span>
-        )}
-      </div>
-
-      {/* Bio snippet */}
-      {handler.bio && (
-        <p className="mb-3 line-clamp-2 text-sm text-warm-brown">
-          {handler.bio}
-        </p>
-      )}
-
-      {/* Breed chips */}
-      {handler.breeds.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-1.5">
-          {handler.breeds.slice(0, 3).map((breed) => (
-            <span
-              key={breed}
-              className="rounded-full bg-light-sand px-2.5 py-0.5 text-xs text-warm-brown"
-            >
-              {breed}
-            </span>
-          ))}
-          {handler.breeds.length > 3 && (
-            <span className="rounded-full bg-light-sand px-2.5 py-0.5 text-xs text-warm-gray">
-              +{handler.breeds.length - 3} more
-            </span>
+        {/* Bottom row: rating + location + price */}
+        <div className="flex items-center justify-between border-t border-sand/40 pt-3">
+          <div className="flex items-center gap-3">
+            {handler.rating && (
+              <div className="flex items-center gap-1">
+                <Star size={14} weight="fill" className="text-amber-400" />
+                <span className="text-sm font-semibold text-ringside-black">
+                  {handler.rating.toFixed(1)}
+                </span>
+                {handler.reviewCount > 0 && (
+                  <span className="text-xs text-warm-gray">
+                    ({handler.reviewCount})
+                  </span>
+                )}
+              </div>
+            )}
+            <div className="flex items-center gap-1 text-xs text-warm-gray">
+              <MapPin size={12} weight="bold" className="text-paddock-green" />
+              {location || handler.regions?.[0] || 'N/A'}
+            </div>
+          </div>
+          {handler.ratePerShow && (
+            <p className="text-sm font-semibold text-paddock-green">
+              From ${handler.ratePerShow}
+            </p>
           )}
         </div>
-      )}
-
-      {/* Bottom row: region + price */}
-      <div className="flex items-center justify-between border-t border-sand/40 pt-3">
-        <div className="flex items-center gap-1 text-sm text-warm-gray">
-          <MapPin size={14} weight="bold" className="text-forest" />
-          {location || handler.regions?.[0] || 'Location not set'}
-        </div>
-        {handler.ratePerShow && (
-          <p className="text-sm font-semibold text-forest">
-            From ${handler.ratePerShow}/show
-          </p>
-        )}
       </div>
     </Link>
   )
@@ -346,7 +491,7 @@ export default function HandlersPageWrapper() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-[calc(100vh-140px)] items-center justify-center">
+        <div className="flex h-[calc(100vh-140px)] items-center justify-center bg-ring-cream">
           <SpinnerGap size={32} className="animate-spin text-warm-gray" />
         </div>
       }
@@ -369,8 +514,10 @@ function HandlersPage() {
     searchParams.get('search') || ''
   )
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<EventSuggestion | null>(
+    null
+  )
 
-  // Active filters from URL
   const activeState = searchParams.get('state') || ''
   const activeCity = searchParams.get('city') || ''
   const activeBreed = searchParams.get('breed') || ''
@@ -379,15 +526,18 @@ function HandlersPage() {
   const activeExperience = searchParams.get('experience') || ''
   const activeSearch = searchParams.get('search') || ''
   const activeSort = searchParams.get('sort') || 'newest'
+  const activeServiceType = searchParams.get('serviceType') || ''
+  const activeEventId = searchParams.get('eventId') || ''
 
   const hasActiveFilters =
     activeState ||
     activeBreed ||
     activeMinPrice ||
     activeMaxPrice ||
-    activeExperience
+    activeExperience ||
+    activeServiceType ||
+    activeEventId
 
-  // Fetch handlers
   const fetchHandlers = useCallback(async () => {
     setLoading(true)
     try {
@@ -399,6 +549,8 @@ function HandlersPage() {
       if (activeMinPrice) params.set('minPrice', activeMinPrice)
       if (activeMaxPrice) params.set('maxPrice', activeMaxPrice)
       if (activeExperience) params.set('experience', activeExperience)
+      if (activeServiceType) params.set('serviceType', activeServiceType)
+      if (activeEventId) params.set('eventId', activeEventId)
       if (activeSort) params.set('sort', activeSort)
       params.set('page', page.toString())
 
@@ -423,6 +575,8 @@ function HandlersPage() {
     activeMinPrice,
     activeMaxPrice,
     activeExperience,
+    activeServiceType,
+    activeEventId,
     activeSort,
     page,
   ])
@@ -431,7 +585,6 @@ function HandlersPage() {
     fetchHandlers()
   }, [fetchHandlers])
 
-  // Update URL params
   function setFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString())
     if (value) {
@@ -439,13 +592,14 @@ function HandlersPage() {
     } else {
       params.delete(key)
     }
-    params.delete('page') // Reset page on filter change
+    params.delete('page')
     setPage(1)
     router.push(`/handlers?${params.toString()}`, { scroll: false })
   }
 
   function clearFilters() {
     setPage(1)
+    setSelectedEvent(null)
     router.push('/handlers', { scroll: false })
   }
 
@@ -454,13 +608,51 @@ function HandlersPage() {
     setFilter('search', searchQuery)
   }
 
+  function handleEventSelect(event: EventSuggestion) {
+    setSelectedEvent(event)
+    setFilter('eventId', event.id)
+  }
+
+  function handleEventClear() {
+    setSelectedEvent(null)
+    setFilter('eventId', '')
+  }
+
   return (
-    <div className="flex h-[calc(100vh-140px)] flex-col">
-      {/* Search + Filter bar */}
+    <div className="flex h-[calc(100vh-140px)] flex-col bg-ring-cream">
+      {/* Sticky header: service selector + search + filters */}
       <div className="sticky top-0 z-20 border-b border-sand bg-ring-cream">
-        {/* Search row */}
-        <div className="px-6 pt-3">
-          <form onSubmit={handleSearch} className="relative max-w-md">
+        {/* Service Type Selector */}
+        <div className="px-6 pb-2 pt-4">
+          <h1 className="mb-3 font-display text-xl font-bold text-ringside-black">
+            Find a Professional
+          </h1>
+          <div className="flex gap-3">
+            {SERVICE_TYPES.map(({ label, value, icon: Icon }) => {
+              const isSelected = activeServiceType === value
+              return (
+                <button
+                  key={value}
+                  onClick={() =>
+                    setFilter('serviceType', isSelected ? '' : value)
+                  }
+                  className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 px-5 py-3 text-xs font-semibold transition-all ${
+                    isSelected
+                      ? 'border-paddock-green bg-paddock-green text-white shadow-md'
+                      : 'border-sand bg-white text-warm-brown hover:border-paddock-green/40 hover:shadow-sm'
+                  }`}
+                >
+                  <Icon size={24} weight={isSelected ? 'fill' : 'bold'} />
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Search + Event row */}
+        <div className="flex gap-3 px-6 pb-1 pt-2">
+          <form onSubmit={handleSearch} className="relative max-w-md flex-1">
             <MagnifyingGlass
               size={18}
               weight="bold"
@@ -470,15 +662,21 @@ function HandlersPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search handlers by name, location, breed..."
-              className="w-full rounded-full border border-tan bg-white py-2 pl-10 pr-4 text-sm text-ringside-black placeholder:text-warm-gray/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
+              placeholder="Search by name, location, breed..."
+              className="w-full rounded-full border border-sand bg-white py-2 pl-10 pr-4 text-sm text-ringside-black placeholder:text-warm-gray/60 focus:border-paddock-green focus:outline-none focus:ring-2 focus:ring-paddock-green/20"
             />
           </form>
+          <div className="w-72">
+            <EventAutocomplete
+              onSelect={handleEventSelect}
+              selectedEvent={selectedEvent}
+              onClear={handleEventClear}
+            />
+          </div>
         </div>
 
-        {/* Filter row */}
-        <div className="flex items-center gap-3 overflow-x-auto px-6 py-3">
-          {/* State filter */}
+        {/* Filter pills row */}
+        <div className="flex items-center gap-3 overflow-x-auto px-6 py-2.5">
           <FilterDropdown
             label={activeState || 'State'}
             icon={Globe}
@@ -497,7 +695,7 @@ function HandlersPage() {
                   onClick={() => setFilter('state', s)}
                   className={`block w-full rounded-lg px-3 py-1.5 text-left text-sm hover:bg-light-sand ${
                     activeState === s
-                      ? 'font-semibold text-forest'
+                      ? 'font-semibold text-paddock-green'
                       : 'text-ringside-black'
                   }`}
                 >
@@ -507,7 +705,6 @@ function HandlersPage() {
             </div>
           </FilterDropdown>
 
-          {/* Price filter */}
           <FilterDropdown
             label={
               activeMinPrice
@@ -547,7 +744,6 @@ function HandlersPage() {
             ))}
           </FilterDropdown>
 
-          {/* Experience filter */}
           <FilterDropdown
             label={activeExperience || 'Experience'}
             icon={Trophy}
@@ -565,7 +761,7 @@ function HandlersPage() {
                 onClick={() => setFilter('experience', l.value)}
                 className={`block w-full rounded-lg px-3 py-1.5 text-left text-sm hover:bg-light-sand ${
                   activeExperience === l.value
-                    ? 'font-semibold text-forest'
+                    ? 'font-semibold text-paddock-green'
                     : 'text-ringside-black'
                 }`}
               >
@@ -574,7 +770,6 @@ function HandlersPage() {
             ))}
           </FilterDropdown>
 
-          {/* Sort */}
           <FilterDropdown
             label="Sort"
             icon={Funnel}
@@ -592,7 +787,7 @@ function HandlersPage() {
                 onClick={() => setFilter('sort', s.value)}
                 className={`block w-full rounded-lg px-3 py-1.5 text-left text-sm hover:bg-light-sand ${
                   activeSort === s.value
-                    ? 'font-semibold text-forest'
+                    ? 'font-semibold text-paddock-green'
                     : 'text-ringside-black'
                 }`}
               >
@@ -601,7 +796,6 @@ function HandlersPage() {
             ))}
           </FilterDropdown>
 
-          {/* Clear filters */}
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
@@ -619,7 +813,7 @@ function HandlersPage() {
         {/* Left panel: handler cards */}
         <div className="w-full overflow-y-auto px-6 py-5 lg:w-3/5">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-warm-gray">
+            <p className="font-body text-sm text-warm-gray">
               {loading ? (
                 <span className="flex items-center gap-2">
                   <SpinnerGap size={14} className="animate-spin" />
@@ -639,10 +833,10 @@ function HandlersPage() {
           {!loading && handlers.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <UserCircle size={48} weight="thin" className="mb-3 text-tan" />
-              <p className="text-lg font-medium text-warm-gray">
+              <p className="font-display text-lg font-medium text-warm-gray">
                 No handlers found
               </p>
-              <p className="mt-1 text-sm text-warm-gray/70">
+              <p className="mt-1 font-body text-sm text-warm-gray/70">
                 {hasActiveFilters
                   ? 'Try adjusting your filters or broadening your search.'
                   : 'Be the first to create a handler profile!'}
@@ -650,7 +844,7 @@ function HandlersPage() {
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
-                  className="mt-4 rounded-full bg-forest px-5 py-2 text-sm font-semibold text-white hover:bg-forest/90"
+                  className="mt-4 rounded-full bg-paddock-green px-5 py-2 text-sm font-semibold text-white hover:bg-paddock-green/90"
                 >
                   Clear All Filters
                 </button>
@@ -658,7 +852,7 @@ function HandlersPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-4 pb-8 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 pb-8 md:grid-cols-2">
             {handlers.map((handler) => (
               <HandlerCard
                 key={handler.id}
@@ -674,17 +868,17 @@ function HandlersPage() {
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="rounded-lg border border-sand px-3 py-1.5 text-sm font-medium text-warm-brown disabled:opacity-40"
+                className="rounded-full border border-sand px-4 py-2 text-sm font-medium text-warm-brown transition-all hover:border-paddock-green disabled:opacity-40"
               >
                 Previous
               </button>
-              <span className="text-sm text-warm-gray">
+              <span className="font-body text-sm text-warm-gray">
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
-                className="rounded-lg border border-sand px-3 py-1.5 text-sm font-medium text-warm-brown disabled:opacity-40"
+                className="rounded-full border border-sand px-4 py-2 text-sm font-medium text-warm-brown transition-all hover:border-paddock-green disabled:opacity-40"
               >
                 Next
               </button>

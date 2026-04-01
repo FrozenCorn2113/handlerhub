@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
     ? parseFloat(searchParams.get('maxPrice')!)
     : null
   const experience = searchParams.get('experience')?.trim() || null
+  const serviceType = searchParams.get('serviceType')?.trim() || null
+  const eventId = searchParams.get('eventId')?.trim() || null
   const sort = searchParams.get('sort') || 'newest'
 
   // Build where clause
@@ -51,6 +53,17 @@ export async function GET(req: NextRequest) {
 
   if (experience) {
     where.experienceLevel = experience
+  }
+
+  if (serviceType) {
+    where.serviceTypes = { has: serviceType }
+  }
+
+  if (eventId) {
+    where.user = {
+      ...where.user,
+      showAttendance: { some: { eventId } },
+    }
   }
 
   // Full-text search on name, bio, breeds
@@ -91,7 +104,9 @@ export async function GET(req: NextRequest) {
       id: h.user.id,
       name: h.fullName || h.user.name || 'Professional Handler',
       profileImage: h.profileImage || h.user.image || null,
+      coverImage: h.coverImage || null,
       serviceType: h.services?.[0] || 'Handling',
+      serviceTypes: h.serviceTypes || [],
       breeds: h.breeds || [],
       regions: h.regions || [],
       city: h.city || null,
@@ -104,6 +119,10 @@ export async function GET(req: NextRequest) {
       isInsured: h.isInsured,
       isBonded: h.isBonded,
       registries: h.registries || [],
+      tagline: h.showHighlights
+        ? h.showHighlights.slice(0, 80) +
+          (h.showHighlights.length > 80 ? '...' : '')
+        : null,
       bio: h.bio
         ? h.bio.slice(0, 150) + (h.bio.length > 150 ? '...' : '')
         : null,

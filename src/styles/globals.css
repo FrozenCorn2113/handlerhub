@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@400;500;600&display=swap');
 
-/* Roca One — not on Google Fonts. Using @font-face placeholder.
-   To activate: drop RocaOne-Regular.woff2 into /public/fonts/ */
+/* Roca One — local font, not on Google Fonts */
 @font-face {
   font-family: 'Roca One';
-  src: url('/fonts/RocaOne-Regular.woff2') format('woff2');
+  src: url('/fonts/RocaOne-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

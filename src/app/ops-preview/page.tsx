@@ -322,11 +322,6 @@ export default function OpsPreviewPage() {
                 <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                   Roca One
                 </span>
-                <p className="mb-4 rounded bg-yellow-50 px-3 py-2 font-sans text-[11px] text-yellow-800">
-                  Roca One is not on Google Fonts. Drop RocaOne-Regular.woff2
-                  into /public/fonts/ to preview. Until then, this falls back to
-                  system sans-serif.
-                </p>
 
                 {/* Desktop size */}
                 <div className="mb-6">

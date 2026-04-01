@@ -23,21 +23,29 @@ export default async function OnboardingPage() {
   const userId = session.user.id
 
   // Fetch user and profile in parallel
-  const [user, profile] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        image: true,
-      },
-    }),
-    prisma.handlerProfile.findUnique({
-      where: { userId },
-    }),
-  ])
+  let user, profile
+  try {
+    ;[user, profile] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          image: true,
+        },
+      }),
+      prisma.handlerProfile
+        .findUnique({
+          where: { userId },
+        })
+        .catch(() => null),
+    ])
+  } catch {
+    // If user query fails, redirect to register
+    redirect('/register?next=/onboarding')
+  }
 
   if (!user) {
     redirect('/register?next=/onboarding')

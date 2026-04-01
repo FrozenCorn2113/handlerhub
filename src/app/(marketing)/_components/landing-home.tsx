@@ -201,7 +201,7 @@ function RequestBoardSection() {
         <ScrollReveal>
           <div className="mb-12 flex items-end justify-between">
             <div>
-              <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#D4621A]">
+              <p className="mb-3 text-base font-semibold uppercase tracking-[0.15em] text-[#4A6F8A]">
                 Request board
               </p>
               <h2
@@ -233,7 +233,7 @@ function RequestBoardSection() {
                     <span className="rounded-full bg-[#14472F] px-3 py-1 text-sm font-semibold text-white">
                       {req.service}
                     </span>
-                    <span className="rounded-full border border-[#D4621A]/30 bg-[#D4621A]/10 px-2.5 py-0.5 text-sm font-medium text-[#D4621A]">
+                    <span className="rounded-full border border-[#4A6F8A]/30 bg-[#4A6F8A]/10 px-2.5 py-0.5 text-sm font-medium text-[#4A6F8A]">
                       Example
                     </span>
                   </div>

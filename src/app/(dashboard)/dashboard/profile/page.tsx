@@ -130,7 +130,7 @@ export default async function HandlerProfilePage({
 
       {/* Motivation banner */}
       {profile && completeness < 80 && (
-        <div className="mb-6 rounded-xl border border-show-orange/30 bg-show-orange/5 p-4">
+        <div className="mb-6 rounded-xl border border-slate-blue/30 bg-slate-blue/5 p-4">
           <p className="font-display text-base font-light text-ringside-black">
             Complete your profile to appear in search results
           </p>

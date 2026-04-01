@@ -20,6 +20,7 @@ const publicRoutes = [
   '/role-select',
   '/our-story',
   '/events',
+  '/ops-preview',
   '/signup/verify-email',
   '/login/password-reset',
   '/signin/password-update',

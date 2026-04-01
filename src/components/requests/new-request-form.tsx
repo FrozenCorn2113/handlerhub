@@ -17,6 +17,10 @@ import { PaperPlaneRight } from '@phosphor-icons/react'
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export function NewRequestForm() {
@@ -107,7 +111,7 @@ export function NewRequestForm() {
         {/* Title */}
         <div>
           <label htmlFor="title" className={labelClass}>
-            Title <span className="text-show-orange">*</span>
+            Title <span className="text-slate-blue">*</span>
           </label>
           <input
             id="title"
@@ -123,7 +127,7 @@ export function NewRequestForm() {
         {/* Description */}
         <div>
           <label htmlFor="description" className={labelClass}>
-            Description <span className="text-show-orange">*</span>
+            Description <span className="text-slate-blue">*</span>
           </label>
           <textarea
             id="description"
@@ -139,7 +143,7 @@ export function NewRequestForm() {
         {/* Service Type */}
         <div>
           <label htmlFor="serviceType" className={labelClass}>
-            Service Type <span className="text-show-orange">*</span>
+            Service Type <span className="text-slate-blue">*</span>
           </label>
           <select
             id="serviceType"

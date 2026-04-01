@@ -61,7 +61,7 @@ interface EventsFiltersProps {
 function FilterBadge({ count }: { count: number }) {
   if (count === 0) return null
   return (
-    <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-show-orange px-1 text-[10px] font-bold text-white">
+    <span className="ml-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-slate-blue px-1 text-[10px] font-bold text-white">
       {count}
     </span>
   )
@@ -382,7 +382,7 @@ export function EventsFilters({
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-show-orange transition-colors hover:bg-show-orange/10"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-slate-blue transition-colors hover:bg-slate-blue/10"
             >
               <X size={12} weight="bold" />
               Clear all

@@ -201,7 +201,7 @@ function FilterDropdown({
 
 function serviceBadgeClasses(serviceType: string): string {
   const lower = serviceType.toLowerCase()
-  if (lower.includes('campaign')) return 'bg-show-orange/10 text-show-orange'
+  if (lower.includes('campaign')) return 'bg-slate-blue/10 text-slate-blue'
   if (
     lower.includes('handling') ||
     lower.includes('ringside') ||
@@ -269,7 +269,7 @@ function HandlerCard({
         </div>
         {handler.rating && (
           <div className="flex items-center gap-1">
-            <Star size={14} weight="fill" className="text-show-orange" />
+            <Star size={14} weight="fill" className="text-slate-blue" />
             <span className="text-sm font-semibold text-ringside-black">
               {handler.rating.toFixed(1)}
             </span>

@@ -364,23 +364,26 @@ export default function OpsPreviewPage() {
               3. Heading Font Comparison
             </h2>
             <p className="mb-6 font-sans text-sm text-warm-gray">
-              Three heading font options at weight 300, tracking -0.04em,
-              line-height 0.95. All paired with Inter body text.
+              Three rounded/geometric heading font options to complement Roca
+              One. All paired with Inter body text.
             </p>
 
             <div className="grid gap-6 lg:grid-cols-3">
               {[
                 {
-                  name: 'Source Serif 4',
-                  family: "'Source Serif 4', serif",
+                  name: 'Quicksand',
+                  family: "'Quicksand', sans-serif",
+                  weights: '300 / 500',
                 },
                 {
-                  name: 'Spectral',
-                  family: "'Spectral', serif",
+                  name: 'Josefin Sans',
+                  family: "'Josefin Sans', sans-serif",
+                  weights: '300 / 400',
                 },
                 {
-                  name: 'Newsreader',
-                  family: "'Newsreader', serif",
+                  name: 'Outfit',
+                  family: "'Outfit', sans-serif",
+                  weights: '300 / 400',
                 },
               ].map((font) => (
                 <div
@@ -394,15 +397,15 @@ export default function OpsPreviewPage() {
                   <div className="space-y-3">
                     <div>
                       <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                        H1
+                        H1 &middot; {font.weights}
                       </span>
                       <h1
                         className="text-5xl text-ringside-black lg:text-6xl"
                         style={{
                           fontFamily: font.family,
                           fontWeight: 300,
-                          letterSpacing: '-0.04em',
-                          lineHeight: 0.95,
+                          letterSpacing: '-0.02em',
+                          lineHeight: 1.05,
                           marginBottom: 0,
                         }}
                       >
@@ -421,8 +424,8 @@ export default function OpsPreviewPage() {
                         style={{
                           fontFamily: font.family,
                           fontWeight: 300,
-                          letterSpacing: '-0.04em',
-                          lineHeight: 0.95,
+                          letterSpacing: '-0.02em',
+                          lineHeight: 1.1,
                           marginBottom: 0,
                         }}
                       >
@@ -441,8 +444,8 @@ export default function OpsPreviewPage() {
                         style={{
                           fontFamily: font.family,
                           fontWeight: 300,
-                          letterSpacing: '-0.04em',
-                          lineHeight: 0.95,
+                          letterSpacing: '-0.02em',
+                          lineHeight: 1.1,
                           marginBottom: 0,
                         }}
                       >
@@ -479,16 +482,16 @@ export default function OpsPreviewPage() {
             <div className="grid gap-6 lg:grid-cols-3">
               {[
                 {
-                  name: 'Source Serif 4',
-                  family: "'Source Serif 4', serif",
+                  name: 'Quicksand',
+                  family: "'Quicksand', sans-serif",
                 },
                 {
-                  name: 'Spectral',
-                  family: "'Spectral', serif",
+                  name: 'Josefin Sans',
+                  family: "'Josefin Sans', sans-serif",
                 },
                 {
-                  name: 'Newsreader',
-                  family: "'Newsreader', serif",
+                  name: 'Outfit',
+                  family: "'Outfit', sans-serif",
                 },
               ].map((font) => (
                 <div
@@ -504,8 +507,8 @@ export default function OpsPreviewPage() {
                     style={{
                       fontFamily: font.family,
                       fontWeight: 300,
-                      letterSpacing: '-0.04em',
-                      lineHeight: 0.95,
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1.1,
                       marginBottom: '0.5rem',
                     }}
                   >
@@ -624,7 +627,8 @@ export default function OpsPreviewPage() {
                 <ColorSwatch name="Ring Cream" hex="#F8F4EE" />
                 <ColorSwatch name="Paddock Green" hex="#1F6B4A" dark />
                 <ColorSwatch name="Forest" hex="#14472F" dark />
-                <ColorSwatch name="Show Orange" hex="#D4621A" dark />
+                <ColorSwatch name="Slate Blue" hex="#4A6F8A" dark />
+                <ColorSwatch name="Slate Blue Light" hex="#E8EFF5" />
                 <ColorSwatch name="Sand" hex="#E8E0D4" />
                 <ColorSwatch name="Tan" hex="#D4CFC4" />
                 <ColorSwatch name="Warm Brown" hex="#4A3E2E" dark />
@@ -796,26 +800,37 @@ export default function OpsPreviewPage() {
 
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3 rounded-lg border border-tan bg-white p-6">
-              <span className="mr-2 font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                On White
+              <span className="mr-2 w-full font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+                Filled
               </span>
-              <StatusBadge status="pending" />
-              <StatusBadge status="accepted" />
-              <StatusBadge status="completed" />
-              <StatusBadge status="declined" />
-              <StatusBadge status="cancelled" />
-              <StatusBadge status="overdue" />
+              <StatusBadge status="pending" weight="filled" />
+              <StatusBadge status="accepted" weight="filled" />
+              <StatusBadge status="completed" weight="filled" />
+              <StatusBadge status="declined" weight="filled" />
+              <StatusBadge status="cancelled" weight="filled" />
+              <StatusBadge status="overdue" weight="filled" />
+            </div>
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-tan bg-white p-6">
+              <span className="mr-2 w-full font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+                Medium (default)
+              </span>
+              <StatusBadge status="pending" weight="medium" />
+              <StatusBadge status="accepted" weight="medium" />
+              <StatusBadge status="completed" weight="medium" />
+              <StatusBadge status="declined" weight="medium" />
+              <StatusBadge status="cancelled" weight="medium" />
+              <StatusBadge status="overdue" weight="medium" />
             </div>
             <div className="flex flex-wrap items-center gap-3 rounded-lg border border-tan bg-ring-cream p-6">
-              <span className="mr-2 font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                On Cream
+              <span className="mr-2 w-full font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+                Light
               </span>
-              <StatusBadge status="pending" />
-              <StatusBadge status="accepted" />
-              <StatusBadge status="completed" />
-              <StatusBadge status="declined" />
-              <StatusBadge status="cancelled" />
-              <StatusBadge status="overdue" />
+              <StatusBadge status="pending" weight="light" />
+              <StatusBadge status="accepted" weight="light" />
+              <StatusBadge status="completed" weight="light" />
+              <StatusBadge status="declined" weight="light" />
+              <StatusBadge status="cancelled" weight="light" />
+              <StatusBadge status="overdue" weight="light" />
             </div>
           </div>
         </section>
@@ -909,18 +924,38 @@ export default function OpsPreviewPage() {
               price={15000}
               pricePer="show"
               description="Professional ring presentation including pre-show grooming, gaiting, and stacking for breed and group competition."
+              tiers={[
+                { name: 'Breed', price: 15000, pricePer: 'show' },
+                { name: 'Group', price: 20000, pricePer: 'show' },
+                { name: 'Best in Show', price: 25000, pricePer: 'show' },
+              ]}
+              features={[
+                'Professional ring presentation',
+                'Pre-show grooming and stacking',
+                'Breed and group competition',
+              ]}
             />
             <ServiceCard
               name="Full Grooming"
               price={8500}
               pricePer="session"
               description="Complete breed-standard grooming including bath, blow-dry, trimming, and show-day finishing touches."
+              features={[
+                'Breed-standard grooming',
+                'Bath, blow-dry, and trimming',
+                'Show-day finishing touches',
+              ]}
             />
             <ServiceCard
               name="Training"
               price={12000}
               pricePer="hour"
               description="One-on-one ring training sessions covering free-stacking, gaiting patterns, and show ring etiquette."
+              features={[
+                'One-on-one ring training',
+                'Free-stacking and gaiting patterns',
+                'Show ring etiquette',
+              ]}
             />
           </div>
         </section>
@@ -1100,7 +1135,7 @@ export default function OpsPreviewPage() {
                         key={i}
                         size={14}
                         weight={i <= 4 ? 'fill' : 'regular'}
-                        className={i <= 4 ? 'text-show-orange' : 'text-tan'}
+                        className={i <= 4 ? 'text-slate-blue' : 'text-tan'}
                       />
                     ))}
                     <span className="ml-1 font-sans text-xs text-warm-brown">

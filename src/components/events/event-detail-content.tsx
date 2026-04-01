@@ -433,7 +433,7 @@ export function EventDetailContent({
             {event.eventChairName && (
               <div className="rounded-xl border border-[#E8E0D4] bg-white p-5">
                 <h2 className="mb-3 flex items-center gap-2 text-base font-bold text-ringside-black">
-                  <User size={18} weight="bold" className="text-show-orange" />
+                  <User size={18} weight="bold" className="text-slate-blue" />
                   Event Chair
                 </h2>
                 <p className="font-medium text-ringside-black">

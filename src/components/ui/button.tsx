@@ -22,7 +22,7 @@ const buttonVariants = cva(
         ghost:
           'bg-transparent text-warm-brown hover:bg-warm-brown/10 hover:text-[#1C1208]',
         link: 'underline-offset-4 hover:underline text-paddock-green',
-        orange: 'bg-show-orange hover:bg-show-orange/90 text-white',
+        orange: 'bg-slate-blue hover:bg-slate-blue/90 text-white',
         sexy: 'transition-all text-white hover:bg-opacity-0',
       },
       size: {

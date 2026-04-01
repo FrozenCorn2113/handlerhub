@@ -36,7 +36,6 @@ export const {
   },
   callbacks: {
     async signIn({ user, account }) {
-      console.log('signIn', { user, account })
       if (!user.id) return false
       if (account?.provider !== 'credentials') return true
 
@@ -46,11 +45,6 @@ export const {
     },
 
     async session({ token, session }) {
-      console.log('[auth:session]', {
-        sub: token.sub,
-        role: token.role,
-        hasUser: !!session.user,
-      })
       if (session.user) {
         if (token.sub) {
           session.user.id = token.sub
@@ -72,19 +66,11 @@ export const {
     },
 
     async jwt({ token, trigger }) {
-      console.log('[auth:jwt]', {
-        sub: token.sub,
-        trigger,
-        hasRole: !!token.role,
-      })
       if (!token.sub) return token
 
       const dbUser = await getUserById(token.sub)
 
-      if (!dbUser) {
-        console.warn('[auth:jwt] getUserById returned null for', token.sub)
-        return token
-      }
+      if (!dbUser) return token
 
       token.name = dbUser.name
       token.role = dbUser.role
@@ -95,5 +81,5 @@ export const {
     },
   },
   ...authConfig,
-  debug: true,
+  debug: process.env.NODE_ENV !== 'production',
 })

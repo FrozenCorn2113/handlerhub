@@ -13,6 +13,8 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
 export function StitchLandingShell({
   children,
 }: {
@@ -65,7 +67,7 @@ export function StitchLandingShell({
               Sign In
             </Link>
             <Link
-              className="hidden rounded-xl bg-[#D4621A] px-6 py-3 text-lg font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#b85416] hover:shadow-md sm:block"
+              className="hidden rounded-xl bg-[#4A6F8A] px-6 py-3 text-lg font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#3A5A72] hover:shadow-md sm:block"
               href="/register"
             >
               Join
@@ -117,7 +119,7 @@ export function StitchLandingShell({
                 Sign In
               </Link>
               <Link
-                className="mt-2 inline-block rounded-xl bg-[#D4621A] px-6 py-3 text-center text-base font-semibold text-white transition-all hover:bg-[#b85416]"
+                className="mt-2 inline-block rounded-xl bg-[#4A6F8A] px-6 py-3 text-center text-base font-semibold text-white transition-all hover:bg-[#3A5A72]"
                 href="/register"
                 onClick={() => setMobileMenuOpen(false)}
               >

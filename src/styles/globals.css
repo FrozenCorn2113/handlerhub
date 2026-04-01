@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,300&family=Spectral:wght@300&family=Newsreader:opsz,wght@6..72,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@400;500;600&family=Quicksand:wght@300;500&family=Josefin+Sans:wght@300;400&family=Outfit:wght@300;400&display=swap');
 
 /* Roca One — local font, not on Google Fonts */
 @font-face {
@@ -34,8 +34,8 @@
     --color-primary-hover: #195c3e;
     --color-primary-light: #d4efe0;
 
-    --color-accent: #d4621a;
-    --color-accent-light: #f5e0cc;
+    --color-accent: #4a6f8a;
+    --color-accent-light: #e8eff5;
 
     --color-pastel-sky: #c2e4f5;
     --color-pastel-ribbon: #f5efa0;
@@ -100,7 +100,7 @@
     --secondary-foreground: 30 38% 8%;
     --muted: 34 22% 90%;
     --muted-foreground: 30 18% 42%;
-    --accent: 24 78% 47%;
+    --accent: 205 30% 42%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 60% 44%;
     --destructive-foreground: 0 0% 100%;
@@ -249,7 +249,7 @@ html {
   }
   .chip-new {
     background: var(--color-accent-light);
-    color: #8a3a08;
+    color: #3a5a72;
   }
 
   .section {

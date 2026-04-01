@@ -14,9 +14,9 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
 export const EVENT_TYPE_COLORS: Record<EventType, string> = {
   ALL_BREED: '#1F6B4A', // paddock-green
   LIMITED_BREED: '#14472F', // forest
-  SPECIALTY: '#D4621A', // show-orange
-  PARENT_SPECIALTY: '#D4621A', // show-orange
-  DESIGNATED_SPECIALTY: '#D4621A', // show-orange
+  SPECIALTY: '#4A6F8A', // slate-blue
+  PARENT_SPECIALTY: '#4A6F8A', // slate-blue
+  DESIGNATED_SPECIALTY: '#4A6F8A', // slate-blue
   JUNIOR_SHOWMANSHIP: '#4A3E2E', // warm-brown
   SWEEPSTAKES: '#7A6E5E', // warm-gray
   OTHER: '#7A6E5E', // warm-gray
@@ -38,7 +38,7 @@ export const ENTRY_STATUS_CONFIG: Record<
   },
   CLOSING_SOON: {
     label: 'Closing Soon',
-    color: '#D4621A',
+    color: '#4A6F8A',
     bgColor: '#F5E0CC',
   },
   CLOSED: {

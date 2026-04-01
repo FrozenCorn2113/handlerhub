@@ -121,7 +121,7 @@ export function ClaimConfirmPage({ profile, userId }: ClaimConfirmPageProps) {
 
         {/* Warning */}
         <div className="mt-6 flex items-start gap-3 rounded-xl bg-light-sand p-4">
-          <Warning className="mt-0.5 h-5 w-5 shrink-0 text-show-orange" />
+          <Warning className="mt-0.5 h-5 w-5 shrink-0 text-slate-blue" />
           <div>
             <p className="font-body text-sm font-semibold text-ringside-black">
               This action cannot be undone

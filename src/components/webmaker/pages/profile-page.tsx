@@ -28,6 +28,10 @@ import {
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export interface ProfileHandler {
@@ -98,7 +102,7 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
         </Link>
 
         {handler.isClaimed === false && (
-          <div className="mb-6 rounded-xl border-2 border-show-orange/30 bg-show-orange/5 p-4">
+          <div className="mb-6 rounded-xl border-2 border-slate-blue/30 bg-slate-blue/5 p-4">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-display text-lg font-light text-ringside-black">

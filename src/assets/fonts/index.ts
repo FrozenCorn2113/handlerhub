@@ -1,14 +1,14 @@
-import { DM_Sans, Inter as FontSans } from 'next/font/google'
+import { Cormorant_Garamond, Inter as FontSans } from 'next/font/google'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 })
 
-export const fontSerif = DM_Sans({
+export const fontSerif = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-serif',
+  weight: ['300', '400', '600'],
+  variable: '--font-display',
 })
 
 // Aliases for backward compatibility with existing component classNames

@@ -85,7 +85,7 @@ export function HandlerCard({
                     {region}
                   </span>
                   <span className="flex items-center gap-1">
-                    <Star size={14} weight="fill" className="text-[#D4621A]" />
+                    <Star size={14} weight="fill" className="text-[#4A6F8A]" />
                     {rating} ({reviewCount})
                   </span>
                 </div>

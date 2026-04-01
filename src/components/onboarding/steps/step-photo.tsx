@@ -85,18 +85,21 @@ export function StepPhoto({
     img.src = preview
   }, [preview])
 
-  // Convert stored percentage offsets back to pixel offsets when props change or image loads
+  // Convert stored percentage offsets back to pixel offsets ONLY on initial load
+  const initializedRef = useRef(false)
   useEffect(() => {
     if (naturalW === 0 || naturalH === 0) return
+    if (initializedRef.current) return
+    initializedRef.current = true
+
     const minZoom = getMinZoom(naturalW, naturalH)
     const effectiveZoom = Math.max(propZoom || 1, minZoom)
     setZoomLevel(effectiveZoom)
 
-    const displayW = CONTAINER_WIDTH * effectiveZoom
-    const displayH = (naturalH / naturalW) * CONTAINER_WIDTH * effectiveZoom
-    // Convert percentage offsets to pixels
-    setOffsetX((cropX / 100) * displayW)
-    setOffsetY((cropY / 100) * displayH)
+    const dw = CONTAINER_WIDTH * effectiveZoom
+    const dh = (naturalH / naturalW) * CONTAINER_WIDTH * effectiveZoom
+    setOffsetX((cropX / 100) * dw)
+    setOffsetY((cropY / 100) * dh)
   }, [cropX, cropY, propZoom, naturalW, naturalH, getMinZoom])
 
   // Compute display dimensions
@@ -392,7 +395,7 @@ export function StepPhoto({
 
         {/* Crop editor: full image with overlay + circle cutout */}
         {showEditor && (
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-2">
             <div
               ref={containerRef}
               onPointerDown={handlePointerDown}

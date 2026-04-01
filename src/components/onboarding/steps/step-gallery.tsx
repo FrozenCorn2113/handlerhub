@@ -46,7 +46,10 @@ export function StepGallery({ value, onChange }: StepGalleryProps) {
             }),
           })
 
-          if (!presignedRes.ok) throw new Error('Failed to get upload URL')
+          if (!presignedRes.ok) {
+            const err = await presignedRes.json().catch(() => ({}))
+            throw new Error(err.error || 'Failed to get upload URL')
+          }
 
           const { url: presignedUrl, key } = await presignedRes.json()
 

@@ -17,14 +17,20 @@ import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
 import { EmptyPlaceholder } from '@/components/demo/empty-placeholder'
 
-import { Plus } from '@phosphor-icons/react/dist/ssr'
+import { Dog, Plus } from '@phosphor-icons/react/dist/ssr'
 
 export const metadata = {
   title: 'My Dogs',
   description: 'Manage your dog profiles',
 }
 
-export default async function DogProfilesPage() {
+export default async function DogProfilesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const params = await searchParams
+  const isOnboarding = params?.onboarding === '1'
   const user = await getCurrentUser()
 
   if (!user) {
@@ -55,7 +61,27 @@ export default async function DogProfilesPage() {
       </DashboardHeader>
 
       <div className="grid gap-6">
-        {dogProfiles.length === 0 ? (
+        {isOnboarding && dogProfiles.length === 0 ? (
+          <div className="flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-[#E8E0D4] bg-[#FBF7F0] p-8 text-center shadow-md animate-in fade-in-50">
+            <div className="mx-auto flex max-w-[480px] flex-col items-center justify-center text-center">
+              <div className="flex size-20 items-center justify-center rounded-full bg-white">
+                <Dog className="size-10 text-[#B8A080]" />
+              </div>
+              <h2 className="mt-6 font-display text-2xl font-light text-ringside-black">
+                Let&apos;s add your first dog
+              </h2>
+              <p className="mb-6 mt-3 font-body text-sm leading-relaxed text-warm-gray">
+                Tell us about the dog you&apos;d like to find a handler for.
+              </p>
+              <Link href="/dashboard/dogs/new">
+                <Button>
+                  <Plus className="mr-2 size-4" />
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : dogProfiles.length === 0 ? (
           <EmptyPlaceholder>
             <EmptyPlaceholder.Icon name="dog" />
             <EmptyPlaceholder.Title>Add your first dog</EmptyPlaceholder.Title>

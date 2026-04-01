@@ -248,6 +248,3 @@ export const emailStyles = {
     fontWeight: 500 as const,
   },
 }
-    fontWeight: 500 as const,
-  },
-}

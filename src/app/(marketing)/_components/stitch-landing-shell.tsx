@@ -5,15 +5,20 @@ import { useState } from 'react'
 
 import Link from 'next/link'
 
+import { Button } from '@/components/ui/button'
+
 import { StitchMarketingFooter } from '@/app/(marketing)/_components/stitch-marketing-footer'
 
 import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/classnames-order */
+const navLinks = [
+  { label: 'Find a Handler', href: '/handlers' },
+  { label: 'How It Works', href: '/how-it-works' },
+  { label: 'Events', href: '/events' },
+  { label: 'For Handlers', href: '/for-handlers' },
+]
 
 export function StitchLandingShell({
   children,
@@ -25,62 +30,59 @@ export function StitchLandingShell({
   return (
     <div className="bg-white font-body text-[#1C1208] antialiased">
       <header className="w-full bg-[#14472F]">
-        <div className="mx-auto flex h-[140px] max-w-7xl items-center justify-between px-6 lg:px-12">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-12">
+          {/* Wordmark */}
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-3"
+            className="flex shrink-0 items-center"
             aria-label="HandlerHub home"
           >
-            <img
-              src="/handler-hub-logo-light.png"
-              alt="HandlerHub"
-              className="-my-16 h-56 w-auto shrink-0 object-contain"
-            />
+            <span
+              className="text-[28px] leading-none text-[#F8F4EE]"
+              style={{ fontFamily: "'Roca One', sans-serif" }}
+            >
+              HandlerHub
+            </span>
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <Link
-              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
-              href="/handlers"
-            >
-              Browse Handlers
-            </Link>
-            <Link
-              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
-              href="/events"
-            >
-              Events
-            </Link>
-            <Link
-              className="rounded-lg px-3 py-2 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10"
-              href="/for-handlers"
-            >
-              Become a Handler
-            </Link>
+          {/* Desktop nav links */}
+          <nav className="hidden items-center gap-6 md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                className="rounded-lg px-3 py-2 font-sans text-[15px] font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
+                href={link.href}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
+          {/* Right side: Sign In + Join + hamburger */}
           <div className="flex items-center gap-3">
             <Link
-              className="hidden rounded-lg px-4 py-2.5 text-lg font-medium text-[#F5F0E8] transition-colors hover:bg-white/10 sm:block"
+              className="hidden rounded-lg px-4 py-2 font-sans text-[15px] font-medium text-[#F8F4EE] transition-colors hover:text-white/80 sm:block"
               href="/login"
             >
               Sign In
             </Link>
-            <Link
-              className="hidden rounded-xl bg-[#4A6F8A] px-6 py-3 text-lg font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-[#3A5A72] hover:shadow-md sm:block"
-              href="/register"
+            <Button
+              variant="accent"
+              size="sm"
+              asChild
+              className="hidden sm:inline-flex"
             >
-              Join
-            </Link>
+              <Link href="/register">Join</Link>
+            </Button>
             <button
               className="flex items-center justify-center md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <X size={28} className="text-[#F5F0E8]" />
+                <X size={26} className="text-[#F8F4EE]" />
               ) : (
-                <List size={28} className="text-[#F5F0E8]" />
+                <List size={26} className="text-[#F8F4EE]" />
               )}
             </button>
           </div>
@@ -88,43 +90,40 @@ export function StitchLandingShell({
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="border-t border-gray-200 bg-white px-6 pb-6 pt-4 md:hidden">
-            <nav className="flex flex-col gap-2">
+          <div className="border-t border-white/10 bg-[#14472F] px-6 pb-6 pt-4 md:hidden">
+            <nav className="flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  className="rounded-lg px-3 py-3 font-sans text-base font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
               <Link
-                className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
-                href="/handlers"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Browse Handlers
-              </Link>
-              <Link
-                className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
-                href="/events"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Events
-              </Link>
-              <Link
-                className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
-                href="/for-handlers"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Become a Handler
-              </Link>
-              <Link
-                className="rounded-lg px-3 py-3 text-base font-medium text-[#1C1208] transition-colors hover:bg-gray-100 hover:text-paddock-green"
+                className="rounded-lg px-3 py-3 font-sans text-base font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sign In
               </Link>
-              <Link
-                className="mt-2 inline-block rounded-xl bg-[#4A6F8A] px-6 py-3 text-center text-base font-semibold text-white transition-all hover:bg-[#3A5A72]"
-                href="/register"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Join
-              </Link>
+              <div className="mt-2">
+                <Button
+                  variant="accent"
+                  size="default"
+                  asChild
+                  className="w-full"
+                >
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Join
+                  </Link>
+                </Button>
+              </div>
             </nav>
           </div>
         )}

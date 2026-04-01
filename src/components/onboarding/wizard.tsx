@@ -41,6 +41,7 @@ export interface OnboardingFormData {
   profileImage?: string
   profileImageCropX?: number
   profileImageCropY?: number
+  profileImageZoom?: number
   galleryImages?: string[]
   ratePerShow?: number
   ratePerDay?: number
@@ -103,7 +104,12 @@ const STEPS: StepConfig[] = [
     id: 'photo',
     phase: 'Show Your Work',
     skippable: true,
-    fields: ['profileImage', 'profileImageCropX', 'profileImageCropY'],
+    fields: [
+      'profileImage',
+      'profileImageCropX',
+      'profileImageCropY',
+      'profileImageZoom',
+    ],
   },
   {
     id: 'gallery',
@@ -202,6 +208,7 @@ export function OnboardingWizard({
         profileImage: (existingProfile.profileImage as string) ?? '',
         profileImageCropX: (existingProfile.profileImageCropX as number) ?? 0,
         profileImageCropY: (existingProfile.profileImageCropY as number) ?? 0,
+        profileImageZoom: (existingProfile.profileImageZoom as number) ?? 1,
         galleryImages: (existingProfile.galleryImages as string[]) ?? [],
         ratePerShow: (existingProfile.ratePerShow as number) ?? undefined,
         ratePerDay: (existingProfile.ratePerDay as number) ?? undefined,
@@ -448,15 +455,18 @@ export function OnboardingWizard({
                 value={formData.profileImage ?? ''}
                 cropX={formData.profileImageCropX ?? 0}
                 cropY={formData.profileImageCropY ?? 0}
+                zoom={formData.profileImageZoom ?? 1}
                 onChange={(
                   profileImage,
                   profileImageCropX,
-                  profileImageCropY
+                  profileImageCropY,
+                  profileImageZoom
                 ) =>
                   updateFormData({
                     profileImage,
                     profileImageCropX,
                     profileImageCropY,
+                    profileImageZoom,
                   })
                 }
               />

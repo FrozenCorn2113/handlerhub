@@ -20,7 +20,8 @@ const adapter: Adapter = {
   ...baseAdapter,
   async getUserByAccount(
     providerAccountId: Pick<
-      import('next-auth/adapters').AdapterAccount, 'provider' | 'providerAccountId'
+      import('next-auth/adapters').AdapterAccount,
+      'provider' | 'providerAccountId'
     >
   ): Promise<AdapterUser | null> {
     // Look up the Account row directly
@@ -87,11 +88,35 @@ export const {
   callbacks: {
     async signIn({ user, account }) {
       if (!user.id) return false
-      if (account?.provider !== 'credentials') return true
 
-      const existingUser = await actionGetUserById({ id: user.id })
+      // For credentials, require email verification
+      if (account?.provider === 'credentials') {
+        const existingUser = await actionGetUserById({ id: user.id })
+        return !existingUser?.emailVerified ? false : true
+      }
 
-      return !existingUser?.emailVerified ? false : true
+      // For OAuth providers (Google, GitHub, etc.), check if user needs onboarding
+      // A user needs onboarding if they have no HandlerProfile
+      try {
+        const profile = await prisma.handlerProfile.findUnique({
+          where: { userId: user.id },
+          select: { id: true, profileCompleteness: true },
+        })
+
+        // No profile at all, or profile completeness is very low -> onboarding
+        if (
+          !profile ||
+          !profile.profileCompleteness ||
+          profile.profileCompleteness <= 10
+        ) {
+          return '/onboarding'
+        }
+      } catch (error) {
+        // If DB query fails, allow sign-in normally rather than blocking
+        console.error('[NextAuth] Error checking onboarding status:', error)
+      }
+
+      return true
     },
 
     async session({ token, session }) {

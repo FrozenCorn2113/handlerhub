@@ -9,6 +9,7 @@ import {
 import { getCurrentUser } from '@/lib/session'
 
 import { Button } from '@/components/ui/button-ui'
+import { Button as BrandButton } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -136,7 +137,7 @@ async function HandlerDashboard({ userId }: { userId: string }) {
               )}
             </div>
             <Link href="/dashboard/profile">
-              <Button variant="primary">Complete Profile</Button>
+              <BrandButton size="lg">Complete Profile</BrandButton>
             </Link>
           </CardContent>
         </Card>
@@ -321,7 +322,7 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
                 and let experienced professionals come to you.
               </p>
               <Link href="/handlers">
-                <Button variant="primary">Find Handlers</Button>
+                <BrandButton size="lg">Find Handlers</BrandButton>
               </Link>
             </div>
           ) : (

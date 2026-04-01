@@ -358,77 +358,177 @@ export default function OpsPreviewPage() {
             </div>
           </div>
 
-          {/* ---------- 3. Heading Font Check ---------- */}
+          {/* ---------- 3. Heading Font Comparison ---------- */}
           <div>
             <h2 className="mb-1 font-display text-3xl font-light text-ringside-black">
-              3. Heading Font Check
+              3. Heading Font Comparison
             </h2>
             <p className="mb-6 font-sans text-sm text-warm-gray">
-              Cormorant Garamond at weight 300 with tracking -0.04em and
-              line-height 0.95.
+              Three heading font options at weight 300, tracking -0.04em,
+              line-height 0.95. All paired with Inter body text.
             </p>
 
-            <div className="rounded-lg border border-tan bg-ring-cream p-8">
-              <span className="mb-6 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
-                Cormorant Garamond 300 / tracking -0.04em / line-height 0.95
-              </span>
-
-              <div className="space-y-4">
-                <div>
-                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                    H1 — font-display text-6xl font-light
+            <div className="grid gap-6 lg:grid-cols-3">
+              {[
+                {
+                  name: 'Source Serif 4',
+                  family: "'Source Serif 4', serif",
+                },
+                {
+                  name: 'Spectral',
+                  family: "'Spectral', serif",
+                },
+                {
+                  name: 'Newsreader',
+                  family: "'Newsreader', serif",
+                },
+              ].map((font) => (
+                <div
+                  key={font.name}
+                  className="rounded-lg border border-tan bg-ring-cream p-6"
+                >
+                  <span className="mb-5 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                    {font.name}
                   </span>
-                  <h1
-                    className="font-display text-6xl text-ringside-black"
+
+                  <div className="space-y-3">
+                    <div>
+                      <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                        H1
+                      </span>
+                      <h1
+                        className="text-5xl text-ringside-black lg:text-6xl"
+                        style={{
+                          fontFamily: font.family,
+                          fontWeight: 300,
+                          letterSpacing: '-0.04em',
+                          lineHeight: 0.95,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Find Your Handler
+                      </h1>
+                    </div>
+
+                    <hr className="border-tan" />
+
+                    <div>
+                      <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                        H2
+                      </span>
+                      <h2
+                        className="text-3xl text-ringside-black lg:text-4xl"
+                        style={{
+                          fontFamily: font.family,
+                          fontWeight: 300,
+                          letterSpacing: '-0.04em',
+                          lineHeight: 0.95,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Westminster 2026
+                      </h2>
+                    </div>
+
+                    <hr className="border-tan" />
+
+                    <div>
+                      <span className="mb-1 block font-sans text-[10px] text-warm-gray">
+                        H3
+                      </span>
+                      <h3
+                        className="text-2xl text-ringside-black lg:text-3xl"
+                        style={{
+                          fontFamily: font.family,
+                          fontWeight: 300,
+                          letterSpacing: '-0.04em',
+                          lineHeight: 0.95,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Booking Confirmed
+                      </h3>
+                    </div>
+
+                    <hr className="border-tan" />
+
+                    <p
+                      className="text-sm text-warm-brown"
+                      style={{
+                        fontFamily: "'Inter', system-ui, sans-serif",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      Professional handlers matched to your dog&apos;s breed,
+                      temperament, and show goals.
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ---------- In-Context Card Preview ---------- */}
+            <h3 className="mb-4 mt-10 font-display text-2xl font-light text-ringside-black">
+              In Context
+            </h3>
+            <p className="mb-6 font-sans text-sm text-warm-gray">
+              Each heading font used as a card title alongside Inter body text
+              and a Slate Blue accent.
+            </p>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+              {[
+                {
+                  name: 'Source Serif 4',
+                  family: "'Source Serif 4', serif",
+                },
+                {
+                  name: 'Spectral',
+                  family: "'Spectral', serif",
+                },
+                {
+                  name: 'Newsreader',
+                  family: "'Newsreader', serif",
+                },
+              ].map((font) => (
+                <div
+                  key={font.name}
+                  className="rounded-lg border border-tan bg-white p-6 shadow-sm"
+                >
+                  <span className="mb-4 block font-sans text-[10px] font-semibold uppercase tracking-widest text-warm-gray">
+                    {font.name}
+                  </span>
+
+                  <h4
+                    className="text-xl text-ringside-black"
                     style={{
+                      fontFamily: font.family,
                       fontWeight: 300,
                       letterSpacing: '-0.04em',
                       lineHeight: 0.95,
-                      marginBottom: 0,
+                      marginBottom: '0.5rem',
                     }}
                   >
-                    Find Your Perfect Handler
-                  </h1>
-                </div>
+                    GCH Foxfire&apos;s Northern Star
+                  </h4>
 
-                <hr className="border-tan" />
-
-                <div>
-                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                    H2 — font-display text-4xl font-light
-                  </span>
-                  <h2
-                    className="font-display text-4xl text-ringside-black"
+                  <p
+                    className="mb-3 text-sm text-warm-gray"
                     style={{
-                      fontWeight: 300,
-                      letterSpacing: '-0.04em',
-                      lineHeight: 0.95,
-                      marginBottom: 0,
+                      fontFamily: "'Inter', system-ui, sans-serif",
                     }}
                   >
-                    Professional Handling Services
-                  </h2>
-                </div>
+                    Golden Retriever &middot; Westminster 2026
+                  </p>
 
-                <hr className="border-tan" />
-
-                <div>
-                  <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                    H3 — font-display text-3xl font-light
+                  <span
+                    className="inline-block rounded-full px-3 py-1 text-[11px] font-medium text-white"
+                    style={{ backgroundColor: '#4A6F8A' }}
+                  >
+                    Confirmed
                   </span>
-                  <h3
-                    className="font-display text-3xl text-ringside-black"
-                    style={{
-                      fontWeight: 300,
-                      letterSpacing: '-0.04em',
-                      lineHeight: 0.95,
-                      marginBottom: 0,
-                    }}
-                  >
-                    Trusted by Exhibitors Nationwide
-                  </h3>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>

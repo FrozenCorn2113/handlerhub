@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/ops/status-badge'
 import { ThreadCard } from '@/components/ops/thread-card'
 
 import {
+  ArrowRight,
   CalendarBlank,
   ChatCircle,
   CloudArrowUp,
@@ -663,18 +664,18 @@ export default function OpsPreviewPage() {
 
           <div className="space-y-4">
             <div>
-              <span className="mb-2 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-2 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Handler View
               </span>
-              <div className="overflow-hidden rounded-lg border border-tan">
+              <div className="rounded-2xl border border-tan/60 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
                 <OpsNav role="handler" />
               </div>
             </div>
-            <div>
-              <span className="mb-2 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+            <div className="mt-8">
+              <span className="mb-2 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Exhibitor View
               </span>
-              <div className="overflow-hidden rounded-lg border border-tan">
+              <div className="rounded-2xl border border-tan/60 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
                 <OpsNav role="exhibitor" />
               </div>
             </div>
@@ -689,20 +690,20 @@ export default function OpsPreviewPage() {
             preview.
           </SectionDescription>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <span className="mb-2 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Handler
               </span>
-              <div className="overflow-hidden rounded-lg border border-tan">
+              <div className="rounded-2xl bg-ring-cream p-4">
                 <MobileTabBar role="handler" />
               </div>
             </div>
             <div>
-              <span className="mb-2 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Exhibitor
               </span>
-              <div className="overflow-hidden rounded-lg border border-tan">
+              <div className="rounded-2xl bg-ring-cream p-4">
                 <MobileTabBar role="exhibitor" />
               </div>
             </div>
@@ -713,41 +714,83 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Buttons</SectionTitle>
           <SectionDescription>
-            Primary, secondary, ghost, and destructive variants at three sizes.
+            Primary dark, accent, secondary, ghost, and destructive variants.
           </SectionDescription>
 
-          <div className="space-y-8 rounded-lg border border-tan bg-white p-8">
-            {/* Primary */}
+          <div className="space-y-8 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+            {/* Primary Dark */}
             <div>
-              <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Primary
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                Primary Dark
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full bg-paddock-green px-4 py-2 font-sans text-xs font-medium text-white transition-colors hover:bg-forest">
+                <button className="rounded-full bg-ringside-black px-5 py-2.5 font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(28,18,8,0.2)] transition-all hover:bg-warm-brown hover:shadow-[0_4px_12px_rgba(28,18,8,0.25)]">
                   Small
                 </button>
-                <button className="rounded-full bg-paddock-green px-6 py-3 font-sans text-[13px] font-medium text-white transition-colors hover:bg-forest">
+                <button className="flex items-center gap-2 rounded-full bg-ringside-black px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(28,18,8,0.2)] transition-all hover:bg-warm-brown hover:shadow-[0_4px_12px_rgba(28,18,8,0.25)]">
                   Medium
+                  <ArrowRight size={14} weight="bold" />
                 </button>
-                <button className="rounded-full bg-paddock-green px-8 py-3.5 font-sans text-sm font-medium text-white transition-colors hover:bg-forest">
+                <button className="flex items-center gap-2 rounded-full bg-ringside-black px-9 py-3.5 font-sans text-sm font-semibold text-white shadow-[0_2px_8px_rgba(28,18,8,0.2)] transition-all hover:bg-warm-brown hover:shadow-[0_4px_12px_rgba(28,18,8,0.25)]">
                   Large
+                  <ArrowRight size={16} weight="bold" />
+                </button>
+              </div>
+            </div>
+
+            {/* Accent (Slate Blue) */}
+            <div>
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                Accent (Slate Blue)
+              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <button className="rounded-full bg-slate-blue px-5 py-2.5 font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(74,111,138,0.25)] transition-all hover:bg-slate-blue-dark hover:shadow-[0_4px_12px_rgba(74,111,138,0.3)]">
+                  Small
+                </button>
+                <button className="flex items-center gap-2 rounded-full bg-slate-blue px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(74,111,138,0.25)] transition-all hover:bg-slate-blue-dark hover:shadow-[0_4px_12px_rgba(74,111,138,0.3)]">
+                  Medium
+                  <ArrowRight size={14} weight="bold" />
+                </button>
+                <button className="flex items-center gap-2 rounded-full bg-slate-blue px-9 py-3.5 font-sans text-sm font-semibold text-white shadow-[0_2px_8px_rgba(74,111,138,0.25)] transition-all hover:bg-slate-blue-dark hover:shadow-[0_4px_12px_rgba(74,111,138,0.3)]">
+                  Large
+                  <ArrowRight size={16} weight="bold" />
+                </button>
+              </div>
+            </div>
+
+            {/* Brand Green */}
+            <div>
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                Brand Green
+              </span>
+              <div className="flex flex-wrap items-center gap-3">
+                <button className="rounded-full bg-paddock-green px-5 py-2.5 font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(31,107,74,0.25)] transition-all hover:bg-forest hover:shadow-[0_4px_12px_rgba(31,107,74,0.3)]">
+                  Small
+                </button>
+                <button className="flex items-center gap-2 rounded-full bg-paddock-green px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(31,107,74,0.25)] transition-all hover:bg-forest hover:shadow-[0_4px_12px_rgba(31,107,74,0.3)]">
+                  Medium
+                  <ArrowRight size={14} weight="bold" />
+                </button>
+                <button className="flex items-center gap-2 rounded-full bg-paddock-green px-9 py-3.5 font-sans text-sm font-semibold text-white shadow-[0_2px_8px_rgba(31,107,74,0.25)] transition-all hover:bg-forest hover:shadow-[0_4px_12px_rgba(31,107,74,0.3)]">
+                  Large
+                  <ArrowRight size={16} weight="bold" />
                 </button>
               </div>
             </div>
 
             {/* Secondary */}
             <div>
-              <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Secondary
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full border border-tan px-4 py-2 font-sans text-xs font-medium text-ringside-black transition-colors hover:bg-light-sand">
+                <button className="rounded-full border border-tan px-5 py-2.5 font-sans text-xs font-semibold text-ringside-black transition-all hover:border-warm-brown hover:bg-light-sand">
                   Small
                 </button>
-                <button className="rounded-full border border-tan px-6 py-3 font-sans text-[13px] font-medium text-ringside-black transition-colors hover:bg-light-sand">
+                <button className="rounded-full border border-tan px-7 py-3 font-sans text-[13px] font-semibold text-ringside-black transition-all hover:border-warm-brown hover:bg-light-sand">
                   Medium
                 </button>
-                <button className="rounded-full border border-tan px-8 py-3.5 font-sans text-sm font-medium text-ringside-black transition-colors hover:bg-light-sand">
+                <button className="rounded-full border border-tan px-9 py-3.5 font-sans text-sm font-semibold text-ringside-black transition-all hover:border-warm-brown hover:bg-light-sand">
                   Large
                 </button>
               </div>
@@ -755,17 +798,17 @@ export default function OpsPreviewPage() {
 
             {/* Ghost */}
             <div>
-              <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Ghost
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full px-4 py-2 font-sans text-xs font-medium text-warm-brown transition-colors hover:bg-sand/50">
+                <button className="rounded-full px-5 py-2.5 font-sans text-xs font-semibold text-warm-brown transition-all hover:border hover:border-tan hover:bg-sand/30">
                   Small
                 </button>
-                <button className="rounded-full px-6 py-3 font-sans text-[13px] font-medium text-warm-brown transition-colors hover:bg-sand/50">
+                <button className="rounded-full px-7 py-3 font-sans text-[13px] font-semibold text-warm-brown transition-all hover:border hover:border-tan hover:bg-sand/30">
                   Medium
                 </button>
-                <button className="rounded-full px-8 py-3.5 font-sans text-sm font-medium text-warm-brown transition-colors hover:bg-sand/50">
+                <button className="rounded-full px-9 py-3.5 font-sans text-sm font-semibold text-warm-brown transition-all hover:border hover:border-tan hover:bg-sand/30">
                   Large
                 </button>
               </div>
@@ -773,17 +816,17 @@ export default function OpsPreviewPage() {
 
             {/* Destructive */}
             <div>
-              <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+              <span className="mb-3 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Destructive
               </span>
               <div className="flex flex-wrap items-center gap-3">
-                <button className="rounded-full bg-red-600 px-4 py-2 font-sans text-xs font-medium text-white transition-colors hover:bg-red-700">
+                <button className="rounded-full bg-red-600 px-5 py-2.5 font-sans text-xs font-semibold text-white shadow-[0_2px_8px_rgba(220,38,38,0.25)] transition-all hover:bg-red-700 hover:shadow-[0_4px_12px_rgba(220,38,38,0.3)]">
                   Small
                 </button>
-                <button className="rounded-full bg-red-600 px-6 py-3 font-sans text-[13px] font-medium text-white transition-colors hover:bg-red-700">
+                <button className="rounded-full bg-red-600 px-7 py-3 font-sans text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(220,38,38,0.25)] transition-all hover:bg-red-700 hover:shadow-[0_4px_12px_rgba(220,38,38,0.3)]">
                   Medium
                 </button>
-                <button className="rounded-full bg-red-600 px-8 py-3.5 font-sans text-sm font-medium text-white transition-colors hover:bg-red-700">
+                <button className="rounded-full bg-red-600 px-9 py-3.5 font-sans text-sm font-semibold text-white shadow-[0_2px_8px_rgba(220,38,38,0.25)] transition-all hover:bg-red-700 hover:shadow-[0_4px_12px_rgba(220,38,38,0.3)]">
                   Large
                 </button>
               </div>
@@ -848,7 +891,7 @@ export default function OpsPreviewPage() {
               <span className="mb-3 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
                 Booking Cards
               </span>
-              <div className="space-y-3">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <BookingCard
                   exhibitorName="Sarah Mitchell"
                   dogName="GCH Foxfire's Northern Star"
@@ -1068,43 +1111,43 @@ export default function OpsPreviewPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Handler viewing exhibitor */}
-            <div className="rounded-lg border border-tan bg-white p-6">
-              <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+            <div className="rounded-2xl border border-tan/60 bg-white p-6 shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)]">
+              <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Handler views Exhibitor
               </span>
               <div className="flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sage font-sans text-lg font-semibold text-paddock-green">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-full border-[3px] border-paddock-green/20 bg-sage font-sans text-lg font-semibold text-paddock-green">
                   SM
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-sans text-base font-semibold text-ringside-black">
+                  <p className="font-sans text-base font-bold text-ringside-black">
                     Sarah Mitchell
                   </p>
                   <p className="mt-0.5 font-sans text-xs text-warm-brown">
                     3 dogs registered
                   </p>
-                  <div className="mt-3 flex gap-6">
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-ringside-black">
+                  <div className="mt-3 flex gap-4">
+                    <div className="rounded-xl bg-light-sand px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-ringside-black">
                         12
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Bookings
                       </p>
                     </div>
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-ringside-black">
+                    <div className="rounded-xl bg-light-sand px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-ringside-black">
                         8
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Shows
                       </p>
                     </div>
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-paddock-green">
+                    <div className="rounded-xl bg-paddock-green/10 px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-paddock-green">
                         Active
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Status
                       </p>
                     </div>
@@ -1114,16 +1157,16 @@ export default function OpsPreviewPage() {
             </div>
 
             {/* Exhibitor viewing handler */}
-            <div className="rounded-lg border border-tan bg-white p-6">
-              <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
+            <div className="rounded-2xl border border-tan/60 bg-white p-6 shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)]">
+              <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
                 Exhibitor views Handler
               </span>
               <div className="flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-pastel-sky font-sans text-lg font-semibold text-[#1A4A7A]">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-full border-[3px] border-slate-blue/20 bg-pastel-sky font-sans text-lg font-semibold text-[#1A4A7A]">
                   JR
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="font-sans text-base font-semibold text-ringside-black">
+                  <p className="font-sans text-base font-bold text-ringside-black">
                     James Rodriguez
                   </p>
                   <p className="mt-0.5 font-sans text-xs text-warm-brown">
@@ -1138,32 +1181,32 @@ export default function OpsPreviewPage() {
                         className={i <= 4 ? 'text-slate-blue' : 'text-tan'}
                       />
                     ))}
-                    <span className="ml-1 font-sans text-xs text-warm-brown">
+                    <span className="ml-1 font-sans text-xs font-medium text-warm-brown">
                       4.0 (28 reviews)
                     </span>
                   </div>
-                  <div className="mt-3 flex gap-6">
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-ringside-black">
+                  <div className="mt-3 flex gap-4">
+                    <div className="rounded-xl bg-light-sand px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-ringside-black">
                         3
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Services
                       </p>
                     </div>
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-ringside-black">
+                    <div className="rounded-xl bg-light-sand px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-ringside-black">
                         47
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Shows
                       </p>
                     </div>
-                    <div>
-                      <p className="font-sans text-lg font-semibold text-ringside-black">
+                    <div className="rounded-xl bg-light-sand px-3 py-2 text-center">
+                      <p className="font-sans text-lg font-bold text-ringside-black">
                         28
                       </p>
-                      <p className="font-sans text-[11px] text-warm-gray">
+                      <p className="font-sans text-[10px] font-medium text-warm-gray">
                         Reviews
                       </p>
                     </div>

@@ -1,13 +1,13 @@
-import { Inter as FontSans, Fraunces } from 'next/font/google'
+import { Inter as FontSans, Sen } from 'next/font/google'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 })
 
-export const fontSerif = Fraunces({
+export const fontSerif = Sen({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-display',
 })
 

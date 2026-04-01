@@ -7,14 +7,14 @@ import { DogCard } from '@/components/ops/dog-card'
 import { EmptyState } from '@/components/ops/empty-state'
 import { MobileTabBar } from '@/components/ops/mobile-tab-bar'
 import { OpsNav } from '@/components/ops/ops-nav'
-import { TierCard } from '@/components/ops/service-card'
+import { FiverrTierCard } from '@/components/ops/service-card'
 import { StatusBadge } from '@/components/ops/status-badge'
 
 import {
   ArrowRight,
-  Article,
   CalendarBlank,
   ChatCircle,
+  Clock,
   CloudArrowUp,
   Dog,
   Envelope,
@@ -22,8 +22,8 @@ import {
   MapPin,
   PaperPlaneRight,
   PawPrint,
+  Repeat,
   Star,
-  Textbox,
   Trophy,
   Truck,
   Users,
@@ -31,7 +31,7 @@ import {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="mb-1 font-display text-3xl font-light text-ringside-black">
+    <h2 className="mb-1 font-display text-3xl font-bold text-ringside-black">
       {children}
     </h2>
   )
@@ -285,19 +285,118 @@ function MessagingMockup() {
   )
 }
 
-export default function OpsPreviewPage() {
-  const [selectedTier, setSelectedTier] = useState(1) // Standard selected by default
+/* ============================================================
+   HANDLER PROFILE CARD (Fiverr search result style)
+   ============================================================ */
+function HandlerProfileCard({
+  name,
+  tagline,
+  avatar,
+  coverImg,
+  rating,
+  reviewCount,
+  startingPrice,
+  badge,
+}: {
+  name: string
+  tagline: string
+  avatar: string
+  coverImg: string
+  rating: number
+  reviewCount: number
+  startingPrice: number
+  badge?: string
+}) {
+  const [hovered, setHovered] = useState(false)
 
+  return (
+    <div
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Large cover photo */}
+      <div className="relative h-52 overflow-hidden">
+        <img
+          src={coverImg}
+          alt={name}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {/* Hover overlay with bio */}
+        <div
+          className={`absolute inset-0 flex items-end bg-gradient-to-t from-ringside-black/80 via-ringside-black/40 to-transparent p-4 transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <p className="font-sans text-xs leading-relaxed text-white/90">
+            Experienced handler with 10+ years in the ring. Specializing in
+            Sporting and Working groups.
+          </p>
+        </div>
+      </div>
+
+      {/* Content below photo */}
+      <div className="flex flex-col p-4">
+        {/* Avatar + name + badge */}
+        <div className="mb-2 flex items-center gap-2.5">
+          <img
+            src={avatar}
+            alt={name}
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-white"
+          />
+          <span className="font-sans text-sm font-semibold text-ringside-black">
+            {name}
+          </span>
+          {badge && (
+            <span className="rounded-full bg-paddock-green/10 px-2 py-0.5 font-sans text-[10px] font-semibold text-paddock-green">
+              {badge}
+            </span>
+          )}
+        </div>
+
+        {/* Service tagline */}
+        <p className="mb-3 line-clamp-2 font-sans text-sm leading-snug text-warm-brown">
+          {tagline}
+        </p>
+
+        {/* Rating */}
+        <div className="mb-3 flex items-center gap-1.5">
+          <Star size={14} weight="fill" className="text-yellow-500" />
+          <span className="font-sans text-sm font-bold text-ringside-black">
+            {rating}
+          </span>
+          <span className="font-sans text-xs text-warm-gray">
+            ({reviewCount})
+          </span>
+        </div>
+
+        {/* Starting price */}
+        <div className="border-t border-tan/40 pt-3">
+          <span className="font-sans text-xs text-warm-gray">From</span>{' '}
+          <span className="font-sans text-base font-bold text-ringside-black">
+            ${startingPrice}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function OpsPreviewPage() {
+  // Tier data for the Fiverr-style tabbed card
   const tiers = [
     {
       tierName: 'Basic',
+      label: 'Silver',
       basePrice: 150,
-      description: 'Ring handling only. Perfect for experienced show dogs.',
+      description:
+        'Ring handling only. Perfect for experienced show dogs who just need a skilled hand in the ring.',
+      deliveryDays: 1,
+      revisions: 'Day-of only',
       included: [
         'Professional ring handling',
         'Pre-show ring practice',
         'Day-of coordination',
       ],
+      excluded: ['Grooming prep', 'Transport', 'Post-show care'],
       addOns: [
         { name: 'Grooming prep', price: 50 },
         { name: 'Transport', price: 75 },
@@ -305,14 +404,19 @@ export default function OpsPreviewPage() {
     },
     {
       tierName: 'Standard',
+      label: 'Gold',
       basePrice: 250,
-      description: 'Ring handling plus grooming. Our most popular package.',
+      description:
+        'Ring handling plus full grooming. Our most popular package for handlers who want show-ready results.',
+      deliveryDays: 2,
+      revisions: '1 revision',
       included: [
         'Professional ring handling',
         'Full breed-standard grooming',
         'Bath, blow-dry, and trimming',
         'Day-of coordination',
       ],
+      excluded: ['Transport', 'Post-show care'],
       addOns: [
         { name: 'Transport', price: 75 },
         { name: 'Photo package', price: 40 },
@@ -320,8 +424,12 @@ export default function OpsPreviewPage() {
     },
     {
       tierName: 'Premium',
+      label: 'Platinum',
       basePrice: 400,
-      description: 'Full show day package. We handle everything.',
+      description:
+        'Full show day package. We handle everything from pickup to post-show care so you can focus on the win.',
+      deliveryDays: 3,
+      revisions: 'Unlimited',
       included: [
         'Professional ring handling',
         'Full breed-standard grooming',
@@ -348,49 +456,70 @@ export default function OpsPreviewPage() {
     { name: 'Herding', icon: <PawPrint size={14} weight="fill" /> },
   ]
 
-  // Profile card data
-  const profiles = [
+  // Handler profile cards (Fiverr search result style)
+  const handlers = [
     {
       name: 'Liam Roberts',
-      role: 'Professional Handler',
-      avatar: 'https://i.pravatar.cc/300?img=1',
-      followers: 527,
-      reviews: 92,
+      tagline:
+        'I will professionally handle your dog at AKC and UKC shows with expert ring presentation',
+      avatar: 'https://i.pravatar.cc/100?img=1',
+      coverImg: 'https://i.pravatar.cc/600?img=1',
+      rating: 4.9,
+      reviewCount: 92,
+      startingPrice: 150,
+      badge: 'Top Rated',
     },
     {
       name: 'Sophia Johnson',
-      role: 'Grooming Specialist',
-      avatar: 'https://i.pravatar.cc/300?img=2',
-      followers: 413,
-      reviews: 76,
+      tagline:
+        'I will groom and prepare your show dog to breed standard with competition-ready finishing',
+      avatar: 'https://i.pravatar.cc/100?img=2',
+      coverImg: 'https://i.pravatar.cc/600?img=2',
+      rating: 4.8,
+      reviewCount: 76,
+      startingPrice: 120,
+      badge: 'Top Rated',
     },
     {
       name: 'Noah Martinez',
-      role: 'Show Coordinator',
-      avatar: 'https://i.pravatar.cc/300?img=3',
-      followers: 612,
-      reviews: 88,
+      tagline:
+        'I will coordinate your entire show day logistics including transport, scheduling, and ring management',
+      avatar: 'https://i.pravatar.cc/100?img=3',
+      coverImg: 'https://i.pravatar.cc/600?img=3',
+      rating: 5.0,
+      reviewCount: 88,
+      startingPrice: 200,
     },
     {
       name: 'Emma Davis',
-      role: 'Professional Handler',
-      avatar: 'https://i.pravatar.cc/300?img=4',
-      followers: 489,
-      reviews: 95,
+      tagline:
+        'I will handle your sporting and working group dogs with championship-winning expertise',
+      avatar: 'https://i.pravatar.cc/100?img=4',
+      coverImg: 'https://i.pravatar.cc/600?img=4',
+      rating: 4.7,
+      reviewCount: 95,
+      startingPrice: 175,
+      badge: 'Top Rated',
     },
     {
       name: 'Oliver Wilson',
-      role: 'Transport Specialist',
-      avatar: 'https://i.pravatar.cc/300?img=5',
-      followers: 523,
-      reviews: 80,
+      tagline:
+        'I will safely transport your show dog with climate-controlled vehicle and professional handling',
+      avatar: 'https://i.pravatar.cc/100?img=5',
+      coverImg: 'https://i.pravatar.cc/600?img=5',
+      rating: 4.9,
+      reviewCount: 80,
+      startingPrice: 100,
     },
     {
       name: 'Ava Thompson',
-      role: 'Ring Training Coach',
-      avatar: 'https://i.pravatar.cc/300?img=6',
-      followers: 455,
-      reviews: 90,
+      tagline:
+        'I will train and condition your dog for ring readiness with positive reinforcement techniques',
+      avatar: 'https://i.pravatar.cc/100?img=6',
+      coverImg: 'https://i.pravatar.cc/600?img=6',
+      rating: 4.8,
+      reviewCount: 90,
+      startingPrice: 160,
     },
   ]
 
@@ -408,7 +537,7 @@ export default function OpsPreviewPage() {
           >
             HandlerHub
           </span>
-          <h1 className="mt-4 font-display text-5xl font-light tracking-tight text-ringside-black">
+          <h1 className="mt-4 font-display text-5xl font-bold tracking-tight text-ringside-black">
             Brand Direction
           </h1>
           <p className="mt-4 max-w-lg font-sans text-base text-warm-brown">
@@ -421,179 +550,22 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Typography</SectionTitle>
           <SectionDescription>
-            Three heading font candidates side by side. Pick the one that feels
-            right for HandlerHub.
+            Sen headings paired with Inter body text. Clean, modern, and
+            confident.
           </SectionDescription>
 
           <div className="space-y-6 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
-            {/* Side-by-side Fraunces vs Questrial */}
+            {/* Sen heading showcase */}
             <div>
               <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Heading Comparison: Fraunces vs Questrial vs Sen
-              </span>
-              <div className="grid grid-cols-3 gap-6">
-                {/* Fraunces column */}
-                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
-                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-paddock-green">
-                    Fraunces
-                  </span>
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H1
-                    </span>
-                    <h1 className="font-display text-5xl font-light text-ringside-black">
-                      Find Your Perfect Handler
-                    </h1>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H2
-                    </span>
-                    <h2 className="font-display text-3xl font-light text-ringside-black">
-                      Westminster 2026
-                    </h2>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H3
-                    </span>
-                    <h3 className="font-display text-2xl font-light text-ringside-black">
-                      Booking Confirmed
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Questrial column */}
-                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
-                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-slate-blue">
-                    Questrial
-                  </span>
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H1
-                    </span>
-                    <h1
-                      className="text-5xl font-normal text-ringside-black"
-                      style={{
-                        fontFamily: "'Questrial', sans-serif",
-                        lineHeight: 0.95,
-                        letterSpacing: '-0.04em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Find Your Perfect Handler
-                    </h1>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H2
-                    </span>
-                    <h2
-                      className="text-3xl font-normal text-ringside-black"
-                      style={{
-                        fontFamily: "'Questrial', sans-serif",
-                        lineHeight: 1.05,
-                        letterSpacing: '-0.02em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Westminster 2026
-                    </h2>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H3
-                    </span>
-                    <h3
-                      className="text-2xl font-normal text-ringside-black"
-                      style={{
-                        fontFamily: "'Questrial', sans-serif",
-                        lineHeight: 1.2,
-                        letterSpacing: '-0.01em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Booking Confirmed
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Sen column */}
-                <div className="space-y-4 rounded-xl bg-ring-cream/50 p-6">
-                  <span className="mb-3 block font-sans text-[10px] font-semibold uppercase tracking-widest text-warm-brown">
-                    Sen
-                  </span>
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H1
-                    </span>
-                    <h1
-                      className="text-5xl font-bold text-ringside-black"
-                      style={{
-                        fontFamily: "'Sen', sans-serif",
-                        lineHeight: 0.95,
-                        letterSpacing: '-0.04em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Find Your Perfect Handler
-                    </h1>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H2
-                    </span>
-                    <h2
-                      className="text-3xl font-bold text-ringside-black"
-                      style={{
-                        fontFamily: "'Sen', sans-serif",
-                        lineHeight: 1.05,
-                        letterSpacing: '-0.02em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Westminster 2026
-                    </h2>
-                  </div>
-                  <hr className="border-tan/40" />
-                  <div>
-                    <span className="mb-1 block font-sans text-[10px] text-warm-gray">
-                      H3
-                    </span>
-                    <h3
-                      className="text-2xl font-semibold text-ringside-black"
-                      style={{
-                        fontFamily: "'Sen', sans-serif",
-                        lineHeight: 1.2,
-                        letterSpacing: '-0.01em',
-                        marginBottom: 0,
-                      }}
-                    >
-                      Booking Confirmed
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <hr className="border-tan" />
-
-            {/* Fraunces headings (full showcase) */}
-            <div>
-              <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Display / Fraunces (full scale)
+                Display / Sen (heading scale)
               </span>
               <div className="space-y-4">
                 <div>
                   <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                     H1
                   </span>
-                  <h1 className="font-display text-6xl font-light text-ringside-black">
+                  <h1 className="font-display text-6xl font-bold text-ringside-black">
                     Find Your Perfect Handler
                   </h1>
                 </div>
@@ -602,7 +574,7 @@ export default function OpsPreviewPage() {
                   <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                     H2
                   </span>
-                  <h2 className="font-display text-4xl font-light text-ringside-black">
+                  <h2 className="font-display text-4xl font-bold text-ringside-black">
                     Westminster 2026
                   </h2>
                 </div>
@@ -611,7 +583,7 @@ export default function OpsPreviewPage() {
                   <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                     H3
                   </span>
-                  <h3 className="font-display text-3xl font-light text-ringside-black">
+                  <h3 className="font-display text-3xl font-semibold text-ringside-black">
                     Booking Confirmed
                   </h3>
                 </div>
@@ -621,7 +593,7 @@ export default function OpsPreviewPage() {
                     <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                       H4
                     </span>
-                    <h4 className="font-display text-2xl font-light text-ringside-black">
+                    <h4 className="font-display text-2xl font-semibold text-ringside-black">
                       Your Dashboard
                     </h4>
                   </div>
@@ -629,7 +601,7 @@ export default function OpsPreviewPage() {
                     <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                       H5
                     </span>
-                    <h5 className="font-display text-xl font-light text-ringside-black">
+                    <h5 className="font-display text-xl font-semibold text-ringside-black">
                       Service Details
                     </h5>
                   </div>
@@ -637,7 +609,7 @@ export default function OpsPreviewPage() {
                     <span className="mb-1 block font-sans text-[10px] text-warm-gray">
                       H6
                     </span>
-                    <h6 className="font-display text-lg font-light text-ringside-black">
+                    <h6 className="font-display text-lg font-medium text-ringside-black">
                       Dog Profile
                     </h6>
                   </div>
@@ -650,11 +622,11 @@ export default function OpsPreviewPage() {
             {/* Pairing demo */}
             <div>
               <span className="mb-4 block font-sans text-[11px] font-medium uppercase tracking-widest text-warm-gray">
-                Fraunces + Inter Pairing
+                Sen + Inter Pairing
               </span>
               <div className="rounded-xl bg-ring-cream p-6">
                 <h2
-                  className="font-display text-3xl font-light text-ringside-black"
+                  className="font-display text-3xl font-bold text-ringside-black"
                   style={{ marginBottom: '0.75rem' }}
                 >
                   Professional handlers, matched to your dog
@@ -1108,23 +1080,35 @@ export default function OpsPreviewPage() {
         <section>
           <SectionTitle>Service Tiers</SectionTitle>
           <SectionDescription>
-            Fiverr-style tiered pricing. Handlers pick one tier, then customize
-            with selectable add-on pills inside each card.
+            Fiverr-style single card with tabbed tiers. Basic, Standard, Premium
+            tabs switch content. Add-on pills inside the card.
           </SectionDescription>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            {tiers.map((tier, i) => (
-              <TierCard
-                key={tier.tierName}
-                tierName={tier.tierName}
-                basePrice={tier.basePrice}
-                description={tier.description}
-                included={tier.included}
-                addOns={tier.addOns}
-                selected={selectedTier === i}
-                onSelect={() => setSelectedTier(i)}
-              />
-            ))}
+          <div className="flex items-start gap-8">
+            {/* Context: how it would look on a profile page */}
+            <div className="flex-1 rounded-2xl border border-tan/60 bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+              <span className="mb-4 block font-sans text-[11px] font-semibold uppercase tracking-widest text-warm-gray">
+                Sticky sidebar placement
+              </span>
+              <p className="mb-4 font-sans text-sm leading-relaxed text-warm-brown">
+                This tier card sits on the right side of a handler&apos;s
+                profile page, similar to Fiverr&apos;s sticky sidebar. Users
+                switch between Basic, Standard, and Premium tabs to compare
+                tiers, then customize with add-on pills before booking.
+              </p>
+              <div className="rounded-xl bg-ring-cream/50 p-4">
+                <div className="space-y-2">
+                  <div className="h-3 w-3/4 rounded-full bg-tan/40" />
+                  <div className="h-3 w-full rounded-full bg-tan/40" />
+                  <div className="h-3 w-2/3 rounded-full bg-tan/40" />
+                  <div className="mt-4 h-3 w-full rounded-full bg-tan/40" />
+                  <div className="h-3 w-5/6 rounded-full bg-tan/40" />
+                </div>
+              </div>
+            </div>
+
+            {/* The actual tier card */}
+            <FiverrTierCard tiers={tiers} defaultTab={1} />
           </div>
         </section>
 
@@ -1331,7 +1315,7 @@ export default function OpsPreviewPage() {
               {/* Right side - contextual info (40%) */}
               <div className="flex flex-[2] flex-col items-center justify-center bg-gradient-to-br from-paddock-green/[0.06] via-sage/30 to-pastel-sky/20 p-8">
                 <div className="text-center">
-                  <h3 className="font-display text-3xl font-light text-ringside-black">
+                  <h3 className="font-display text-3xl font-bold text-ringside-black">
                     About Your Dog
                   </h3>
                   <p className="mx-auto mt-3 max-w-xs font-sans text-sm leading-relaxed text-warm-brown">
@@ -1379,77 +1363,159 @@ export default function OpsPreviewPage() {
 
         {/* ======================== PROFILE CARDS ======================== */}
         <section>
-          <SectionTitle>Profile Cards</SectionTitle>
+          <SectionTitle>Handler Cards</SectionTitle>
           <SectionDescription>
-            Clean, airy profile cards with large photos, stats, and action
-            buttons. White card background, generous rounded corners.
+            Fiverr search result style. Large cover photo, avatar + name + badge
+            below, service tagline, star rating, starting price. Hover shows bio
+            overlay.
           </SectionDescription>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {profiles.map((profile) => (
-              <div
-                key={profile.name}
-                className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.12)]"
-              >
-                {/* Large photo at top */}
-                <div className="relative overflow-hidden">
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    className="h-56 w-full rounded-t-xl object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+            {handlers.map((handler) => (
+              <HandlerProfileCard key={handler.name} {...handler} />
+            ))}
+          </div>
+        </section>
+
+        {/* ======================== HANDLER PROFILE ======================== */}
+        <section>
+          <SectionTitle>Handler Profile</SectionTitle>
+          <SectionDescription>
+            Fiverr-style profile page layout. Handler info and gallery on the
+            left, sticky tier card on the right.
+          </SectionDescription>
+
+          <div className="overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_4px_20px_rgba(28,18,8,0.08)]">
+            <div className="flex">
+              {/* Left side (60%) - Profile content */}
+              <div className="flex-[3] p-8">
+                {/* Breadcrumbs */}
+                <div className="mb-6 flex items-center gap-2 font-sans text-xs text-warm-gray">
+                  <span className="cursor-pointer hover:text-paddock-green">
+                    Handlers
+                  </span>
+                  <span>/</span>
+                  <span className="cursor-pointer hover:text-paddock-green">
+                    Sporting Group
+                  </span>
+                  <span>/</span>
+                  <span className="text-ringside-black">Liam Roberts</span>
                 </div>
 
-                {/* Content below photo */}
-                <div className="flex flex-1 flex-col p-5">
-                  {/* Name bold */}
-                  <h4
-                    className="font-display text-lg font-semibold text-ringside-black"
-                    style={{ marginBottom: '0.25rem' }}
-                  >
-                    {profile.name}
-                  </h4>
-                  {/* Role/description muted */}
-                  <p className="font-sans text-sm text-warm-gray">
-                    {profile.role}
-                  </p>
+                {/* Handler title */}
+                <h2
+                  className="font-display text-2xl font-bold text-ringside-black"
+                  style={{ marginBottom: '1rem' }}
+                >
+                  I will professionally handle your dog at AKC and UKC shows
+                </h2>
 
-                  {/* Stats row */}
-                  <div className="mt-4 flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <Users
-                        size={14}
+                {/* Handler info row */}
+                <div className="mb-6 flex items-center gap-4">
+                  <img
+                    src="https://i.pravatar.cc/100?img=1"
+                    alt="Liam Roberts"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-tan/60"
+                  />
+                  <div className="flex items-center gap-3">
+                    <span className="font-sans text-sm font-semibold text-ringside-black">
+                      Liam Roberts
+                    </span>
+                    <span className="rounded-full bg-paddock-green/10 px-2.5 py-0.5 font-sans text-[10px] font-semibold text-paddock-green">
+                      Top Rated
+                    </span>
+                    <span className="font-sans text-xs text-warm-gray">|</span>
+                    <span className="font-sans text-xs text-warm-gray">
+                      4 orders in queue
+                    </span>
+                    <span className="font-sans text-xs text-warm-gray">|</span>
+                    <div className="flex items-center gap-1">
+                      <Star
+                        size={12}
                         weight="fill"
-                        className="text-warm-gray"
+                        className="text-yellow-500"
                       />
-                      <span className="font-sans text-xs font-medium text-warm-brown">
-                        {profile.followers}
+                      <span className="font-sans text-xs font-bold text-ringside-black">
+                        4.9
                       </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Article
-                        size={14}
-                        weight="fill"
-                        className="text-warm-gray"
-                      />
-                      <span className="font-sans text-xs font-medium text-warm-brown">
-                        {profile.reviews}
+                      <span className="font-sans text-xs text-warm-gray">
+                        (92 reviews)
                       </span>
-                    </div>
-
-                    {/* Connect + button at bottom-right */}
-                    <div className="ml-auto">
-                      <button
-                        className="flex items-center gap-1 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-4 py-2 font-sans text-xs font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_6px_rgba(31,107,74,0.25)] transition-all duration-200 hover:scale-[1.03] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_16px_rgba(31,107,74,0.3)]"
-                        style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}
-                      >
-                        Connect +
-                      </button>
                     </div>
                   </div>
                 </div>
+
+                {/* About section */}
+                <div className="mb-8">
+                  <h3
+                    className="font-display text-lg font-bold text-ringside-black"
+                    style={{ marginBottom: '0.5rem' }}
+                  >
+                    About
+                  </h3>
+                  <p className="font-sans text-sm leading-relaxed text-warm-brown">
+                    I&apos;m a professional handler with over 10 years of
+                    experience in the AKC and UKC show circuits. I specialize in
+                    Sporting and Working groups, with a particular expertise in
+                    Golden Retrievers, Labrador Retrievers, and German
+                    Shepherds. My approach focuses on building a genuine
+                    connection with each dog to bring out their best in the
+                    ring.
+                  </p>
+                </div>
+
+                {/* Info grid */}
+                <div className="mb-8 grid grid-cols-2 gap-4">
+                  {[
+                    { label: 'Specialties', value: 'Sporting, Working Groups' },
+                    { label: 'Breeds', value: 'Golden Retriever, GSD, Lab' },
+                    { label: 'Location', value: 'Portland, OR' },
+                    { label: 'Response Time', value: 'Within 2 hours' },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl bg-ring-cream/60 p-4"
+                    >
+                      <span className="block font-sans text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+                        {item.label}
+                      </span>
+                      <span className="mt-1 block font-sans text-sm font-medium text-ringside-black">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Gallery placeholder */}
+                <div>
+                  <h3
+                    className="font-display text-lg font-bold text-ringside-black"
+                    style={{ marginBottom: '0.75rem' }}
+                  >
+                    Gallery
+                  </h3>
+                  <div className="grid grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div
+                        key={n}
+                        className="flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-light-sand"
+                      >
+                        <img
+                          src={`https://placedog.net/300/300?id=${n + 10}`}
+                          alt={`Gallery ${n}`}
+                          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            ))}
+
+              {/* Right side (40%) - Sticky tier card */}
+              <div className="flex flex-[2] items-start justify-center border-l border-tan/40 bg-ring-cream/30 p-6 pt-8">
+                <FiverrTierCard tiers={tiers} defaultTab={1} />
+              </div>
+            </div>
           </div>
         </section>
 

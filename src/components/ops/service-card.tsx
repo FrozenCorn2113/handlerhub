@@ -2,33 +2,43 @@
 
 import { useState } from 'react'
 
-import { Check, CheckCircle, Plus } from '@phosphor-icons/react'
+import {
+  ArrowRight,
+  Check,
+  CheckCircle,
+  Clock,
+  Envelope,
+  Plus,
+  Repeat,
+} from '@phosphor-icons/react'
 
 interface AddOn {
   name: string
   price: number
 }
 
-interface TierCardProps {
+interface Tier {
   tierName: string
+  label: string
   basePrice: number
   description: string
+  deliveryDays: number
+  revisions: string
   included: string[]
+  excluded?: string[]
   addOns: AddOn[]
-  selected: boolean
-  onSelect: () => void
 }
 
-export function TierCard({
-  tierName,
-  basePrice,
-  description,
-  included,
-  addOns,
-  selected,
-  onSelect,
-}: TierCardProps) {
+interface FiverrTierCardProps {
+  tiers: Tier[]
+  defaultTab?: number
+}
+
+export function FiverrTierCard({ tiers, defaultTab = 1 }: FiverrTierCardProps) {
+  const [activeTab, setActiveTab] = useState(defaultTab)
   const [selectedAddOns, setSelectedAddOns] = useState<Set<number>>(new Set())
+
+  const tier = tiers[activeTab]
 
   const toggleAddOn = (idx: number) => {
     setSelectedAddOns((prev) => {
@@ -39,224 +49,182 @@ export function TierCard({
     })
   }
 
-  const addOnTotal = addOns.reduce(
+  const handleTabChange = (idx: number) => {
+    setActiveTab(idx)
+    setSelectedAddOns(new Set())
+  }
+
+  const addOnTotal = tier.addOns.reduce(
     (sum, a, i) => (selectedAddOns.has(i) ? sum + a.price : sum),
     0
   )
-  const total = basePrice + addOnTotal
+  const total = tier.basePrice + addOnTotal
 
   return (
-    <div
-      onClick={onSelect}
-      className={`group relative flex cursor-pointer flex-col rounded-2xl border-2 p-6 text-left transition-all duration-300 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)] ${
-        selected
-          ? 'border-paddock-green bg-paddock-green/[0.03] shadow-[0_4px_20px_rgba(31,107,74,0.15)]'
-          : 'border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] hover:border-tan'
-      }`}
-    >
-      {/* Header: tier name + selection indicator */}
-      <div className="mb-4 flex items-start justify-between">
-        <div>
-          <h4 className="font-display text-xl font-semibold text-ringside-black">
-            {tierName}
+    <div className="w-[350px] overflow-hidden rounded-2xl border border-tan/60 bg-white shadow-[0_4px_20px_rgba(28,18,8,0.1)]">
+      {/* Tab row */}
+      <div className="flex border-b border-tan/40">
+        {tiers.map((t, i) => (
+          <button
+            key={t.tierName}
+            onClick={() => handleTabChange(i)}
+            className={`flex-1 px-4 py-3.5 font-sans text-[13px] font-semibold transition-all duration-200 ${
+              activeTab === i
+                ? 'border-b-[3px] border-paddock-green bg-white text-ringside-black'
+                : 'border-b-[3px] border-transparent bg-ring-cream/50 text-warm-gray hover:bg-ring-cream hover:text-warm-brown'
+            }`}
+          >
+            {t.tierName}
+          </button>
+        ))}
+      </div>
+
+      {/* Selected tier content */}
+      <div className="p-6">
+        {/* Tier label + price */}
+        <div className="mb-1 flex items-start justify-between">
+          <h4
+            className="font-display text-lg font-bold text-ringside-black"
+            style={{ marginBottom: 0 }}
+          >
+            {tier.label}
           </h4>
-          <p className="mt-1 font-sans text-sm text-warm-gray">{description}</p>
         </div>
-        <div
-          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
-            selected
-              ? 'bg-gradient-to-br from-[#24845a] to-paddock-green shadow-[0_2px_6px_rgba(31,107,74,0.3)]'
-              : 'border-2 border-tan bg-white'
-          }`}
-        >
-          {selected && <Check size={14} weight="bold" className="text-white" />}
-        </div>
-      </div>
-
-      {/* Price */}
-      <div className="mb-4 flex items-baseline gap-1">
-        <span className="font-sans text-3xl font-bold text-ringside-black">
-          ${total}
-        </span>
-        {addOnTotal > 0 && (
-          <span className="ml-1 font-sans text-xs text-warm-gray">
-            (${basePrice} base + ${addOnTotal} add-ons)
+        <div className="mb-3">
+          <span className="font-sans text-3xl font-bold text-ringside-black">
+            ${total}
           </span>
-        )}
-      </div>
+          {addOnTotal > 0 && (
+            <span className="ml-2 font-sans text-xs text-warm-gray">
+              (${tier.basePrice} + ${addOnTotal} add-ons)
+            </span>
+          )}
+        </div>
 
-      {/* What's included */}
-      <div className="mb-4">
-        <span className="mb-2 block font-sans text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
-          Included
-        </span>
-        <ul className="space-y-1.5">
-          {included.map((item, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <CheckCircle
-                size={16}
-                weight="fill"
-                className={`mt-0.5 shrink-0 ${selected ? 'text-paddock-green' : 'text-warm-gray'}`}
-              />
-              <span className="font-sans text-xs leading-relaxed text-warm-brown">
-                {item}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {/* Description */}
+        <p className="mb-4 font-sans text-sm leading-relaxed text-warm-brown">
+          {tier.description}
+        </p>
 
-      {/* Add-on pills */}
-      {addOns.length > 0 && (
+        {/* Delivery + Revisions */}
+        <div className="mb-5 flex items-center gap-4 font-sans text-xs text-warm-brown">
+          <span className="flex items-center gap-1.5">
+            <Clock size={14} weight="bold" className="text-warm-gray" />
+            {tier.deliveryDays}-day delivery
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Repeat size={14} weight="bold" className="text-warm-gray" />
+            {tier.revisions}
+          </span>
+        </div>
+
+        {/* Feature checklist */}
         <div className="mb-5">
-          <span className="mb-2 block font-sans text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
-            Add-ons
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {addOns.map((addOn, i) => {
-              const isActive = selectedAddOns.has(i)
-              return (
-                <button
-                  key={addOn.name}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleAddOn(i)
-                  }}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-sans text-xs font-medium transition-all duration-200 hover:scale-[1.03] ${
-                    isActive
-                      ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.25)]'
-                      : 'border border-tan bg-white text-warm-brown hover:border-paddock-green/40'
-                  }`}
-                >
-                  {isActive ? (
-                    <Check size={12} weight="bold" />
-                  ) : (
-                    <Plus size={12} weight="bold" />
-                  )}
-                  {addOn.name}
-                  <span
-                    className={isActive ? 'text-white/70' : 'text-warm-gray'}
-                  >
-                    +${addOn.price}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+          <ul className="space-y-2">
+            {tier.included.map((item, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <CheckCircle
+                  size={16}
+                  weight="fill"
+                  className="mt-0.5 shrink-0 text-paddock-green"
+                />
+                <span className="font-sans text-xs leading-relaxed text-ringside-black">
+                  {item}
+                </span>
+              </li>
+            ))}
+            {tier.excluded?.map((item, i) => (
+              <li key={`ex-${i}`} className="flex items-start gap-2.5">
+                <CheckCircle
+                  size={16}
+                  weight="regular"
+                  className="mt-0.5 shrink-0 text-tan"
+                />
+                <span className="font-sans text-xs leading-relaxed text-warm-gray">
+                  {item}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
 
-      {/* Book Now button */}
-      <div className="mt-auto">
+        {/* Add-on pills */}
+        {tier.addOns.length > 0 && (
+          <div className="mb-6">
+            <span className="mb-2 block font-sans text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+              Add-ons
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {tier.addOns.map((addOn, i) => {
+                const isActive = selectedAddOns.has(i)
+                return (
+                  <button
+                    key={addOn.name}
+                    onClick={() => toggleAddOn(i)}
+                    className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 font-sans text-xs font-medium transition-all duration-200 hover:scale-[1.03] ${
+                      isActive
+                        ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.25)]'
+                        : 'border border-tan bg-white text-warm-brown hover:border-paddock-green/40'
+                    }`}
+                  >
+                    {isActive ? (
+                      <Check size={12} weight="bold" />
+                    ) : (
+                      <Plus size={12} weight="bold" />
+                    )}
+                    {addOn.name}
+                    <span
+                      className={isActive ? 'text-white/70' : 'text-warm-gray'}
+                    >
+                      +${addOn.price}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Book Now CTA */}
         <button
-          onClick={(e) => {
-            e.stopPropagation()
-            if (!selected) onSelect()
-          }}
-          className={`flex w-full items-center justify-center gap-2 rounded-full py-3 font-sans text-[13px] font-semibold transition-all duration-200 hover:scale-[1.01] ${
-            selected
-              ? 'bg-gradient-to-b from-[#24845a] to-paddock-green text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_2px_8px_rgba(31,107,74,0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_6px_20px_rgba(31,107,74,0.35)]'
-              : 'bg-gradient-to-b from-[#F0EAE0] to-sand text-warm-brown shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_1px_4px_rgba(28,18,8,0.1)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_12px_rgba(28,18,8,0.15)]'
-          }`}
-          style={
-            selected ? { textShadow: '0 1px 2px rgba(0,0,0,0.15)' } : undefined
-          }
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green py-3.5 font-sans text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_2px_8px_rgba(31,107,74,0.3)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_6px_20px_rgba(31,107,74,0.35)]"
+          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.15)' }}
         >
           Book Now
+          <ArrowRight size={14} weight="bold" />
+        </button>
+
+        {/* Contact Handler */}
+        <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-tan bg-white py-3 font-sans text-[13px] font-semibold text-warm-brown transition-all duration-200 hover:scale-[1.02] hover:border-paddock-green/40 hover:shadow-lg">
+          <Envelope size={14} weight="bold" className="text-warm-gray" />
+          Contact Handler
         </button>
       </div>
     </div>
   )
 }
 
-// Keep the old export name for backward compatibility but it won't be used in the new layout
-export function ServiceCard({
-  name,
-  price,
+// Keep the old export names for backward compatibility
+export function TierCard({
+  tierName,
+  basePrice,
   description,
-  features,
-  icon,
-  selected = false,
-  onToggle,
+  included,
+  addOns,
+  selected,
+  onSelect,
 }: {
-  name: string
-  price: number
-  pricePer: string
+  tierName: string
+  basePrice: number
   description: string
-  tiers?: { name: string; price: number; pricePer: string }[]
-  features?: string[]
-  icon?: React.ReactNode
-  selected?: boolean
-  onToggle?: () => void
+  included: string[]
+  addOns: { name: string; price: number }[]
+  selected: boolean
+  onSelect: () => void
 }) {
-  const formattedPrice = `$${(price / 100).toFixed(0)}`
+  return null // Deprecated - use FiverrTierCard instead
+}
 
-  const featureList =
-    features && features.length > 0
-      ? features
-      : description
-          .split(/[.,]/)
-          .filter((s) => s.trim().length > 0)
-          .map((s) => s.trim())
-
-  return (
-    <button
-      onClick={onToggle}
-      className={`group flex flex-col rounded-2xl border-2 p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.14)] ${
-        selected
-          ? 'border-paddock-green bg-paddock-green/[0.04] shadow-[0_4px_20px_rgba(31,107,74,0.15)]'
-          : 'border-tan/60 bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)] hover:border-tan'
-      }`}
-    >
-      <div className="mb-4 flex items-start justify-between">
-        {icon && (
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
-              selected ? 'bg-paddock-green/10' : 'bg-light-sand'
-            }`}
-          >
-            {icon}
-          </div>
-        )}
-        <div
-          className={`flex h-6 w-6 items-center justify-center rounded-full transition-all duration-200 ${
-            selected
-              ? 'bg-gradient-to-br from-[#24845a] to-paddock-green shadow-[0_2px_6px_rgba(31,107,74,0.3)]'
-              : 'border-2 border-tan bg-white'
-          }`}
-        >
-          {selected && <Check size={14} weight="bold" className="text-white" />}
-        </div>
-      </div>
-
-      <h4 className="font-display text-lg font-semibold text-ringside-black">
-        {name}
-      </h4>
-
-      <div className="mt-1 flex items-baseline gap-1">
-        <span className="font-sans text-2xl font-bold text-ringside-black">
-          {formattedPrice}
-        </span>
-      </div>
-
-      <p className="mt-2 font-sans text-sm leading-relaxed text-warm-gray">
-        {description}
-      </p>
-
-      <ul className="mt-4 flex-1 space-y-2">
-        {featureList.map((feature, i) => (
-          <li key={i} className="flex items-start gap-2">
-            <CheckCircle
-              size={16}
-              weight={selected ? 'fill' : 'regular'}
-              className={`mt-0.5 shrink-0 ${selected ? 'text-paddock-green' : 'text-warm-gray'}`}
-            />
-            <span className="font-sans text-xs leading-relaxed text-warm-brown">
-              {feature}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </button>
-  )
+export function ServiceCard() {
+  return null // Deprecated - use FiverrTierCard instead
 }

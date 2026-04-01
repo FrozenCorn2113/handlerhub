@@ -26,7 +26,7 @@ export function DogCard({
 }: DogCardProps) {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_2px_12px_rgba(28,18,8,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.18)]">
-      {/* Photo area - dominant, Airbnb-style */}
+      {/* Photo area - clean, no overlay */}
       <div className="relative h-64 overflow-hidden">
         {photoUrl ? (
           <img
@@ -41,11 +41,6 @@ export function DogCard({
             </div>
           </div>
         )}
-
-        {/* Frost gradient overlay at bottom of photo */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-white/90 via-white/40 to-transparent backdrop-blur-[2px]" />
-        {/* Extra subtle frost across bottom edge */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-white/60" />
 
         {/* Rating badge - top right */}
         {rating && (

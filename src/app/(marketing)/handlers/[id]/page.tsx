@@ -291,7 +291,7 @@ export default async function HandlerProfilePage({
     notFound()
   }
 
-  const messageTarget = '/dashboard/messages'
+  const messageTarget = `/dashboard/messages?new=${handler.id}`
   const messageHref = user
     ? messageTarget
     : `/login?next=${encodeURIComponent(messageTarget)}`

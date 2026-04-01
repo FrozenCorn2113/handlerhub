@@ -25,6 +25,13 @@ export async function GET(req: Request) {
         },
       },
       include: {
+        participants: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
         bookingRequest: {
           include: {
             handler: {
@@ -63,7 +70,30 @@ export async function GET(req: Request) {
       },
     })
 
-    return NextResponse.json(conversations)
+    // Compute unread counts for each conversation
+    const conversationsWithUnread = await Promise.all(
+      conversations.map(async (conv) => {
+        const unreadCount = await prisma.message.count({
+          where: {
+            conversationId: conv.id,
+            senderId: { not: user.id },
+            readAt: null,
+          },
+        })
+
+        // Get the other participant from the participants relation
+        const otherParticipant =
+          conv.participants.find((p) => p.id !== user.id) ?? null
+
+        return {
+          ...conv,
+          unreadCount,
+          otherParticipant,
+        }
+      })
+    )
+
+    return NextResponse.json(conversationsWithUnread)
   } catch (error) {
     console.error('Fetch conversations error:', error)
     return new NextResponse('Internal Server Error', { status: 500 })
@@ -116,6 +146,9 @@ export async function POST(req: Request) {
       data: {
         bookingRequestId: body.bookingRequestId,
         participantIds: [booking.exhibitorId, booking.handlerId],
+        participants: {
+          connect: [{ id: booking.exhibitorId }, { id: booking.handlerId }],
+        },
       },
       include: {
         messages: true,

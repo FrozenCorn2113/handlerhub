@@ -133,6 +133,18 @@ export async function GET(
       return new NextResponse('Forbidden', { status: 403 })
     }
 
+    // Mark unread messages from others as read
+    await prisma.message.updateMany({
+      where: {
+        conversationId: params.id,
+        senderId: { not: user.id },
+        readAt: null,
+      },
+      data: {
+        readAt: new Date(),
+      },
+    })
+
     // Get messages
     const messages = await prisma.message.findMany({
       where: {

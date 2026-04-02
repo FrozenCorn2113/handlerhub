@@ -11,7 +11,7 @@ import { EventsBrowse } from '@/components/events/events-browse'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Upcoming Dog Shows & Events | HandlerHub',
+  title: 'Upcoming Dog Shows & Events',
   description:
     'Browse upcoming AKC dog shows on an interactive map. Search by location, breed, event type. Find entry deadlines, superintendent contacts, and venue details.',
   keywords: [

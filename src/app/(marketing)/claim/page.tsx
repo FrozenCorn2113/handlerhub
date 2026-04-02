@@ -5,7 +5,7 @@ import { ClaimSearchPage } from '@/components/webmaker/pages/claim-search-page'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Claim Your Profile | HandlerHub',
+  title: 'Claim Your Profile',
   description:
     'Professional handlers: claim your profile on HandlerHub to manage your online presence.',
 }

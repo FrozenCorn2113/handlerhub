@@ -252,7 +252,7 @@ export async function generateMetadata({
 
   if (!handler) {
     return {
-      title: 'Handler Not Found | HandlerHub',
+      title: 'Handler Not Found',
     }
   }
 
@@ -270,7 +270,7 @@ export async function generateMetadata({
   const canonicalUrl = `https://handlerhub.com/handlers/${params.id}`
 
   return {
-    title: `${handler.name} - Professional Dog Handler | HandlerHub`,
+    title: `${handler.name} - Professional Dog Handler`,
     description,
     alternates: {
       canonical: canonicalUrl,

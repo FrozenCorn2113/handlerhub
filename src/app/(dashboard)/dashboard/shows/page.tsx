@@ -7,7 +7,7 @@ import { DashboardShell } from '@/components/dashboard/shell'
 import { ShowsPageClient } from '@/components/shows/shows-page-client'
 
 export const metadata = {
-  title: 'My Shows | HandlerHub',
+  title: 'My Shows',
 }
 
 export const dynamic = 'force-dynamic'

@@ -6,7 +6,7 @@ import { getCurrentUser } from '@/lib/session'
 import { MessagesClient } from '@/components/messaging/messages-client'
 
 export const metadata = {
-  title: 'Messages | HandlerHub',
+  title: 'Messages',
 }
 
 export const dynamic = 'force-dynamic'

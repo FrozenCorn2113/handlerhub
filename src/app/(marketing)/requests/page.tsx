@@ -9,7 +9,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Request Board | HandlerHub',
+  title: 'Request Board',
   description:
     'Browse open requests from exhibitors looking for handlers, groomers, and more.',
 }

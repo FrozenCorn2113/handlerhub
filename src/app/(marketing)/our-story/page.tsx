@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
-  title: 'Our Story | HandlerHub',
+  title: 'Our Story',
   description:
     'How one visit to a dog show in a barn led to building HandlerHub.',
 }

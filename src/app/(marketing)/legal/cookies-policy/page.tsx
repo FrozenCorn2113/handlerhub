@@ -2,7 +2,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Cookie Policy | HandlerHub',
+  title: 'Cookie Policy',
 }
 
 export default function CookiePolicyPage() {

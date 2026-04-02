@@ -8,7 +8,7 @@ import { ClaimConfirmPage } from '@/components/webmaker/pages/claim-confirm-page
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Confirm Profile Claim | HandlerHub',
+  title: 'Confirm Profile Claim',
   description: 'Confirm that this is your professional handler profile.',
 }
 

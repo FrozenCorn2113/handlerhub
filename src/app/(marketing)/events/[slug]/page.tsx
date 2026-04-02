@@ -16,7 +16,7 @@ export async function generateMetadata({
 }: EventDetailPageProps): Promise<Metadata> {
   const event = await getEventBySlug(params.slug)
   if (!event) {
-    return { title: 'Event Not Found | HandlerHub' }
+    return { title: 'Event Not Found' }
   }
 
   const typeLabel = EVENT_TYPE_LABELS[event.eventType]
@@ -27,7 +27,7 @@ export async function generateMetadata({
   })
 
   return {
-    title: `${event.clubName} ${typeLabel} - ${dateStr} | HandlerHub`,
+    title: `${event.clubName} ${typeLabel} - ${dateStr}`,
     description: `${event.clubName} ${typeLabel} dog show on ${dateStr} in ${event.venue.city}, ${event.venue.state}. Entry deadlines, superintendent contact, venue details, and more.`,
     keywords: [
       event.clubName,

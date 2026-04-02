@@ -15,7 +15,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Become a Handler | HandlerHub',
+  title: 'Become a Handler',
   description:
     'Create your profile on HandlerHub and let exhibitors find you by breed, region, and show circuit.',
 }

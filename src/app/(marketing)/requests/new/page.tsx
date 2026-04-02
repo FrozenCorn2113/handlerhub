@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/session'
 import { NewRequestForm } from '@/components/requests/new-request-form'
 
 export const metadata = {
-  title: 'Post a Request | HandlerHub',
+  title: 'Post a Request',
 }
 
 export default async function NewRequestPage() {

@@ -24,7 +24,7 @@ interface StepPhotoProps {
 
 const CIRCLE_SIZE = 192
 const CONTAINER_WIDTH = 340
-const CONTAINER_HEIGHT = 300
+const CONTAINER_HEIGHT = 340
 const MIN_ZOOM = 1
 const MAX_ZOOM = 3
 

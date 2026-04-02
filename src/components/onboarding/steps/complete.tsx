@@ -4,18 +4,94 @@ import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
-
 import type { OnboardingFormData } from '../wizard'
-import { motion } from 'framer-motion'
+import {
+  Calendar,
+  Dog,
+  MagnifyingGlass,
+  ShareNetwork,
+  UserCircle,
+} from '@phosphor-icons/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 
 interface StepCompleteProps {
   formData: OnboardingFormData
+  userId?: string
 }
 
-export function StepComplete({ formData }: StepCompleteProps) {
+function getFullUrl(key: string): string {
+  if (!key || key.startsWith('http')) return key || ''
+  return `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${key}`
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+}
+
+// CSS confetti colors matching brand palette
+const CONFETTI_COLORS = [
+  '#1F6B4A', // paddock-green
+  '#4A6F8A', // slate-blue
+  '#4A3E2E', // warm-brown
+  '#1F6B4A',
+  '#4A6F8A',
+  '#4A3E2E',
+  '#1F6B4A',
+  '#4A6F8A',
+  '#1F6B4A',
+  '#4A6F8A',
+  '#4A3E2E',
+  '#1F6B4A',
+]
+
+interface CtaCardProps {
+  icon: React.ReactNode
+  title: string
+  description: string
+  href?: string
+  onClick?: () => void
+}
+
+function CtaCard({ icon, title, description, href, onClick }: CtaCardProps) {
+  const content = (
+    <div className="rounded-2xl border border-sand bg-white p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="flex justify-center text-paddock-green">{icon}</div>
+      <h3
+        className="mt-3 text-lg font-semibold"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
+        {title}
+      </h3>
+      <p
+        className="mt-1 text-sm text-warm-gray"
+        style={{ fontFamily: 'var(--font-body)' }}
+      >
+        {description}
+      </p>
+    </div>
+  )
+
+  if (href) {
+    return <Link href={href}>{content}</Link>
+  }
+
+  return (
+    <button onClick={onClick} className="text-left">
+      {content}
+    </button>
+  )
+}
+
+export function StepComplete({ formData, userId }: StepCompleteProps) {
   const [finalized, setFinalized] = useState(false)
+  const [showNextSteps, setShowNextSteps] = useState(false)
   const isExhibitor = formData.role === 'EXHIBITOR'
 
   // Set isAvailable: true on mount (handlers only)
@@ -39,156 +115,166 @@ export function StepComplete({ formData }: StepCompleteProps) {
     finalize()
   }, [isExhibitor])
 
+  // Phase transition after 2.5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowNextSteps(true)
+    }, 2500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handleShareProfile = () => {
+    const url = `${window.location.origin}/handlers/${userId}`
+    navigator.clipboard.writeText(url).then(
+      () => toast.success('Profile link copied to clipboard!'),
+      () => toast.error('Failed to copy link')
+    )
+  }
+
+  const profileImageUrl = formData.profileImage
+    ? getFullUrl(formData.profileImage)
+    : ''
+  const initials = getInitials(formData.fullName || '?')
+
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md text-center">
-        {/* Animated checkmark */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{
-            type: 'spring',
-            stiffness: 260,
-            damping: 20,
-            delay: 0.1,
-          }}
-          className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-sage"
-        >
-          <motion.svg
-            className="size-10 text-paddock-green"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-          >
-            <motion.path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 13l4 4L19 7"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-            />
-          </motion.svg>
-        </motion.div>
+    <div className="relative flex min-h-[60vh] flex-col items-center justify-center overflow-hidden px-4 py-12">
+      {/* CSS Confetti */}
+      {!showNextSteps &&
+        CONFETTI_COLORS.map((color, i) => (
+          <span
+            key={i}
+            className="pointer-events-none absolute animate-confetti rounded-full"
+            style={{
+              width: `${6 + Math.random() * 6}px`,
+              height: `${6 + Math.random() * 6}px`,
+              backgroundColor: color,
+              left: `${8 + (i / CONFETTI_COLORS.length) * 84}%`,
+              bottom: '0%',
+              animationDelay: `${i * 0.15}s`,
+              animationDuration: `${1.8 + Math.random() * 1.2}s`,
+            }}
+          />
+        ))}
 
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-2 text-3xl font-bold tracking-tight text-ringside-black md:text-4xl"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          {isExhibitor
-            ? "You're ready to find a handler"
-            : 'Your profile is live!'}
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mb-8 text-base text-warm-gray"
-          style={{ fontFamily: 'var(--font-body)' }}
-        >
-          {isExhibitor
-            ? 'Start by adding your first dog.'
-            : 'Exhibitors can now find and reach out to you.'}
-        </motion.p>
-
-        {/* Preview card */}
-        {!isExhibitor && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
-            className="mb-8 rounded-2xl border-2 border-sand bg-white p-6 text-left"
-          >
-            <div className="flex items-center gap-4">
-              {formData.profileImage ? (
+      <div className="w-full max-w-2xl">
+        <AnimatePresence mode="wait">
+          {!showNextSteps ? (
+            /* Phase 1: Celebration */
+            <motion.div
+              key="celebration"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center text-center"
+            >
+              {/* Profile photo */}
+              {profileImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={getFullUrl(formData.profileImage)}
+                  src={profileImageUrl}
                   alt="Profile"
-                  className="size-14 rounded-full object-cover"
+                  className="mb-4 size-32 rounded-full object-cover shadow-md"
                 />
               ) : (
-                <div className="flex size-14 items-center justify-center rounded-full bg-sage text-lg font-bold text-paddock-green">
-                  {(formData.fullName ?? '?')[0]?.toUpperCase()}
+                <div className="mb-4 flex size-32 items-center justify-center rounded-full bg-sage text-3xl font-bold text-paddock-green shadow-md">
+                  {initials}
                 </div>
               )}
-              <div>
-                <p
-                  className="text-lg font-semibold text-ringside-black"
-                  style={{ fontFamily: 'var(--font-body)' }}
-                >
-                  {formData.fullName || 'Your Name'}
-                </p>
-                {(formData.city || formData.state) && (
-                  <p
-                    className="text-sm text-warm-gray"
-                    style={{ fontFamily: 'var(--font-body)' }}
-                  >
-                    {[formData.city, formData.state].filter(Boolean).join(', ')}
-                  </p>
+
+              {/* Name */}
+              <p
+                className="mb-6 text-xl text-warm-gray"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
+                {formData.fullName || 'Welcome'}
+              </p>
+
+              {/* Main heading */}
+              <h1
+                className="mb-3 text-3xl font-bold tracking-tight text-ringside-black md:text-4xl"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                Welcome to HandlerHub!
+              </h1>
+
+              {/* Role subtitle */}
+              <p
+                className="text-base text-warm-gray"
+                style={{ fontFamily: 'var(--font-body)' }}
+              >
+                {isExhibitor
+                  ? "You're all set. Let's find your perfect handler."
+                  : 'Your profile is live. Exhibitors can now find you.'}
+              </p>
+            </motion.div>
+          ) : (
+            /* Phase 2: Next Steps */
+            <motion.div
+              key="next-steps"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center text-center"
+            >
+              <h2
+                className="mb-8 text-3xl font-bold tracking-tight text-ringside-black md:text-4xl"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                What&apos;s next?
+              </h2>
+
+              <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
+                {isExhibitor ? (
+                  <>
+                    <CtaCard
+                      icon={<MagnifyingGlass size={32} weight="duotone" />}
+                      title="Find a handler"
+                      description="Browse experienced handlers in your area."
+                      href="/handlers"
+                    />
+                    <CtaCard
+                      icon={<Calendar size={32} weight="duotone" />}
+                      title="Browse upcoming shows"
+                      description="See what events are coming up near you."
+                      href="/events"
+                    />
+                    <CtaCard
+                      icon={<Dog size={32} weight="duotone" />}
+                      title="Add your first dog"
+                      description="Set up a profile for your dog."
+                      href="/dashboard/dogs?onboarding=1"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <CtaCard
+                      icon={<Calendar size={32} weight="duotone" />}
+                      title="Browse shows near you"
+                      description="Find upcoming events in your area."
+                      href="/events"
+                    />
+                    <CtaCard
+                      icon={<UserCircle size={32} weight="duotone" />}
+                      title="Preview your profile"
+                      description="See how exhibitors will find you."
+                      href={
+                        userId ? `/handlers/${userId}` : '/dashboard/profile'
+                      }
+                    />
+                    <CtaCard
+                      icon={<ShareNetwork size={32} weight="duotone" />}
+                      title="Share your profile"
+                      description="Copy your profile link to share."
+                      onClick={handleShareProfile}
+                    />
+                  </>
                 )}
               </div>
-            </div>
-
-            {formData.services && formData.services.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {formData.services.map((service) => (
-                  <span
-                    key={service}
-                    className="rounded-full bg-paddock-green px-2.5 py-0.5 text-xs font-medium text-white"
-                  >
-                    {service}
-                  </span>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="flex flex-col gap-3 sm:flex-row"
-        >
-          {isExhibitor ? (
-            <Button asChild size="lg" className="flex-1 rounded-xl">
-              <Link href="/dashboard/dogs?onboarding=1">
-                Add your first dog
-              </Link>
-            </Button>
-          ) : (
-            <>
-              <Button asChild size="lg" className="flex-1 rounded-xl">
-                <Link href="/dashboard/profile">View your profile</Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="flex-1 rounded-xl"
-              >
-                <Link href="/requests">Browse open requests</Link>
-              </Button>
-            </>
+            </motion.div>
           )}
-        </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   )
-}
-
-function getFullUrl(key: string): string {
-  if (key.startsWith('http')) return key
-  const r2DevUrl = process.env.NEXT_PUBLIC_R2_DEV_URL
-  return `${r2DevUrl}/${key}`
 }

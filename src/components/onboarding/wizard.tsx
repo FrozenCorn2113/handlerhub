@@ -498,7 +498,9 @@ export function OnboardingWizard({
                 onChange={(bio) => updateFormData({ bio })}
               />
             )}
-            {step.id === 'complete' && <StepComplete formData={formData} />}
+            {step.id === 'complete' && (
+              <StepComplete formData={formData} userId={user.id} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

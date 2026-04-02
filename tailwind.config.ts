@@ -29,6 +29,7 @@ module.exports = {
         'fade-out': 'fade-out 0.4s',
         'fade-in-forwards': 'fade-in 0.5s linear forwards',
 
+        confetti: 'confetti 2s ease-out forwards',
         marquee: 'marquee var(--marquee-duration) linear infinite',
         'marquee-left': 'marquee-left var(--duration, 40s) linear infinite',
         'marquee-up': 'marquee-up var(--duration, 40s) linear infinite',
@@ -153,6 +154,19 @@ module.exports = {
         'infinite-scroll': {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-100%)' },
+        },
+        confetti: {
+          '0%': {
+            transform: 'translateY(0) rotate(0deg) scale(1)',
+            opacity: '1',
+          },
+          '50%': {
+            opacity: '1',
+          },
+          '100%': {
+            transform: 'translateY(-400px) rotate(720deg) scale(0)',
+            opacity: '0',
+          },
         },
       },
     },

@@ -22,6 +22,7 @@ export function StepGallery({ value, onChange }: StepGalleryProps) {
 
   const handleFiles = useCallback(
     async (files: FileList) => {
+      const MAX_PHOTOS = 8
       const imageFiles = Array.from(files).filter((f) =>
         f.type.startsWith('image/')
       )
@@ -29,12 +30,23 @@ export function StepGallery({ value, onChange }: StepGalleryProps) {
         toast.error('Please select image files')
         return
       }
+      const remaining = MAX_PHOTOS - value.length
+      if (remaining <= 0) {
+        toast.error(`Maximum ${MAX_PHOTOS} photos allowed`)
+        return
+      }
+      const filesToUpload = imageFiles.slice(0, remaining)
+      if (filesToUpload.length < imageFiles.length) {
+        toast.info(
+          `Uploading ${filesToUpload.length} of ${imageFiles.length} (max ${MAX_PHOTOS} total)`
+        )
+      }
 
       setUploading(true)
       const newKeys: string[] = []
 
       try {
-        for (const file of imageFiles) {
+        for (const file of filesToUpload) {
           const presignedRes = await fetch('/api/upload/presigned-url', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

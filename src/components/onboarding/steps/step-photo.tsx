@@ -276,11 +276,19 @@ export function StepPhoto({
   )
 
   // --- Confirm / Adjust ---
+  // Store confirmed snapshot so prop changes can't reset the preview
+  const [confirmedState, setConfirmedState] = useState<{
+    ox: number
+    oy: number
+    dw: number
+    dh: number
+  } | null>(null)
 
   const handleConfirm = useCallback(() => {
+    // Snapshot the current pixel positions before locking
+    setConfirmedState({ ox: offsetX, oy: offsetY, dw: displayW, dh: displayH })
     setLocked(true)
     if (value) {
-      // Store as percentage offsets for portability
       const pctX = displayW > 0 ? (offsetX / displayW) * 100 : 0
       const pctY = displayH > 0 ? (offsetY / displayH) * 100 : 0
       onChange(value, pctX, pctY, zoomLevel)
@@ -288,6 +296,7 @@ export function StepPhoto({
   }, [value, offsetX, offsetY, displayW, displayH, zoomLevel, onChange])
 
   const handleAdjust = useCallback(() => {
+    setConfirmedState(null)
     setLocked(false)
   }, [])
 
@@ -506,7 +515,7 @@ export function StepPhoto({
         )}
 
         {/* Confirmed circular preview */}
-        {showConfirmedPreview && (
+        {showConfirmedPreview && confirmedState && (
           <div className="flex flex-col items-center gap-3">
             <div
               className="relative overflow-hidden rounded-full border-2 border-paddock-green"
@@ -522,15 +531,12 @@ export function StepPhoto({
                 draggable={false}
                 className="pointer-events-none absolute"
                 style={{
-                  width: displayW,
-                  height: displayH,
-                  // In the confirmed preview, we need to remap the offset
-                  // from editor-space to the circle-only container
-                  // In editor: image is at (circleCenterX - displayW/2 + offsetX, circleCenterY - displayH/2 + offsetY)
-                  // In circle container: circle center is at (CIRCLE_SIZE/2, CIRCLE_SIZE/2)
-                  left: CIRCLE_SIZE / 2 - displayW / 2 + offsetX,
-                  top: CIRCLE_SIZE / 2 - displayH / 2 + offsetY,
-                  objectFit: 'cover',
+                  width: confirmedState.dw,
+                  height: confirmedState.dh,
+                  left:
+                    CIRCLE_SIZE / 2 - confirmedState.dw / 2 + confirmedState.ox,
+                  top:
+                    CIRCLE_SIZE / 2 - confirmedState.dh / 2 + confirmedState.oy,
                 }}
               />
             </div>

@@ -1,6 +1,6 @@
 export const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
 export const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'] as const
-export const MAX_FILE_SIZE = 15 * 1024 * 1024 // 15MB
+export const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
 type ValidationResult = { valid: boolean; error?: string }
 

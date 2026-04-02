@@ -887,7 +887,7 @@ function HandlersPage() {
         </div>
 
         {/* Right panel: map */}
-        <div className="sticky top-0 hidden h-full border-l border-sand lg:block lg:w-2/5">
+        <div className="sticky top-0 hidden h-[calc(100vh-4rem)] border-l border-sand lg:block lg:w-2/5">
           <HandlerMap
             handlers={handlers}
             highlightedId={highlightedId}

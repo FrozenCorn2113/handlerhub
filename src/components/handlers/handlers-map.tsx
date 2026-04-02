@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
+import { Map, Marker, Overlay } from 'pigeon-maps'
 
 export interface HandlerPin {
   id: string
@@ -74,6 +75,11 @@ const STATE_COORDS: Record<string, [number, number]> = {
   WY: [42.755966, -107.30249],
 }
 
+interface PinWithCoords {
+  handler: HandlerPin
+  coords: [number, number]
+}
+
 function getHandlerCoords(handler: HandlerPin): [number, number] | null {
   if (handler.state) {
     const coords = STATE_COORDS[handler.state.toUpperCase()]
@@ -94,213 +100,132 @@ export function HandlersMap({
   onPinHover,
   onPinClick,
 }: HandlersMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const leafletMapRef = useRef<any>(null)
-  const clusterGroupRef = useRef<any>(null)
-  const markersRef = useRef<Map<string, any>>(new Map())
+  const [selectedPin, setSelectedPin] = useState<PinWithCoords | null>(null)
 
-  useEffect(() => {
-    if (!mapRef.current) return
+  // Memoize pin positions so random offsets stay stable across renders
+  const pinsWithCoords = useMemo(() => {
+    return handlers
+      .map((h) => ({ handler: h, coords: getHandlerCoords(h) }))
+      .filter((p): p is PinWithCoords => p.coords !== null)
+  }, [handlers])
 
-    const initMap = async () => {
-      const L = (await import('leaflet')).default
-      await import('leaflet.markercluster')
+  // Compute center from pins or default to US center
+  const center = useMemo<[number, number]>(() => {
+    if (pinsWithCoords.length === 0) return [39.8283, -98.5795]
+    const avgLat =
+      pinsWithCoords.reduce((sum, p) => sum + p.coords[0], 0) /
+      pinsWithCoords.length
+    const avgLng =
+      pinsWithCoords.reduce((sum, p) => sum + p.coords[1], 0) /
+      pinsWithCoords.length
+    return [avgLat, avgLng]
+  }, [pinsWithCoords])
 
-      if (!document.getElementById('handler-markercluster-css')) {
-        const css1 = document.createElement('link')
-        css1.id = 'handler-markercluster-css'
-        css1.rel = 'stylesheet'
-        css1.href =
-          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'
-        document.head.appendChild(css1)
-        const css2 = document.createElement('link')
-        css2.rel = 'stylesheet'
-        css2.href =
-          'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
-        document.head.appendChild(css2)
-      }
-
-      delete (L.Icon.Default.prototype as any)._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      })
-
-      if (leafletMapRef.current) leafletMapRef.current.remove()
-
-      const isMobile = window.innerWidth < 768
-      const map = L.map(mapRef.current!, {
-        center: [39.8283, -98.5795],
-        zoom: 4,
-        scrollWheelZoom: !isMobile,
-        zoomControl: true,
-      })
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18,
-      }).addTo(map)
-
-      leafletMapRef.current = map
-    }
-
-    initMap()
-    return () => {
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
-        leafletMapRef.current = null
-      }
-    }
+  const handleMapClick = useCallback(() => {
+    setSelectedPin(null)
   }, [])
 
-  // Update markers when handlers change
-  useEffect(() => {
-    if (!leafletMapRef.current) return
-
-    const updateMarkers = async () => {
-      const L = (await import('leaflet')).default
-      await import('leaflet.markercluster')
-
-      if (clusterGroupRef.current) {
-        leafletMapRef.current.removeLayer(clusterGroupRef.current)
-      }
-      markersRef.current.clear()
-
-      const pinsWithCoords = handlers
-        .map((h) => ({ handler: h, coords: getHandlerCoords(h) }))
-        .filter(
-          (p): p is { handler: HandlerPin; coords: [number, number] } =>
-            p.coords !== null
-        )
-
-      if (pinsWithCoords.length === 0) return
-
-      const clusterGroup = L.markerClusterGroup({
-        maxClusterRadius: 50,
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        zoomToBoundsOnClick: true,
-        iconCreateFunction: (cluster: any) => {
-          const count = cluster.getChildCount()
-          const size = count >= 100 ? 44 : count >= 10 ? 40 : 36
-          const fontSize = count >= 100 ? 14 : 13
-          return L.divIcon({
-            html: `<div style="background:#1F6B4A;color:white;width:${size}px;height:${size}px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${fontSize}px;font-weight:700;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.25);">${count}</div>`,
-            className: 'custom-cluster',
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2],
-          })
-        },
-      })
-
-      const bounds: [number, number][] = []
-
-      pinsWithCoords.forEach(({ handler: h, coords }) => {
-        bounds.push(coords)
-
-        const icon = L.divIcon({
-          html: `<div style="background:#1F6B4A;width:14px;height:14px;border-radius:50%;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.25);"></div>`,
-          className: 'custom-pin',
-          iconSize: [14, 14],
-          iconAnchor: [7, 7],
-        })
-
-        const marker = L.marker(coords, { icon })
-
-        const price = h.ratePerShow ? `$${h.ratePerShow}/show` : ''
-        marker.bindPopup(
-          `
-          <div style="min-width:160px;">
-            <div style="font-weight:700;font-size:14px;color:#1C1208;padding-bottom:4px;border-bottom:2px solid #1F6B4A;margin-bottom:4px;">
-              ${h.name}
-            </div>
-            <div style="font-size:12px;color:#7A6E5E;margin-bottom:4px;">${[h.city, h.state].filter(Boolean).join(', ')}</div>
-            <div style="font-size:12px;color:#7A6E5E;">${h.serviceType}${price ? ` · ${price}` : ''}</div>
-            <a href="/handlers/${h.id}" style="display:inline-block;margin-top:6px;padding:4px 10px;background:#1F6B4A;color:white;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;">
-              View Profile
-            </a>
-          </div>
-        `,
-          { maxWidth: 250, className: 'handler-popup' }
-        )
-
-        marker.on('mouseover', () => onPinHover?.(h.id))
-        marker.on('mouseout', () => onPinHover?.(null))
-        marker.on('click', () => onPinClick?.(h.id))
-
-        clusterGroup.addLayer(marker)
-        markersRef.current.set(h.id, marker)
-      })
-
-      leafletMapRef.current.addLayer(clusterGroup)
-      clusterGroupRef.current = clusterGroup
-
-      if (bounds.length > 0) {
-        leafletMapRef.current.fitBounds(bounds, {
-          padding: [40, 40],
-          maxZoom: 12,
-        })
-      }
-    }
-
-    updateMarkers()
-  }, [handlers, onPinHover, onPinClick])
-
-  // Highlight effect
-  useEffect(() => {
-    markersRef.current.forEach((m, id) => {
-      const el = m.getElement?.()
-      if (!el) return
-      if (highlightedId && id === highlightedId) {
-        el.style.transform = `${el.style.transform || ''} scale(1.3)`
-        el.style.zIndex = '1000'
-        el.style.filter =
-          'brightness(1.2) drop-shadow(0 0 6px rgba(31, 107, 74, 0.6))'
-      } else {
-        el.style.transform = (el.style.transform || '').replace(
-          /scale\([^)]*\)/g,
-          ''
-        )
-        el.style.zIndex = ''
-        el.style.filter = ''
-      }
-    })
-  }, [highlightedId])
+  const handleMarkerClick = useCallback(
+    (pin: PinWithCoords) => {
+      setSelectedPin((prev) =>
+        prev?.handler.id === pin.handler.id ? null : pin
+      )
+      onPinClick?.(pin.handler.id)
+    },
+    [onPinClick]
+  )
 
   return (
-    <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossOrigin=""
-      />
-      <style>{`
-        .custom-pin, .custom-cluster { background: transparent !important; border: none !important; }
-        .handler-popup .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        .handler-popup .leaflet-popup-content { margin: 10px 14px; }
-      `}</style>
-      <div className="relative h-full w-full">
-        <div
-          ref={mapRef}
-          className="h-full w-full"
-          style={{ minHeight: '400px' }}
-        />
-        {handlers.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
-            <MapPin size={40} weight="light" className="mb-2 text-warm-gray" />
-            <p className="text-sm font-medium text-warm-gray">
-              No handlers to display
-            </p>
-            <p className="text-xs text-warm-gray/70">
-              Try adjusting your filters
-            </p>
-          </div>
-        )}
+    <div className="relative h-full w-full">
+      <div className="h-full w-full overflow-hidden rounded-2xl border border-sand">
+        <Map
+          defaultCenter={center}
+          defaultZoom={4}
+          height={600}
+          onClick={({ event }) => {
+            const target = event.target as HTMLElement
+            if (!target.closest('[data-pin-overlay]')) {
+              handleMapClick()
+            }
+          }}
+          attribution={false}
+        >
+          {pinsWithCoords.map((pin) => {
+            const isHighlighted = highlightedId === pin.handler.id
+
+            return (
+              <Marker
+                key={pin.handler.id}
+                anchor={pin.coords}
+                onClick={() => handleMarkerClick(pin)}
+                onMouseOver={() => onPinHover?.(pin.handler.id)}
+                onMouseOut={() => onPinHover?.(null)}
+              >
+                <div
+                  style={{
+                    background: '#1F6B4A',
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    border: '2.5px solid white',
+                    boxShadow: isHighlighted
+                      ? '0 0 8px rgba(31, 107, 74, 0.6), 0 2px 6px rgba(0,0,0,0.25)'
+                      : '0 2px 6px rgba(0,0,0,0.25)',
+                    transform: isHighlighted ? 'scale(1.3)' : 'scale(1)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    cursor: 'pointer',
+                    zIndex: isHighlighted ? 1000 : 'auto',
+                  }}
+                />
+              </Marker>
+            )
+          })}
+
+          {selectedPin && (
+            <Overlay anchor={selectedPin.coords} offset={[0, -20]}>
+              <div
+                data-pin-overlay
+                className="rounded-lg border border-sand bg-white p-3 shadow-md"
+                style={{ minWidth: 180, maxWidth: 260 }}
+              >
+                <div className="border-b-2 border-paddock-green pb-1 font-display text-sm font-bold text-ringside-black">
+                  {selectedPin.handler.name}
+                </div>
+                <p className="mb-1 mt-1 text-xs text-warm-gray">
+                  {[selectedPin.handler.city, selectedPin.handler.state]
+                    .filter(Boolean)
+                    .join(', ')}
+                </p>
+                <p className="mb-2 text-xs text-warm-gray">
+                  {selectedPin.handler.serviceType}
+                  {selectedPin.handler.ratePerShow
+                    ? ` · $${selectedPin.handler.ratePerShow}/show`
+                    : ''}
+                </p>
+                <a
+                  href={`/handlers/${selectedPin.handler.id}`}
+                  className="inline-flex items-center gap-1 rounded-lg bg-paddock-green px-2.5 py-1 text-xs font-semibold text-white no-underline"
+                >
+                  View Profile
+                </a>
+              </div>
+            </Overlay>
+          )}
+        </Map>
       </div>
-    </>
+
+      {/* Empty state overlay */}
+      {handlers.length === 0 && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
+          <MapPin size={40} weight="light" className="mb-2 text-warm-gray" />
+          <p className="text-sm font-medium text-warm-gray">
+            No handlers to display
+          </p>
+          <p className="text-xs text-warm-gray/70">
+            Try adjusting your filters
+          </p>
+        </div>
+      )}
+    </div>
   )
 }

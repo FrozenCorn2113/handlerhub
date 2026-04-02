@@ -488,14 +488,19 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                   Gallery
                 </h2>
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {handler.galleryImages.map((img, idx) => (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={`${handler.name} gallery ${idx + 1}`}
-                      className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
-                    />
-                  ))}
+                  {handler.galleryImages.map((img, idx) => {
+                    const src = img.startsWith('http')
+                      ? img
+                      : `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${img}`
+                    return (
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`${handler.name} gallery ${idx + 1}`}
+                        className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
+                      />
+                    )
+                  })}
                 </div>
               </Card>
             )}

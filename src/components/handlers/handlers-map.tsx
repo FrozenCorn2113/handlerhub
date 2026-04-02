@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
 import { Map, Marker, Overlay } from 'pigeon-maps'
@@ -100,7 +100,22 @@ export function HandlersMap({
   onPinHover,
   onPinClick,
 }: HandlersMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [mapHeight, setMapHeight] = useState(600)
   const [selectedPin, setSelectedPin] = useState<PinWithCoords | null>(null)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setMapHeight(Math.round(entry.contentRect.height))
+      }
+    })
+    observer.observe(el)
+    setMapHeight(Math.round(el.clientHeight))
+    return () => observer.disconnect()
+  }, [])
 
   // Memoize pin positions so random offsets stay stable across renders
   const pinsWithCoords = useMemo(() => {
@@ -136,12 +151,12 @@ export function HandlersMap({
   )
 
   return (
-    <div className="relative h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       <div className="h-full w-full overflow-hidden rounded-2xl border border-sand">
         <Map
           defaultCenter={center}
           defaultZoom={4}
-          height={600}
+          height={mapHeight}
           onClick={({ event }) => {
             const target = event.target as HTMLElement
             if (!target.closest('[data-pin-overlay]')) {

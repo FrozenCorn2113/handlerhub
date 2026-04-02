@@ -809,7 +809,7 @@ function HandlersPage() {
       </div>
 
       {/* Split view */}
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Left panel: handler cards */}
         <div className="w-full overflow-y-auto px-6 py-5 lg:w-3/5">
           <div className="mb-4 flex items-center justify-between">
@@ -887,7 +887,7 @@ function HandlersPage() {
         </div>
 
         {/* Right panel: map */}
-        <div className="sticky top-0 hidden h-[calc(100vh-4rem)] border-l border-sand lg:block lg:w-2/5">
+        <div className="hidden h-full border-l border-sand lg:block lg:w-2/5">
           <HandlerMap
             handlers={handlers}
             highlightedId={highlightedId}

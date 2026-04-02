@@ -104,6 +104,14 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
   const fee = handler.feeSchedule
   const startingPrice = handler.ratePerShow ?? fee?.allBreedShow ?? null
   const firstName = handler.name.split(' ')[0]
+  const upcomingShowCount = handler.upcomingShows?.length ?? 0
+
+  // Has any stats to show?
+  const hasStats =
+    handler.yearsExperience != null ||
+    handler.totalCompletedBookings > 0 ||
+    (handler.reviewCount >= 20 && handler.averageRating != null) ||
+    handler.responseRate != null
 
   return (
     <div className="min-h-[80vh] bg-ring-cream">
@@ -121,14 +129,14 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
         {handler.isClaimed === false && (
           <Card
             variant="static"
-            className="mb-6 border-2 border-slate-blue/30 bg-slate-blue-light p-5"
+            className="mb-6 border-2 border-amber-200 bg-amber-50 p-5"
           >
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="font-display text-lg font-light text-ringside-black">
+                <p className="font-display text-lg font-light text-amber-900">
                   Is this your profile?
                 </p>
-                <p className="mt-1 font-body text-sm text-warm-gray">
+                <p className="mt-1 font-body text-sm text-amber-700">
                   Claim it to manage your presence on HandlerHub.
                 </p>
               </div>
@@ -141,8 +149,8 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
           </Card>
         )}
 
-        {/* Hero Card */}
-        <Card variant="static" className="mb-8 overflow-hidden p-0">
+        {/* Hero Card -- cleaned up, no stats */}
+        <Card variant="static" className="mb-0 overflow-hidden p-0">
           {/* Cover photo / gradient */}
           {handler.coverImage ? (
             <img
@@ -154,7 +162,7 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
             <div className="h-48 w-full bg-gradient-to-br from-paddock-green via-forest to-paddock-green/80 sm:h-56 md:h-64" />
           )}
 
-          <div className="px-6 pb-8 sm:px-8">
+          <div className="px-6 pb-6 sm:px-8">
             {/* Avatar overlay */}
             <div className="-mt-16 mb-4 flex items-end gap-5">
               <div className="shrink-0">
@@ -264,111 +272,71 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                 </span>
               </div>
             )}
-
-            {/* Stats row */}
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {handler.yearsExperience != null && (
-                <StatCard
-                  icon={<Clock className="h-5 w-5 text-paddock-green" />}
-                  value={`${handler.yearsExperience}`}
-                  label="Years Experience"
-                />
-              )}
-              {handler.totalCompletedBookings > 0 && (
-                <StatCard
-                  icon={<Trophy className="h-5 w-5 text-paddock-green" />}
-                  value={`${handler.totalCompletedBookings}`}
-                  label="Bookings"
-                />
-              )}
-              {handler.reviewCount >= 20 && handler.averageRating != null && (
-                <StatCard
-                  icon={
-                    <Star
-                      className="h-5 w-5 text-paddock-green"
-                      weight="fill"
-                    />
-                  }
-                  value={handler.averageRating.toFixed(1)}
-                  label="Avg Rating"
-                />
-              )}
-              {handler.responseRate != null && (
-                <StatCard
-                  icon={
-                    <EnvelopeSimple className="h-5 w-5 text-paddock-green" />
-                  }
-                  value={`${Math.round(handler.responseRate)}%`}
-                  label="Response Rate"
-                />
-              )}
-            </div>
           </div>
         </Card>
 
+        {/* Stats Block -- full-width band between hero and content */}
+        {hasStats && (
+          <div className="rounded-b-2xl bg-[#F0EAE0]/60 px-6 py-6 sm:px-8">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {handler.yearsExperience != null && (
+                <div className="flex flex-col items-center text-center">
+                  <span className="font-display text-2xl font-semibold text-ringside-black sm:text-3xl">
+                    {handler.yearsExperience}
+                  </span>
+                  <span className="mt-1 font-body text-xs text-warm-gray">
+                    Years Experience
+                  </span>
+                </div>
+              )}
+              {handler.totalCompletedBookings > 0 && (
+                <div className="flex flex-col items-center text-center">
+                  <span className="font-display text-2xl font-semibold text-ringside-black sm:text-3xl">
+                    {handler.totalCompletedBookings}
+                  </span>
+                  <span className="mt-1 font-body text-xs text-warm-gray">
+                    Completed Bookings
+                  </span>
+                </div>
+              )}
+              {handler.reviewCount >= 20 && handler.averageRating != null && (
+                <div className="flex flex-col items-center text-center">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-display text-2xl font-semibold text-ringside-black sm:text-3xl">
+                      {handler.averageRating.toFixed(1)}
+                    </span>
+                    <Star className="h-5 w-5 text-amber-400" weight="fill" />
+                  </div>
+                  <span className="mt-1 font-body text-xs text-warm-gray">
+                    Average Rating
+                  </span>
+                </div>
+              )}
+              {handler.responseRate != null && (
+                <div className="flex flex-col items-center text-center">
+                  <span className="font-display text-2xl font-semibold text-ringside-black sm:text-3xl">
+                    {Math.round(handler.responseRate)}%
+                  </span>
+                  <span className="mt-1 font-body text-xs text-warm-gray">
+                    Response Rate
+                  </span>
+                </div>
+              )}
+            </div>
+            <p className="mt-3 text-center font-body text-[10px] text-warm-gray/70">
+              [Handler-provided]
+            </p>
+          </div>
+        )}
+
+        {/* Spacer after stats block */}
+        <div className="h-8" />
+
         {/* Content grid */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Main column - Fiverr-style order: Gallery > Reviews > About > Details */}
+          {/* Main column -- reordered: About > Services > Breeds > Trust > Gallery > Shows > Reviews */}
           <div className="space-y-8 lg:col-span-2">
-            {/* Gallery (first - portfolio/work samples are #1 buyer signal) */}
-            {handler.galleryImages.length > 0 && (
-              <Card variant="static" className="p-6">
-                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
-                  <Camera className="h-5 w-5 text-paddock-green" />
-                  Gallery
-                </h2>
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {handler.galleryImages.map((img, idx) => {
-                    const src = img.startsWith('http')
-                      ? img
-                      : `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${img}`
-                    return (
-                      <img
-                        key={idx}
-                        src={src}
-                        alt={`${handler.name} gallery ${idx + 1}`}
-                        className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
-                      />
-                    )
-                  })}
-                </div>
-              </Card>
-            )}
-
-            {/* Reviews (second - #2 buyer signal; placeholder for now) */}
-            {handler.reviewCount >= 20 && handler.averageRating != null && (
-              <Card variant="static" className="p-6">
-                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
-                  <Star className="h-5 w-5 text-paddock-green" weight="fill" />
-                  Reviews
-                </h2>
-                <div className="flex items-center gap-3">
-                  <span className="font-display text-3xl font-light text-ringside-black">
-                    {handler.averageRating.toFixed(1)}
-                  </span>
-                  <div>
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-4 w-4 ${
-                            star <= Math.round(handler.averageRating!)
-                              ? 'text-amber-400'
-                              : 'text-sand'
-                          }`}
-                          weight="fill"
-                        />
-                      ))}
-                    </div>
-                    <p className="mt-0.5 font-body text-xs text-warm-gray">
-                      Based on {handler.reviewCount} reviews
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* About section (third) */}
+            {/* 1. About / Bio */}
             <Card variant="static" className="p-6">
               <h2 className="mb-4 font-display text-xl font-light text-ringside-black">
                 About {firstName}
@@ -384,83 +352,7 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               )}
             </Card>
 
-            {/* Breed Specialties */}
-            {handler.breeds.length > 0 && (
-              <Card variant="static" className="p-6">
-                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
-                  <Dog className="h-5 w-5 text-paddock-green" />
-                  Breed Specialties
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {handler.breeds.map((breed) => (
-                    <span
-                      key={breed}
-                      className="chip-breed rounded-full px-3.5 py-1.5 font-body text-xs font-medium"
-                    >
-                      {breed}
-                    </span>
-                  ))}
-                </div>
-              </Card>
-            )}
-
-            {/* Trust Badges */}
-            {(handler.isInsured ||
-              handler.isBonded ||
-              handler.kennelClubMemberships.length > 0 ||
-              handler.isFoundingHandler) && (
-              <Card variant="static" className="p-6">
-                <h2 className="mb-5 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
-                  <ShieldCheck className="h-5 w-5 text-paddock-green" />
-                  Trust &amp; Credentials
-                </h2>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {handler.isInsured && (
-                    <TrustBadge
-                      icon={
-                        <ShieldCheck
-                          className="h-5 w-5 text-paddock-green"
-                          weight="fill"
-                        />
-                      }
-                      label="Insured"
-                    />
-                  )}
-                  {handler.isBonded && (
-                    <TrustBadge
-                      icon={
-                        <CheckCircle
-                          className="h-5 w-5 text-paddock-green"
-                          weight="fill"
-                        />
-                      }
-                      label="Bonded"
-                    />
-                  )}
-                  {handler.kennelClubMemberships.map((membership) => (
-                    <TrustBadge
-                      key={membership}
-                      icon={<Trophy className="h-5 w-5 text-paddock-green" />}
-                      label={membership}
-                    />
-                  ))}
-                  {handler.isFoundingHandler && (
-                    <TrustBadge
-                      icon={
-                        <Star
-                          className="h-5 w-5 text-paddock-green"
-                          weight="fill"
-                        />
-                      }
-                      label="Founding Handler"
-                      highlight
-                    />
-                  )}
-                </div>
-              </Card>
-            )}
-
-            {/* Services + Prices */}
+            {/* 2. Services & Pricing */}
             {handler.handlerServices.length > 0 ? (
               <Card variant="static" className="p-6">
                 <h2 className="mb-5 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
@@ -474,9 +366,12 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                       className="rounded-xl border border-sand bg-ring-cream p-4 transition-shadow hover:shadow-md"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <h3 className="font-body text-sm font-semibold text-ringside-black">
-                          {service.name}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <CurrencyDollar className="h-4 w-4 shrink-0 text-paddock-green/60" />
+                          <h3 className="font-body text-sm font-semibold text-ringside-black">
+                            {service.name}
+                          </h3>
+                        </div>
                         <span className="shrink-0 font-display text-lg font-light text-paddock-green">
                           $
                           {(service.price / 100).toFixed(
@@ -484,11 +379,11 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                           )}
                         </span>
                       </div>
-                      <p className="mt-0.5 font-body text-xs text-warm-gray">
+                      <p className="mt-0.5 pl-6 font-body text-xs text-warm-gray">
                         per {service.pricePer}
                       </p>
                       {service.description && (
-                        <p className="mt-2 font-body text-xs leading-relaxed text-warm-brown">
+                        <p className="mt-2 line-clamp-2 pl-6 font-body text-xs leading-relaxed text-warm-brown">
                           {service.description}
                         </p>
                       )}
@@ -559,10 +454,115 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                   </div>
                 )}
               </Card>
-            ) : null}
+            ) : (
+              <EmptyStateBox message="Services and pricing coming soon" />
+            )}
 
-            {/* Upcoming Shows */}
-            {handler.upcomingShows && handler.upcomingShows.length > 0 && (
+            {/* 3. Breed Specialties */}
+            {handler.breeds.length > 0 && (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <Dog className="h-5 w-5 text-paddock-green" />
+                  Breed Specialties
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {handler.breeds.map((breed) => (
+                    <span
+                      key={breed}
+                      className="chip-breed rounded-full px-3.5 py-1.5 font-body text-xs font-medium"
+                    >
+                      {breed}
+                    </span>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* 4. Trust & Credentials */}
+            {(handler.isInsured ||
+              handler.isBonded ||
+              handler.kennelClubMemberships.length > 0 ||
+              handler.isFoundingHandler) && (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-5 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <ShieldCheck className="h-5 w-5 text-paddock-green" />
+                  Trust &amp; Credentials
+                </h2>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {handler.isInsured && (
+                    <TrustBadge
+                      icon={
+                        <ShieldCheck
+                          className="h-5 w-5 text-paddock-green"
+                          weight="fill"
+                        />
+                      }
+                      label="Insured"
+                    />
+                  )}
+                  {handler.isBonded && (
+                    <TrustBadge
+                      icon={
+                        <CheckCircle
+                          className="h-5 w-5 text-paddock-green"
+                          weight="fill"
+                        />
+                      }
+                      label="Bonded"
+                    />
+                  )}
+                  {handler.kennelClubMemberships.map((membership) => (
+                    <TrustBadge
+                      key={membership}
+                      icon={<Trophy className="h-5 w-5 text-paddock-green" />}
+                      label={membership}
+                    />
+                  ))}
+                  {handler.isFoundingHandler && (
+                    <TrustBadge
+                      icon={
+                        <Star
+                          className="h-5 w-5 text-paddock-green"
+                          weight="fill"
+                        />
+                      }
+                      label="Founding Handler"
+                      highlight
+                    />
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* 5. Gallery / Portfolio */}
+            {handler.galleryImages.length > 0 ? (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <Camera className="h-5 w-5 text-paddock-green" />
+                  Gallery
+                </h2>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {handler.galleryImages.map((img, idx) => {
+                    const src = img.startsWith('http')
+                      ? img
+                      : `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${img}`
+                    return (
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`${handler.name} gallery ${idx + 1}`}
+                        className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
+                      />
+                    )
+                  })}
+                </div>
+              </Card>
+            ) : (
+              <EmptyStateBox message="Photos coming soon" />
+            )}
+
+            {/* 6. Upcoming Shows */}
+            {handler.upcomingShows && handler.upcomingShows.length > 0 ? (
               <Card variant="static" className="p-6">
                 <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
                   <Trophy className="h-5 w-5 text-paddock-green" />
@@ -614,11 +614,146 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                   })}
                 </div>
               </Card>
+            ) : (
+              <EmptyStateBox message="No upcoming shows listed yet" />
+            )}
+
+            {/* 7. Reviews (last in main column) */}
+            {handler.reviewCount >= 20 && handler.averageRating != null && (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <Star className="h-5 w-5 text-paddock-green" weight="fill" />
+                  Reviews
+                </h2>
+                <div className="flex items-center gap-3">
+                  <span className="font-display text-3xl font-light text-ringside-black">
+                    {handler.averageRating.toFixed(1)}
+                  </span>
+                  <div>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= Math.round(handler.averageRating!)
+                              ? 'text-amber-400'
+                              : 'text-sand'
+                          }`}
+                          weight="fill"
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-0.5 font-body text-xs text-warm-gray">
+                      Based on {handler.reviewCount} reviews
+                    </p>
+                  </div>
+                </div>
+              </Card>
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-8 lg:col-span-1">
+          {/* Sidebar -- enriched */}
+          <div className="space-y-6 lg:col-span-1">
+            {/* Availability + Response Time */}
+            <Card variant="static" className="p-5">
+              <div className="space-y-4">
+                {/* Availability status */}
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-paddock-green/60 opacity-75" />
+                    <span className="relative inline-flex h-3 w-3 rounded-full bg-paddock-green" />
+                  </span>
+                  <span className="font-body text-sm font-semibold text-paddock-green">
+                    Available
+                  </span>
+                </div>
+
+                {/* Response time */}
+                <div className="flex items-center gap-2.5">
+                  <Clock className="h-4 w-4 text-warm-gray" />
+                  <span className="font-body text-sm text-warm-gray">
+                    Typically responds within 24 hours
+                  </span>
+                </div>
+
+                {/* Shows this season */}
+                <div className="flex items-center gap-2.5">
+                  <Trophy className="h-4 w-4 text-warm-gray" />
+                  <span className="font-body text-sm text-warm-gray">
+                    {upcomingShowCount}{' '}
+                    {upcomingShowCount === 1 ? 'show' : 'shows'} this season
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Contact CTA sidebar */}
+            {handler.isClaimed !== false && (
+              <Card
+                variant="static"
+                className="border-2 border-paddock-green/20 p-6"
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <CheckCircle
+                    className="h-5 w-5 text-paddock-green"
+                    weight="fill"
+                  />
+                  <h3 className="font-body text-sm font-semibold text-ringside-black">
+                    Work with {firstName}
+                  </h3>
+                </div>
+                <p className="mb-4 font-body text-sm text-warm-gray">
+                  Send a message to discuss your show needs, availability, and
+                  pricing.
+                </p>
+                <Button asChild className="w-full">
+                  <Link href={handler.messageHref}>
+                    <EnvelopeSimple className="mr-1.5 h-4 w-4" />
+                    Send Message
+                  </Link>
+                </Button>
+              </Card>
+            )}
+
+            {/* Next 3 upcoming shows -- compact sidebar list */}
+            {handler.upcomingShows && handler.upcomingShows.length > 0 && (
+              <Card variant="static" className="p-5">
+                <h3 className="mb-3 flex items-center gap-2 font-display text-base font-light text-ringside-black">
+                  <CalendarBlank className="h-4 w-4 text-paddock-green" />
+                  Next Shows
+                </h3>
+                <div className="space-y-2.5">
+                  {handler.upcomingShows.slice(0, 3).map((show, idx) => {
+                    const date = new Date(show.eventDate)
+                    return (
+                      <div key={idx} className="flex items-start gap-2.5">
+                        <div className="mt-0.5 flex h-8 w-8 shrink-0 flex-col items-center justify-center rounded-md bg-sage">
+                          <span className="font-body text-[8px] font-semibold uppercase tracking-wider text-paddock-green">
+                            {date.toLocaleDateString('en-US', {
+                              month: 'short',
+                            })}
+                          </span>
+                          <span className="font-display text-xs font-light leading-none text-ringside-black">
+                            {date.getDate()}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate font-body text-xs font-semibold text-ringside-black">
+                            {show.eventName}
+                          </p>
+                          {show.eventLocation && (
+                            <p className="truncate font-body text-[11px] text-warm-gray">
+                              {show.eventLocation}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </Card>
+            )}
+
             {/* Circuit Coverage */}
             {handler.regions.length > 0 && (
               <Card variant="static" className="p-6">
@@ -660,42 +795,14 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               </Card>
             )}
 
-            {/* Contact CTA sidebar */}
-            {handler.isClaimed !== false && (
-              <Card
-                variant="static"
-                className="border-2 border-paddock-green/20 p-6"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <CheckCircle
-                    className="h-5 w-5 text-paddock-green"
-                    weight="fill"
-                  />
-                  <h3 className="font-body text-sm font-semibold text-ringside-black">
-                    Work with {firstName}
-                  </h3>
-                </div>
-                <p className="mb-4 font-body text-sm text-warm-gray">
-                  Send a message to discuss your show needs, availability, and
-                  pricing.
-                </p>
-                <Button asChild className="w-full">
-                  <Link href={handler.messageHref}>
-                    <EnvelopeSimple className="mr-1.5 h-4 w-4" />
-                    Send Message
-                  </Link>
-                </Button>
-              </Card>
-            )}
-
             {/* Claim CTA for unclaimed */}
             {handler.isClaimed === false && (
               <Card
                 variant="static"
-                className="border-2 border-slate-blue/20 p-6"
+                className="border-2 border-amber-200/60 p-6"
               >
                 <div className="mb-3 flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-slate-blue" />
+                  <Globe className="h-5 w-5 text-amber-700" />
                   <h3 className="font-body text-sm font-semibold text-ringside-black">
                     Claim This Profile
                   </h3>
@@ -720,22 +827,10 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
 
 /* ---------- Sub-components ---------- */
 
-function StatCard({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode
-  value: string
-  label: string
-}) {
+function EmptyStateBox({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center rounded-xl border border-sand bg-white p-3 text-center">
-      {icon}
-      <span className="mt-1 font-display text-2xl font-light text-ringside-black">
-        {value}
-      </span>
-      <span className="font-body text-xs text-warm-gray">{label}</span>
+    <div className="rounded-2xl border border-sand bg-ring-cream/60 px-6 py-8 text-center">
+      <p className="font-body text-sm italic text-warm-gray">{message}</p>
     </div>
   )
 }

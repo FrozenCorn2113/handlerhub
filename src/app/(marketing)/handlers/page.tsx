@@ -19,6 +19,7 @@ import {
   Money,
   Scissors,
   SealCheck,
+  Sparkle,
   SpinnerGap,
   Star,
   Trophy,
@@ -451,21 +452,24 @@ function HandlerCard({
           </div>
         )}
 
-        {/* Bottom row: rating + location + price */}
+        {/* Bottom row: rating/badge + location + price */}
         <div className="flex items-center justify-between border-t border-sand/40 pt-3">
           <div className="flex items-center gap-3">
-            {handler.rating && (
+            {handler.reviewCount >= 20 && handler.rating ? (
               <div className="flex items-center gap-1">
                 <Star size={14} weight="fill" className="text-amber-400" />
                 <span className="text-sm font-semibold text-ringside-black">
                   {handler.rating.toFixed(1)}
                 </span>
-                {handler.reviewCount > 0 && (
-                  <span className="text-xs text-warm-gray">
-                    ({handler.reviewCount})
-                  </span>
-                )}
+                <span className="text-xs text-warm-gray">
+                  ({handler.reviewCount})
+                </span>
               </div>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-blue/10 px-2.5 py-0.5 text-xs font-semibold text-slate-blue">
+                <Sparkle size={12} weight="fill" />
+                New
+              </span>
             )}
             <div className="flex items-center gap-1 text-xs text-warm-gray">
               <MapPin size={12} weight="bold" className="text-paddock-green" />

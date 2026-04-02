@@ -107,6 +107,20 @@ async function fetchHandler(id: string) {
               pricePer: true,
             },
           },
+          showAttendance: {
+            where: { event: { startDate: { gte: new Date() } } },
+            orderBy: { event: { startDate: 'asc' } },
+            take: 10,
+            select: {
+              event: {
+                select: {
+                  clubName: true,
+                  startDate: true,
+                  venue: { select: { city: true, state: true } },
+                },
+              },
+            },
+          },
         },
       }),
       800,
@@ -145,6 +159,7 @@ async function fetchHandler(id: string) {
       kennelClubMemberships: p.kennelClubMemberships ?? [],
       totalCompletedBookings: p.totalCompletedBookings ?? 0,
       averageRating: p.averageRating ?? null,
+      reviewCount: p.totalCompletedBookings ?? 0,
       responseRate: p.responseRate ?? null,
       travelWillingness: p.travelWillingness ?? [],
       serviceTypes: p.serviceTypes ?? [],
@@ -157,6 +172,13 @@ async function fetchHandler(id: string) {
       })),
       isFoundingHandler: true,
       isClaimed: p.isClaimed,
+      upcomingShows: (dbHandler.showAttendance ?? []).map((a) => ({
+        eventName: a.event.clubName,
+        eventDate: a.event.startDate.toISOString(),
+        eventLocation: [a.event.venue?.city, a.event.venue?.state]
+          .filter(Boolean)
+          .join(', '),
+      })),
     }
   } catch {
     return null

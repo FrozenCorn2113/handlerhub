@@ -33,6 +33,7 @@ export const handlerNavItems: DashboardNavItem[] = [
       { title: 'Stats', href: '/dashboard/stats' },
     ],
   },
+  { title: 'Services', href: '/dashboard/services' },
   { title: 'Profile', href: '/dashboard/profile' },
 ]
 

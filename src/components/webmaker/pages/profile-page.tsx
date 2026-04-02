@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card'
 
 import {
   ArrowLeft,
+  CalendarBlank,
   Camera,
   CarProfile,
   CheckCircle,
@@ -21,6 +22,7 @@ import {
   MapPin,
   MapTrifold,
   ShieldCheck,
+  Sparkle,
   Star,
   Trophy,
 } from '@phosphor-icons/react'
@@ -56,12 +58,20 @@ export interface ProfileHandler {
   kennelClubMemberships: string[]
   totalCompletedBookings: number
   averageRating: number | null
+  reviewCount: number
   responseRate: number | null
   travelWillingness: string[]
   serviceTypes: string[]
   handlerServices: HandlerServiceItem[]
   isFoundingHandler: boolean
   isClaimed?: boolean
+  upcomingShows?: UpcomingShow[]
+}
+
+export interface UpcomingShow {
+  eventName: string
+  eventDate: string
+  eventLocation: string
 }
 
 export interface FeeSchedule {
@@ -245,6 +255,16 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               </div>
             )}
 
+            {/* New to HandlerHub badge - shown when <20 reviews */}
+            {handler.reviewCount < 20 && (
+              <div className="mt-4">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-blue/10 px-3.5 py-1.5 font-body text-xs font-semibold text-slate-blue shadow-sm">
+                  <Sparkle className="h-3.5 w-3.5" weight="fill" />
+                  New to HandlerHub
+                </span>
+              </div>
+            )}
+
             {/* Stats row */}
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {handler.yearsExperience != null && (
@@ -261,7 +281,7 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                   label="Bookings"
                 />
               )}
-              {handler.averageRating != null && (
+              {handler.reviewCount >= 20 && handler.averageRating != null && (
                 <StatCard
                   icon={
                     <Star
@@ -288,9 +308,67 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
 
         {/* Content grid */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Main column */}
+          {/* Main column - Fiverr-style order: Gallery > Reviews > About > Details */}
           <div className="space-y-8 lg:col-span-2">
-            {/* About section */}
+            {/* Gallery (first - portfolio/work samples are #1 buyer signal) */}
+            {handler.galleryImages.length > 0 && (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <Camera className="h-5 w-5 text-paddock-green" />
+                  Gallery
+                </h2>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {handler.galleryImages.map((img, idx) => {
+                    const src = img.startsWith('http')
+                      ? img
+                      : `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${img}`
+                    return (
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`${handler.name} gallery ${idx + 1}`}
+                        className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
+                      />
+                    )
+                  })}
+                </div>
+              </Card>
+            )}
+
+            {/* Reviews (second - #2 buyer signal; placeholder for now) */}
+            {handler.reviewCount >= 20 && handler.averageRating != null && (
+              <Card variant="static" className="p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
+                  <Star className="h-5 w-5 text-paddock-green" weight="fill" />
+                  Reviews
+                </h2>
+                <div className="flex items-center gap-3">
+                  <span className="font-display text-3xl font-light text-ringside-black">
+                    {handler.averageRating.toFixed(1)}
+                  </span>
+                  <div>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${
+                            star <= Math.round(handler.averageRating!)
+                              ? 'text-amber-400'
+                              : 'text-sand'
+                          }`}
+                          weight="fill"
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-0.5 font-body text-xs text-warm-gray">
+                      Based on {handler.reviewCount} reviews
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* About section (third) */}
             <Card variant="static" className="p-6">
               <h2 className="mb-4 font-display text-xl font-light text-ringside-black">
                 About {firstName}
@@ -400,7 +478,10 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
                           {service.name}
                         </h3>
                         <span className="shrink-0 font-display text-lg font-light text-paddock-green">
-                          ${service.price}
+                          $
+                          {(service.price / 100).toFixed(
+                            service.price % 100 === 0 ? 0 : 2
+                          )}
                         </span>
                       </div>
                       <p className="mt-0.5 font-body text-xs text-warm-gray">
@@ -480,25 +561,55 @@ export function WebmakerProfilePage({ handler }: ProfilePageProps) {
               </Card>
             ) : null}
 
-            {/* Gallery */}
-            {handler.galleryImages.length > 0 && (
+            {/* Upcoming Shows */}
+            {handler.upcomingShows && handler.upcomingShows.length > 0 && (
               <Card variant="static" className="p-6">
                 <h2 className="mb-4 flex items-center gap-2 font-display text-xl font-light text-ringside-black">
-                  <Camera className="h-5 w-5 text-paddock-green" />
-                  Gallery
+                  <Trophy className="h-5 w-5 text-paddock-green" />
+                  Upcoming Shows
                 </h2>
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {handler.galleryImages.map((img, idx) => {
-                    const src = img.startsWith('http')
-                      ? img
-                      : `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${img}`
+                <div className="space-y-3">
+                  {handler.upcomingShows.map((show, idx) => {
+                    const date = new Date(show.eventDate)
+                    const monthStr = date.toLocaleDateString('en-US', {
+                      month: 'short',
+                    })
+                    const dayStr = date.getDate().toString()
                     return (
-                      <img
+                      <div
                         key={idx}
-                        src={src}
-                        alt={`${handler.name} gallery ${idx + 1}`}
-                        className="aspect-square rounded-xl object-cover transition-shadow hover:shadow-lg"
-                      />
+                        className="flex items-center gap-3 rounded-xl border border-sand bg-ring-cream p-3 transition-shadow hover:shadow-sm"
+                      >
+                        <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-sage">
+                          <span className="font-body text-[9px] font-semibold uppercase tracking-wider text-paddock-green">
+                            {monthStr}
+                          </span>
+                          <span className="font-display text-lg font-light leading-none text-ringside-black">
+                            {dayStr}
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-body text-sm font-semibold text-ringside-black">
+                            {show.eventName}
+                          </p>
+                          <div className="mt-0.5 flex flex-wrap items-center gap-3">
+                            <span className="flex items-center gap-1 font-body text-xs text-warm-gray">
+                              <CalendarBlank className="h-3 w-3" />
+                              {date.toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </span>
+                            {show.eventLocation && (
+                              <span className="flex items-center gap-1 font-body text-xs text-warm-gray">
+                                <MapPin className="h-3 w-3" />
+                                {show.eventLocation}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     )
                   })}
                 </div>

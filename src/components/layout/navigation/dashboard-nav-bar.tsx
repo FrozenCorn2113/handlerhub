@@ -32,6 +32,7 @@ import {
   MagnifyingGlass,
   Receipt,
   SignOut,
+  Storefront,
   Trophy,
   User,
   Users,
@@ -52,6 +53,7 @@ const iconMap: Record<string, PhosphorIcon> = {
   Inbox: Envelope,
   Messages: ChatCircle,
   Stats: ChartBar,
+  Services: Storefront,
 }
 
 // ---------------------------------------------------------------------------

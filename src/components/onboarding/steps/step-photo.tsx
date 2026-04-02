@@ -276,27 +276,51 @@ export function StepPhoto({
   )
 
   // --- Confirm / Adjust ---
-  // Store confirmed snapshot so prop changes can't reset the preview
-  const [confirmedState, setConfirmedState] = useState<{
-    ox: number
-    oy: number
-    dw: number
-    dh: number
+  // Store the image's position relative to the crop circle so the
+  // confirmed preview can render it identically in the smaller container.
+  const [confirmedStyle, setConfirmedStyle] = useState<{
+    left: number
+    top: number
+    width: number
+    height: number
   } | null>(null)
 
   const handleConfirm = useCallback(() => {
-    // Snapshot the current pixel positions before locking
-    setConfirmedState({ ox: offsetX, oy: offsetY, dw: displayW, dh: displayH })
+    // Image position relative to the crop circle's top-left corner:
+    // In editor, image left = circleCenterX - displayW/2 + offsetX
+    // Crop circle left edge = circleCenterX - CIRCLE_SIZE/2
+    // So image left relative to circle = (imgLeft) - (circleLeft)
+    const circleLeft = circleCenterX - CIRCLE_SIZE / 2
+    const circleTop = circleCenterY - CIRCLE_SIZE / 2
+    const relLeft = circleCenterX - displayW / 2 + offsetX - circleLeft
+    const relTop = circleCenterY - displayH / 2 + offsetY - circleTop
+
+    setConfirmedStyle({
+      left: relLeft,
+      top: relTop,
+      width: displayW,
+      height: displayH,
+    })
     setLocked(true)
     if (value) {
       const pctX = displayW > 0 ? (offsetX / displayW) * 100 : 0
       const pctY = displayH > 0 ? (offsetY / displayH) * 100 : 0
       onChange(value, pctX, pctY, zoomLevel)
     }
-  }, [value, offsetX, offsetY, displayW, displayH, zoomLevel, onChange])
+  }, [
+    value,
+    offsetX,
+    offsetY,
+    displayW,
+    displayH,
+    zoomLevel,
+    onChange,
+    circleCenterX,
+    circleCenterY,
+  ])
 
   const handleAdjust = useCallback(() => {
-    setConfirmedState(null)
+    setConfirmedStyle(null)
     setLocked(false)
   }, [])
 
@@ -515,7 +539,7 @@ export function StepPhoto({
         )}
 
         {/* Confirmed circular preview */}
-        {showConfirmedPreview && confirmedState && (
+        {showConfirmedPreview && confirmedStyle && (
           <div className="flex flex-col items-center gap-3">
             <div
               className="relative overflow-hidden rounded-full border-2 border-paddock-green"
@@ -531,12 +555,10 @@ export function StepPhoto({
                 draggable={false}
                 className="pointer-events-none absolute"
                 style={{
-                  width: confirmedState.dw,
-                  height: confirmedState.dh,
-                  left:
-                    CIRCLE_SIZE / 2 - confirmedState.dw / 2 + confirmedState.ox,
-                  top:
-                    CIRCLE_SIZE / 2 - confirmedState.dh / 2 + confirmedState.oy,
+                  width: confirmedStyle.width,
+                  height: confirmedStyle.height,
+                  left: confirmedStyle.left,
+                  top: confirmedStyle.top,
                 }}
               />
             </div>

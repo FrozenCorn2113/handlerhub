@@ -175,12 +175,7 @@ function TrustBandSection({
   const stats = [
     {
       icon: Users,
-      value:
-        handlerCount === 0
-          ? 'Launching soon'
-          : handlerCount < 10
-            ? 'Growing'
-            : String(handlerCount),
+      value: handlerCount === 0 ? 'Launching soon' : String(handlerCount),
       label: 'handlers on the platform',
     },
     {
@@ -604,10 +599,10 @@ function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
             region. Early profiles get the most visibility.
           </p>
 
-          <Button asChild size="lg" variant="accent">
+          <Button asChild size="lg" variant="secondary">
             <Link
               href="/register"
-              className="gap-3 font-display text-lg font-bold"
+              className="gap-3 border-0 bg-white font-display text-lg font-bold text-paddock-green shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-ring-cream hover:text-paddock-green"
             >
               Create your free profile
               <ArrowRight
@@ -632,9 +627,11 @@ function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
           {/* Handler count + handler CTA */}
           <div className="mt-10 border-t border-white/20 pt-8 text-center">
             <p className="mb-1 font-body text-base text-white/70">
-              {handlerCount > 0
-                ? `${handlerCount} handlers have already joined.`
-                : 'Handlers are joining now.'}
+              {handlerCount === 0
+                ? 'Handlers are joining now.'
+                : handlerCount === 1
+                  ? '1 handler has already joined.'
+                  : `${handlerCount} handlers have already joined.`}
             </p>
             <p className="font-body text-sm text-white/50">
               Are you a handler?{' '}

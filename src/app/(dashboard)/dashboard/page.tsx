@@ -121,8 +121,8 @@ async function HandlerDashboard({ userId }: { userId: string }) {
       {/* Profile completion banner */}
       {completeness < 80 && (
         <Card className="border-paddock-green/30 bg-sage/20">
-          <CardContent className="flex items-center justify-between p-4">
-            <div>
+          <CardContent className="flex items-center justify-between gap-6 p-4">
+            <div className="flex-1">
               <p className="font-semibold text-ringside-black">
                 Complete your profile to go live
               </p>
@@ -135,34 +135,21 @@ async function HandlerDashboard({ userId }: { userId: string }) {
                   Missing: {incompleteFields.map((f) => f.label).join(', ')}
                 </p>
               )}
+              <div className="mt-3 flex items-center gap-3">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-sand">
+                  <div
+                    className="h-2 rounded-full bg-paddock-green transition-all duration-500"
+                    style={{ width: `${completeness}%` }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-ringside-black">
+                  {completeness}%
+                </span>
+              </div>
             </div>
             <Link href="/dashboard/profile">
               <BrandButton size="lg">Complete Profile</BrandButton>
             </Link>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Profile completeness bar */}
-      {profile && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Completeness</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <div className="h-3 w-full overflow-hidden rounded-full bg-sand">
-                  <div
-                    className="h-3 rounded-full bg-paddock-green transition-all duration-500"
-                    style={{ width: `${completeness}%` }}
-                  />
-                </div>
-              </div>
-              <span className="text-sm font-semibold text-ringside-black">
-                {completeness}%
-              </span>
-            </div>
           </CardContent>
         </Card>
       )}

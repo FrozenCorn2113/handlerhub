@@ -46,7 +46,7 @@ function HeroSection() {
     <section className="relative min-h-[520px] overflow-hidden lg:min-h-[600px]">
       {/* Background image */}
       <Image
-        src="/images/hero-bg.jpg"
+        src="/images/backgrounds/agility-jump-border-collie-action.jpg"
         alt=""
         fill
         className="object-cover object-center"

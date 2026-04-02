@@ -123,7 +123,7 @@ const STEPS: StepConfig[] = [
     phase: 'Rates & Reach',
     skippable: false,
     handlerOnly: true,
-    fields: ['ratePerShow', 'ratePerDay'],
+    fields: ['ratePerShow'],
   },
   {
     id: 'regions',
@@ -480,10 +480,7 @@ export function OnboardingWizard({
             {step.id === 'rates' && (
               <StepRates
                 ratePerShow={formData.ratePerShow}
-                ratePerDay={formData.ratePerDay}
-                onChange={(ratePerShow, ratePerDay) =>
-                  updateFormData({ ratePerShow, ratePerDay })
-                }
+                onChange={(ratePerShow) => updateFormData({ ratePerShow })}
               />
             )}
             {step.id === 'regions' && (

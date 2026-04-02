@@ -117,31 +117,22 @@ function FeaturedHandlersSection({
     <section className="border-t border-sand bg-ring-cream py-24 lg:py-32">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
-          <div className="mb-14 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-slate-blue">
-                On the circuit
-              </p>
-              <h2
-                className="font-display text-paddock-green"
-                style={{
-                  fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
-                  fontWeight: 700,
-                }}
-              >
-                Handlers on the circuit
-              </h2>
-              <p className="mt-2 font-body text-base text-warm-brown/60">
-                Working pros, searchable by breed and region.
-              </p>
-            </div>
-            <Link
-              href="/handlers"
-              className="hidden items-center gap-2 font-body text-base font-semibold text-paddock-green transition-colors hover:text-paddock-green/80 sm:flex"
+          <div className="mb-14 flex flex-col items-center text-center">
+            <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-slate-blue">
+              On the circuit
+            </p>
+            <h2
+              className="font-display text-paddock-green"
+              style={{
+                fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+                fontWeight: 700,
+              }}
             >
-              Browse all handlers
-              <ArrowRight size={16} weight="bold" />
-            </Link>
+              Handlers on the circuit
+            </h2>
+            <p className="mt-2 font-body text-base text-warm-brown/60">
+              Working pros, searchable by breed and region.
+            </p>
           </div>
         </ScrollReveal>
 
@@ -153,11 +144,11 @@ function FeaturedHandlersSection({
           ))}
         </div>
 
-        {/* Mobile browse link */}
-        <div className="mt-8 block text-center sm:hidden">
+        {/* Browse all link */}
+        <div className="mt-10 text-center">
           <Link
             href="/handlers"
-            className="inline-flex items-center gap-2 font-body text-base font-semibold text-paddock-green"
+            className="inline-flex items-center gap-2 font-body text-base font-semibold text-paddock-green transition-colors hover:text-paddock-green/80"
           >
             Browse all handlers
             <ArrowRight size={16} weight="bold" />
@@ -175,24 +166,23 @@ function FeaturedHandlersSection({
 const solutionBlocks = [
   {
     paraphrase:
-      'Shop around. Not for price, but for the handler that will be best for your dog.',
+      'Shop around. Not for price, but for the handler who will be best for your dog.',
     heading: 'See every handler\u2019s record before you reach out',
-    body: 'Every profile shows breeds they\u2019ve finished, shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. You can evaluate before you ever pick up the phone.',
+    body: 'Every profile shows breeds they\u2019ve finished, shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. Evaluate a pro handler before you ever pick up the phone.',
     reversed: false,
   },
   {
-    paraphrase:
-      'You hope for feedback after every show, but the phone stays quiet.',
+    paraphrase: 'Good communication makes the whole ring experience better.',
     heading: 'Message any handler directly. No middleman, no waiting.',
-    body: 'Reach out to any handler on the platform and get a response. Response time is tracked and visible on every profile, so you know what to expect before you commit.',
+    body: 'Reach out to any handler on the platform and start a conversation. Response time is tracked and visible on every profile, so you know what to expect.',
     reversed: true,
   },
   {
     paraphrase:
-      'New exhibitors don\u2019t know what they don\u2019t know. That\u2019s not a reason to shut them out.',
+      'Every exhibitor started somewhere. The ring is better when the door is open.',
     heading:
       'Whether it\u2019s your first show or your hundredth, find the right handler for your dog',
-    body: 'Search by breed, by region, by show circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
+    body: 'Search by breed, by region, by circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
     reversed: false,
   },
 ]

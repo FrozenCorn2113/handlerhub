@@ -1,12 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-
-import { cn } from '@/lib/utils'
+import { useCallback, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 
 import { StepShell } from '../step-shell'
+import Cropper from 'react-easy-crop'
+import type { Area } from 'react-easy-crop'
 import { toast } from 'sonner'
 
 interface StepPhotoProps {
@@ -22,13 +22,39 @@ interface StepPhotoProps {
   ) => void
 }
 
-// The visible crop circle diameter
 const CIRCLE_SIZE = 192
-// The editor container width
 const CONTAINER_WIDTH = 340
-const CONTAINER_MAX_HEIGHT = 400
+const CONTAINER_HEIGHT = 300
 const MIN_ZOOM = 1
 const MAX_ZOOM = 3
+
+async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: { x: number; y: number; width: number; height: number }
+): Promise<string> {
+  const image = new Image()
+  image.crossOrigin = 'anonymous'
+  image.src = imageSrc
+  await new Promise((resolve) => {
+    image.onload = resolve
+  })
+  const canvas = document.createElement('canvas')
+  canvas.width = pixelCrop.width
+  canvas.height = pixelCrop.height
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  )
+  return canvas.toDataURL('image/jpeg')
+}
 
 export function StepPhoto({
   value,
@@ -43,104 +69,16 @@ export function StepPhoto({
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Image natural dimensions
-  const [naturalW, setNaturalW] = useState(0)
-  const [naturalH, setNaturalH] = useState(0)
-
-  // Crop state: offsets are in pixels relative to the image's top-left at current zoom
-  const [offsetX, setOffsetX] = useState(0)
-  const [offsetY, setOffsetY] = useState(0)
+  // Crop state for react-easy-crop
+  const [crop, setCrop] = useState({ x: cropX || 0, y: cropY || 0 })
   const [zoomLevel, setZoomLevel] = useState(propZoom || 1)
   const [locked, setLocked] = useState(value ? true : false)
-  const [dragging, setDragging] = useState(false)
-  const dragStart = useRef<{
-    x: number
-    y: number
-    ox: number
-    oy: number
-  } | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
+  const [croppedPreview, setCroppedPreview] = useState<string | null>(null)
 
-  // Compute the minimum zoom so the image covers the crop circle
-  const getMinZoom = useCallback((nw: number, nh: number) => {
-    if (nw === 0 || nh === 0) return 1
-    // We need the scaled image to be at least CIRCLE_SIZE in both dimensions
-    // The image is rendered to fit within CONTAINER_WIDTH (width-constrained display)
-    // Base display size: image scaled to fit CONTAINER_WIDTH wide
-    const baseW = CONTAINER_WIDTH
-    const baseH = (nh / nw) * CONTAINER_WIDTH
-    const minZoomW = CIRCLE_SIZE / baseW
-    const minZoomH = CIRCLE_SIZE / baseH
-    return Math.max(minZoomW, minZoomH, 1)
-  }, [])
-
-  // Load natural dimensions when preview changes
-  useEffect(() => {
-    if (!preview) return
-    const img = new Image()
-    img.onload = () => {
-      setNaturalW(img.naturalWidth)
-      setNaturalH(img.naturalHeight)
-    }
-    img.src = preview
-  }, [preview])
-
-  // Convert stored percentage offsets back to pixel offsets ONLY on initial load
-  const initializedRef = useRef(false)
-  useEffect(() => {
-    if (naturalW === 0 || naturalH === 0) return
-    if (initializedRef.current) return
-    initializedRef.current = true
-
-    const minZoom = getMinZoom(naturalW, naturalH)
-    const effectiveZoom = Math.max(propZoom || 1, minZoom)
-    setZoomLevel(effectiveZoom)
-
-    const dw = CONTAINER_WIDTH * effectiveZoom
-    const dh = (naturalH / naturalW) * CONTAINER_WIDTH * effectiveZoom
-    setOffsetX((cropX / 100) * dw)
-    setOffsetY((cropY / 100) * dh)
-  }, [cropX, cropY, propZoom, naturalW, naturalH, getMinZoom])
-
-  // Compute display dimensions
-  const displayW = CONTAINER_WIDTH * zoomLevel
-  const displayH =
-    naturalW > 0
-      ? (naturalH / naturalW) * CONTAINER_WIDTH * zoomLevel
-      : CONTAINER_WIDTH * zoomLevel
-
-  // Container height based on aspect ratio, capped
-  const baseDisplayH =
-    naturalW > 0 ? (naturalH / naturalW) * CONTAINER_WIDTH : CONTAINER_WIDTH
-  const containerHeight = Math.min(
-    Math.max(baseDisplayH, CIRCLE_SIZE + 32),
-    CONTAINER_MAX_HEIGHT
-  )
-
-  // The crop circle center in the container
-  const circleCenterX = CONTAINER_WIDTH / 2
-  const circleCenterY = containerHeight / 2
-
-  // Clamp offsets so the image edge doesn't enter the crop circle
-  const clampOffsets = useCallback(
-    (ox: number, oy: number, dw: number, dh: number) => {
-      // Image is centered at (circleCenterX + ox, circleCenterY + oy)
-      // Image left edge: circleCenterX + ox - dw/2
-      // For the crop circle, we need:
-      //   image_left <= circle_left  =>  cx + ox - dw/2 <= cx - CIRCLE_SIZE/2
-      //   => ox <= dw/2 - CIRCLE_SIZE/2
-      //   image_right >= circle_right => cx + ox + dw/2 >= cx + CIRCLE_SIZE/2
-      //   => ox >= CIRCLE_SIZE/2 - dw/2
-      const halfCircle = CIRCLE_SIZE / 2
-      const minOx = halfCircle - dw / 2
-      const maxOx = dw / 2 - halfCircle
-      const minOy = halfCircle - dh / 2
-      const maxOy = dh / 2 - halfCircle
-
-      return {
-        x: Math.max(minOx, Math.min(maxOx, ox)),
-        y: Math.max(minOy, Math.min(maxOy, oy)),
-      }
+  const onCropComplete = useCallback(
+    (_croppedArea: Area, croppedAreaPx: Area) => {
+      setCroppedAreaPixels(croppedAreaPx)
     },
     []
   )
@@ -157,10 +95,10 @@ export function StepPhoto({
       const localPreview = URL.createObjectURL(file)
       setPreview(localPreview)
       setUploading(true)
-      setOffsetX(0)
-      setOffsetY(0)
+      setCrop({ x: 0, y: 0 })
       setZoomLevel(1)
       setLocked(false)
+      setCroppedPreview(null)
 
       try {
         const presignedRes = await fetch('/api/upload/presigned-url', {
@@ -207,144 +145,39 @@ export function StepPhoto({
     [handleFile]
   )
 
-  // --- Drag handlers ---
-
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (locked || uploading || !preview) return
-      e.preventDefault()
-      e.stopPropagation()
-      setDragging(true)
-      dragStart.current = {
-        x: e.clientX,
-        y: e.clientY,
-        ox: offsetX,
-        oy: offsetY,
-      }
-      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
-    },
-    [locked, uploading, preview, offsetX, offsetY]
-  )
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!dragging || !dragStart.current) return
-      e.preventDefault()
-
-      const dx = e.clientX - dragStart.current.x
-      const dy = e.clientY - dragStart.current.y
-
-      const newOx = dragStart.current.ox + dx
-      const newOy = dragStart.current.oy + dy
-
-      const clamped = clampOffsets(newOx, newOy, displayW, displayH)
-      setOffsetX(clamped.x)
-      setOffsetY(clamped.y)
-    },
-    [dragging, displayW, displayH, clampOffsets]
-  )
-
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      if (!dragging) return
-      setDragging(false)
-      dragStart.current = null
-      ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
-    },
-    [dragging]
-  )
-
-  // --- Zoom handler ---
-  const handleZoomChange = useCallback(
-    (newZoom: number) => {
-      // When zooming, keep the crop circle centered on the same image point
-      // Scale the offsets proportionally
-      const ratio = newZoom / zoomLevel
-      const newOx = offsetX * ratio
-      const newOy = offsetY * ratio
-      const newDw = CONTAINER_WIDTH * newZoom
-      const newDh =
-        naturalW > 0
-          ? (naturalH / naturalW) * CONTAINER_WIDTH * newZoom
-          : CONTAINER_WIDTH * newZoom
-      const clamped = clampOffsets(newOx, newOy, newDw, newDh)
-      setZoomLevel(newZoom)
-      setOffsetX(clamped.x)
-      setOffsetY(clamped.y)
-    },
-    [zoomLevel, offsetX, offsetY, naturalW, naturalH, clampOffsets]
-  )
-
   // --- Confirm / Adjust ---
-  // Store the image's position relative to the crop circle so the
-  // confirmed preview can render it identically in the smaller container.
-  const [confirmedStyle, setConfirmedStyle] = useState<{
-    left: number
-    top: number
-    width: number
-    height: number
-  } | null>(null)
 
-  const handleConfirm = useCallback(() => {
-    // Image position relative to the crop circle's top-left corner:
-    // In editor, image left = circleCenterX - displayW/2 + offsetX
-    // Crop circle left edge = circleCenterX - CIRCLE_SIZE/2
-    // So image left relative to circle = (imgLeft) - (circleLeft)
-    const circleLeft = circleCenterX - CIRCLE_SIZE / 2
-    const circleTop = circleCenterY - CIRCLE_SIZE / 2
-    const relLeft = circleCenterX - displayW / 2 + offsetX - circleLeft
-    const relTop = circleCenterY - displayH / 2 + offsetY - circleTop
+  const handleConfirm = useCallback(async () => {
+    if (!preview || !croppedAreaPixels) return
 
-    setConfirmedStyle({
-      left: relLeft,
-      top: relTop,
-      width: displayW,
-      height: displayH,
-    })
-    setLocked(true)
-    if (value) {
-      const pctX = displayW > 0 ? (offsetX / displayW) * 100 : 0
-      const pctY = displayH > 0 ? (offsetY / displayH) * 100 : 0
-      onChange(value, pctX, pctY, zoomLevel)
+    try {
+      const croppedDataUrl = await getCroppedImg(preview, croppedAreaPixels)
+      setCroppedPreview(croppedDataUrl)
+      setLocked(true)
+      if (value) {
+        onChange(value, crop.x, crop.y, zoomLevel)
+      }
+    } catch {
+      toast.error('Failed to generate crop preview')
     }
-  }, [
-    value,
-    offsetX,
-    offsetY,
-    displayW,
-    displayH,
-    zoomLevel,
-    onChange,
-    circleCenterX,
-    circleCenterY,
-  ])
+  }, [preview, croppedAreaPixels, value, crop.x, crop.y, zoomLevel, onChange])
 
   const handleAdjust = useCallback(() => {
-    setConfirmedStyle(null)
+    setCroppedPreview(null)
     setLocked(false)
   }, [])
 
   const handleRemove = useCallback(() => {
     setPreview(null)
-    setOffsetX(0)
-    setOffsetY(0)
+    setCrop({ x: 0, y: 0 })
     setZoomLevel(1)
     setLocked(false)
+    setCroppedPreview(null)
     onChange('', 0, 0, 1)
   }, [onChange])
 
-  // Compute effective min zoom
-  const effectiveMinZoom = Math.max(MIN_ZOOM, getMinZoom(naturalW, naturalH))
-
-  // Image position: centered in container + offset
-  const imgLeft = circleCenterX - displayW / 2 + offsetX
-  const imgTop = circleCenterY - displayH / 2 + offsetY
-
   const showEditor = preview && !uploading && !locked
-  const showConfirmedPreview = preview && !uploading && locked
-
-  // SVG overlay with circular cutout
-  const overlayMask = `radial-gradient(circle ${CIRCLE_SIZE / 2}px at ${circleCenterX}px ${circleCenterY}px, transparent ${CIRCLE_SIZE / 2}px, rgba(0,0,0,0.55) ${CIRCLE_SIZE / 2}px)`
+  const showConfirmedPreview = preview && !uploading && locked && croppedPreview
 
   return (
     <StepShell
@@ -400,7 +233,7 @@ export function StepPhoto({
           </div>
         )}
 
-        {/* Uploading spinner (no image yet or during upload) */}
+        {/* Uploading spinner */}
         {uploading && (
           <div className="flex size-48 items-center justify-center rounded-full border-2 border-dashed border-paddock-green">
             <svg
@@ -426,70 +259,27 @@ export function StepPhoto({
           </div>
         )}
 
-        {/* Crop editor: full image with overlay + circle cutout */}
+        {/* Crop editor using react-easy-crop */}
         {showEditor && (
           <div className="flex flex-col items-center gap-2">
             <div
-              ref={containerRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              className={cn(
-                'relative select-none overflow-hidden rounded-2xl border border-sand',
-                dragging ? 'cursor-grabbing' : 'cursor-grab'
-              )}
+              className="relative overflow-hidden rounded-2xl border border-sand"
               style={{
                 width: CONTAINER_WIDTH,
-                height: containerHeight,
-                touchAction: 'none',
+                height: CONTAINER_HEIGHT,
               }}
             >
-              {/* The actual image, draggable */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="Profile preview"
-                draggable={false}
-                className="pointer-events-none absolute"
-                style={{
-                  width: displayW,
-                  height: displayH,
-                  left: imgLeft,
-                  top: imgTop,
-                  objectFit: 'cover',
-                }}
+              <Cropper
+                image={preview}
+                crop={crop}
+                zoom={zoomLevel}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoomLevel}
+                onCropComplete={onCropComplete}
               />
-
-              {/* Dark overlay with circular cutout */}
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background: overlayMask,
-                }}
-              />
-
-              {/* Circle border ring */}
-              <div
-                className="pointer-events-none absolute rounded-full border-2 border-white/70"
-                style={{
-                  width: CIRCLE_SIZE,
-                  height: CIRCLE_SIZE,
-                  left: circleCenterX - CIRCLE_SIZE / 2,
-                  top: circleCenterY - CIRCLE_SIZE / 2,
-                }}
-              />
-
-              {/* Drag hint */}
-              {!dragging && (
-                <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
-                  <span
-                    className="rounded-full bg-black/50 px-2.5 py-0.5 text-xs text-white"
-                    style={{ fontFamily: 'var(--font-body)' }}
-                  >
-                    Drag to reposition
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Zoom slider */}
@@ -509,11 +299,11 @@ export function StepPhoto({
               </svg>
               <input
                 type="range"
-                min={effectiveMinZoom}
+                min={MIN_ZOOM}
                 max={MAX_ZOOM}
                 step={0.01}
                 value={zoomLevel}
-                onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
+                onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
                 className="zoom-slider h-2 w-full cursor-pointer appearance-none rounded-full bg-sand"
               />
               <svg
@@ -539,10 +329,10 @@ export function StepPhoto({
         )}
 
         {/* Confirmed circular preview */}
-        {showConfirmedPreview && confirmedStyle && (
+        {showConfirmedPreview && (
           <div className="flex flex-col items-center gap-3">
             <div
-              className="relative overflow-hidden rounded-full border-2 border-paddock-green"
+              className="overflow-hidden rounded-full border-2 border-paddock-green"
               style={{
                 width: CIRCLE_SIZE,
                 height: CIRCLE_SIZE,
@@ -550,16 +340,9 @@ export function StepPhoto({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={preview}
+                src={croppedPreview}
                 alt="Profile preview"
-                draggable={false}
-                className="pointer-events-none absolute"
-                style={{
-                  width: confirmedStyle.width,
-                  height: confirmedStyle.height,
-                  left: confirmedStyle.left,
-                  top: confirmedStyle.top,
-                }}
+                className="size-full object-cover"
               />
             </div>
           </div>

@@ -206,7 +206,7 @@ export function StepGallery({ value, onChange }: StepGalleryProps) {
                   <img
                     src={getFullUrl(key)}
                     alt={`Gallery photo ${slotIndex + 1}`}
-                    className="size-full object-contain p-1"
+                    className="size-full object-cover"
                     draggable={false}
                   />
                   <button

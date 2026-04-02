@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import { MapPin, SealCheck, Sparkle, Star } from '@phosphor-icons/react'
+import { Clock, MapPin, SealCheck, Sparkle, Star } from '@phosphor-icons/react'
 
 /* ------------------------------------------------------------------ */
 /*  Shared handler type (matches API response shape)                   */
@@ -66,12 +66,12 @@ export function HandlerCard({
           <img
             src={handler.coverImage}
             alt=""
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
           />
         ) : handler.profileImage ? (
-          <div className="h-full w-full bg-gradient-to-br from-forest/20 to-paddock-green/10" />
+          <div className="size-full bg-gradient-to-br from-forest/20 to-paddock-green/10" />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-light-sand via-sand to-tan" />
+          <div className="size-full bg-gradient-to-br from-light-sand via-sand to-tan" />
         )}
       </div>
 
@@ -111,10 +111,29 @@ export function HandlerCard({
           </div>
         </div>
 
+        {/* Availability dot + response time */}
+        <div className="mb-2 flex flex-col gap-1">
+          <span className="inline-flex items-center gap-1.5 font-body text-xs font-semibold">
+            <span className="size-2 rounded-full bg-paddock-green" />
+            Available
+          </span>
+          <p className="flex items-center gap-1 font-body text-xs text-warm-gray">
+            <Clock size={12} weight="fill" />
+            Typically responds within 24 hours
+          </p>
+        </div>
+
         {/* Tagline or bio snippet */}
         {(handler.tagline || handler.bio) && (
           <p className="mb-3 line-clamp-2 text-sm leading-snug text-warm-brown">
             {handler.tagline || handler.bio}
+          </p>
+        )}
+
+        {/* Review snippet */}
+        {handler.reviewCount > 0 && handler.tagline && (
+          <p className="mb-2 mt-1 line-clamp-2 font-body text-xs italic text-warm-brown/70">
+            &ldquo;{handler.tagline}&rdquo;
           </p>
         )}
 

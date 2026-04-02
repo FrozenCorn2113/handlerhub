@@ -53,8 +53,36 @@ async function getFeaturedHandlers(): Promise<HandlerCardData[]> {
   }
 }
 
-export default async function IndexPage() {
-  const featuredHandlers = await getFeaturedHandlers()
+async function getHandlerCount(): Promise<number> {
+  try {
+    return await prisma.user.count({ where: { role: 'HANDLER' } })
+  } catch (error) {
+    console.error('Failed to fetch handler count:', error)
+    return 0
+  }
+}
 
-  return <LandingHome featuredHandlers={featuredHandlers} />
+async function getShowCount(): Promise<number> {
+  try {
+    return await prisma.event.count()
+  } catch (error) {
+    console.error('Failed to fetch show count:', error)
+    return 0
+  }
+}
+
+export default async function IndexPage() {
+  const [featuredHandlers, handlerCount, showCount] = await Promise.all([
+    getFeaturedHandlers(),
+    getHandlerCount(),
+    getShowCount(),
+  ])
+
+  return (
+    <LandingHome
+      featuredHandlers={featuredHandlers}
+      handlerCount={handlerCount}
+      showCount={showCount}
+    />
+  )
 }

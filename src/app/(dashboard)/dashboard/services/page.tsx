@@ -7,7 +7,7 @@ import { ServiceList } from '@/components/dashboard/services/service-list'
 import { DashboardShell } from '@/components/dashboard/shell'
 
 export const metadata = {
-  title: 'Services | HandlerHub Dashboard',
+  title: 'Services',
 }
 
 export default async function ServicesPage() {

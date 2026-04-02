@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 
@@ -10,7 +13,18 @@ import {
   type HandlerCardData,
 } from '@/components/handlers/handler-card'
 
-import { ArrowRight, PawPrint } from '@phosphor-icons/react'
+import {
+  ArrowRight,
+  Camera,
+  Dog,
+  Gift,
+  MagnifyingGlass,
+  PawPrint,
+  Scissors,
+  Trophy,
+  Users,
+  Van,
+} from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 
 /* ------------------------------------------------------------------ */
@@ -39,64 +53,109 @@ function ScrollReveal({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 1 - Hero                                                   */
+/*  Section 1 — Hero                                                   */
 /* ------------------------------------------------------------------ */
+
+const serviceTypes = [
+  { label: 'Handler', icon: Dog, param: 'handler' },
+  { label: 'Groomer', icon: Scissors, param: 'groomer' },
+  { label: 'Transport', icon: Van, param: 'transport' },
+  { label: 'Photographer', icon: Camera, param: 'photographer' },
+] as const
+
 function HeroSection() {
+  const router = useRouter()
+  const [activeType, setActiveType] = useState('handler')
+  const [location, setLocation] = useState('')
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const params = new URLSearchParams({ type: activeType })
+    if (location.trim()) params.set('location', location.trim())
+    router.push(`/handlers?${params.toString()}`)
+  }
+
   return (
-    <section className="relative min-h-[520px] overflow-hidden lg:min-h-[600px]">
+    <section className="relative min-h-[580px] overflow-hidden lg:min-h-[680px]">
       {/* Background image */}
       <Image
-        src="/images/backgrounds/agility-jump-border-collie-action.jpg"
+        src="/images/backgrounds/handler-gaiting-boxer-outdoor-show.jpg"
         alt=""
         fill
         className="object-cover object-center"
         priority
         sizes="100vw"
       />
-      {/* Dark gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-black/75" />
 
-      <div className="relative z-10 flex min-h-[520px] items-center justify-center lg:min-h-[600px]">
+      <div className="relative z-10 flex min-h-[580px] items-center justify-center lg:min-h-[680px]">
         <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
           <h1
-            className="mb-6 font-display text-white"
+            className="mx-auto mb-6 max-w-[42ch] font-display text-white"
             style={{
               fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
-              lineHeight: 1.08,
+              lineHeight: 1.05,
               letterSpacing: '-0.03em',
               fontWeight: 700,
             }}
           >
-            Find a pro handler
+            Find a handler who knows
             <br />
-            who knows your breed
+            your breed in the ring.
           </h1>
 
-          <p className="mx-auto mb-8 max-w-xl font-body text-lg leading-relaxed text-white/80">
-            The dog show world&apos;s first directory of professional handlers,
-            searchable by breed, region, and record.
+          <p className="mx-auto mb-8 max-w-[48ch] font-body text-lg text-white/80">
+            Search every pro handler on the circuit by breed, region, and show
+            record.
           </p>
 
-          {/* Primary CTA */}
-          <div className="mb-4">
-            <Button asChild size="lg" variant="default">
-              <Link href="/handlers" className="gap-2 font-display font-bold">
-                Browse Handlers
-                <ArrowRight size={18} weight="bold" />
-              </Link>
-            </Button>
-          </div>
+          {/* Search Widget */}
+          <form
+            onSubmit={handleSearch}
+            className="mx-auto w-full max-w-[640px] rounded-2xl bg-white p-4 shadow-[0_8px_48px_rgba(0,0,0,0.28)]"
+          >
+            {/* Row 1 — Service Type Tabs */}
+            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-light-sand p-1 sm:grid-cols-4">
+              {serviceTypes.map((svc) => {
+                const Icon = svc.icon
+                const isActive = activeType === svc.param
+                return (
+                  <button
+                    key={svc.param}
+                    type="button"
+                    onClick={() => setActiveType(svc.param)}
+                    className={`flex cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg px-3 py-2 font-body text-sm font-semibold transition-all duration-200 ${
+                      isActive
+                        ? 'bg-paddock-green text-white shadow-sm'
+                        : 'text-warm-brown/70 hover:text-warm-brown'
+                    }`}
+                  >
+                    <Icon size={16} weight={isActive ? 'fill' : 'regular'} />
+                    {svc.label}
+                  </button>
+                )
+              })}
+            </div>
 
-          {/* Secondary CTA */}
-          <p className="font-body text-sm text-white/70">
-            Are you a handler?{' '}
-            <Link
-              href="/register"
-              className="font-semibold text-white underline-offset-2 hover:underline"
-            >
-              Create your free profile
-            </Link>
-          </p>
+            {/* Row 2 — Location Input + Search Button */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Search by city, state, or region..."
+                className="h-11 flex-1 rounded-xl border border-tan bg-ring-cream px-4 font-body text-sm text-ringside-black transition-all duration-150 placeholder:text-warm-gray/60 focus:border-paddock-green/60 focus:outline-none focus:ring-2 focus:ring-paddock-green/30"
+              />
+              <button
+                type="submit"
+                className="flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-b from-[#24845a] to-paddock-green px-6 font-display text-sm font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:shadow-lg sm:w-auto"
+              >
+                <MagnifyingGlass size={16} weight="bold" />
+                Search
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
@@ -104,7 +163,183 @@ function HeroSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 2 - Featured Handlers Grid (Centerpiece)                   */
+/*  Section 2 — Trust Band                                             */
+/* ------------------------------------------------------------------ */
+function TrustBandSection({
+  handlerCount,
+  showCount,
+}: {
+  handlerCount: number
+  showCount: number
+}) {
+  const stats = [
+    {
+      icon: Users,
+      value:
+        handlerCount === 0
+          ? 'Launching soon'
+          : handlerCount < 10
+            ? 'Growing'
+            : String(handlerCount),
+      label: 'handlers on the platform',
+    },
+    {
+      icon: Trophy,
+      value: showCount === 0 ? 'Launching soon' : `${showCount}+`,
+      label: 'dog shows represented',
+    },
+    {
+      icon: Gift,
+      value: 'Free',
+      label: 'for exhibitors',
+    },
+    {
+      icon: MagnifyingGlass,
+      value: 'Search by',
+      label: 'breed, region, and record',
+    },
+  ]
+
+  return (
+    <section className="border-t border-sand bg-light-sand py-8 lg:py-10">
+      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-tan">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon
+            return (
+              <div
+                key={i}
+                className="flex flex-col items-center px-6 py-2 text-center"
+              >
+                <Icon size={24} weight="fill" className="text-paddock-green" />
+                <p className="mb-0.5 mt-2 font-display text-2xl font-bold text-ringside-black lg:text-3xl">
+                  {stat.value}
+                </p>
+                <p className="font-body text-sm leading-snug text-warm-brown/70">
+                  {stat.label}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 3 — Service Showcase                                       */
+/* ------------------------------------------------------------------ */
+
+const serviceCards = [
+  {
+    image: '/images/backgrounds/handler-gaiting-boxer-outdoor-show.jpg',
+    icon: Dog,
+    name: 'Handling',
+    description: 'Expert hands in the ring. Browse by breed and show record.',
+    cta: 'Browse handlers',
+    href: '/handlers?type=handler',
+  },
+  {
+    image: '/images/backgrounds/black-poodle-conformation-stacked.jpg',
+    icon: Scissors,
+    name: 'Grooming',
+    description: 'Ring-ready grooming from breed specialists.',
+    cta: 'Browse groomers',
+    href: '/handlers?type=groomer',
+  },
+  {
+    image: '/images/backgrounds/five-dogs-sitting-field-lineup.jpg',
+    icon: Van,
+    name: 'Transport',
+    description: 'Safe transport across the circuit.',
+    cta: 'Browse transport',
+    href: '/handlers?type=transport',
+  },
+  {
+    image: '/images/backgrounds/tan-sighthound-blue-award-ribbon.jpg',
+    icon: Camera,
+    name: 'Photography',
+    description: 'Professional ring and portrait photography.',
+    cta: 'Browse photographers',
+    href: '/handlers?type=photographer',
+  },
+]
+
+function ServiceShowcaseSection() {
+  return (
+    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
+      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+        <ScrollReveal>
+          <div className="mb-14 text-center">
+            <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-slate-blue">
+              Show day services
+            </p>
+            <h2
+              className="mb-3 font-display font-bold text-ringside-black"
+              style={{
+                fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              }}
+            >
+              Find the right pro for show day.
+            </h2>
+            <p className="mx-auto max-w-[44ch] font-body text-base text-warm-brown/70">
+              Every professional on HandlerHub is searchable by breed, region,
+              and show record.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="mx-auto grid max-w-[900px] grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
+          {serviceCards.map((card, i) => {
+            const Icon = card.icon
+            return (
+              <ScrollReveal key={card.name} delay={i * 0.1}>
+                <Link
+                  href={card.href}
+                  className="group relative block aspect-[16/9] cursor-pointer overflow-hidden rounded-2xl shadow-[0_2px_12px_rgba(28,18,8,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.18)] sm:aspect-[4/3]"
+                >
+                  <Image
+                    src={card.image}
+                    alt={card.name}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 640px) 100vw, 450px"
+                  />
+                  {/* Dark gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/20" />
+
+                  {/* Content */}
+                  <div className="absolute inset-x-0 bottom-0 p-5 lg:p-6">
+                    <div className="mb-1.5 flex items-center gap-2">
+                      <Icon size={20} weight="fill" className="text-white/90" />
+                      <span className="font-display text-xl font-bold text-white lg:text-2xl">
+                        {card.name}
+                      </span>
+                    </div>
+                    <p className="max-w-[28ch] font-body text-sm leading-snug text-white/75">
+                      {card.description}
+                    </p>
+                    {/* Browse CTA — always visible on mobile, hover reveal on desktop */}
+                    <span className="mt-3 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-white opacity-100 transition-all duration-300 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
+                      {card.cta}
+                      <ArrowRight size={14} weight="bold" />
+                    </span>
+                  </div>
+                </Link>
+              </ScrollReveal>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Section 4 — Featured Handlers Grid                                 */
 /* ------------------------------------------------------------------ */
 function FeaturedHandlersSection({
   handlers,
@@ -160,129 +395,96 @@ function FeaturedHandlersSection({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 3 - Solution Blocks                                        */
+/*  Section 5 — Why HandlerHub                                         */
 /* ------------------------------------------------------------------ */
 
-const solutionBlocks = [
+const valueProps = [
   {
     paraphrase:
-      'Shop around. Not for price, but for the handler who will be best for your dog.',
-    heading: 'See every handler\u2019s record before you reach out',
-    body: 'Every profile shows breeds they\u2019ve finished, shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. Evaluate a pro handler before you ever pick up the phone.',
-    reversed: false,
-    image: '/images/backgrounds/black-poodle-conformation-stacked.jpg',
-    imageAlt: 'Black poodle stacked in conformation pose at a dog show',
-  },
-  {
-    paraphrase: 'Good communication makes the whole ring experience better.',
-    heading: 'Message any handler directly. No middleman, no waiting.',
-    body: 'Reach out to any handler on the platform and start a conversation. Every profile shows the breeds they\u2019ve finished, their show record, and their experience, so you can make an informed choice before you ever send a message.',
-    reversed: true,
-    image: '/images/backgrounds/handler-gaiting-boxer-outdoor-show.jpg',
-    imageAlt: 'Handler gaiting a boxer at an outdoor dog show',
-  },
-  {
-    paraphrase:
-      'Every exhibitor started somewhere. The ring is better when the door is open.',
+      '"Shop around. Not for price, but for the handler who will be best for your dog."',
     heading:
-      'Whether it\u2019s your first show or your hundredth, find the right handler for your dog',
-    body: 'Search by breed, region, or circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
-    reversed: false,
-    image: '/images/backgrounds/five-dogs-sitting-field-lineup.jpg',
-    imageAlt: 'Five dogs sitting together in a field',
+      'See every handler\u2019s breeds finished, show history, and reviews before you reach out.',
+    body: 'Every profile shows the breeds they\u2019ve finished, the shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. Evaluate any handler before you ever send a message.',
+  },
+  {
+    paraphrase: '"Good communication makes the whole ring experience better."',
+    heading: 'Message any handler directly. No middleman, no gatekeeping.',
+    body: 'Reach out to any handler on the platform and start a conversation. No referral needed, no waiting to be introduced. Just direct access to every handler in your region.',
+  },
+  {
+    paraphrase:
+      '"Every exhibitor started somewhere. The ring is better when the door is open."',
+    heading:
+      'New to the sport? Every handler on HandlerHub is open to new clients.',
+    body: 'Search by breed, region, or circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog. HandlerHub is how new exhibitors find their footing.',
   },
 ]
 
-function SolutionBlocksSection() {
+function WhyHandlerHubSection() {
   return (
-    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
+    <section className="border-t border-sand bg-light-sand py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        {solutionBlocks.map((block, i) => {
-          const isMiddle = i === 1
-          return (
-            <div key={i} className={isMiddle ? '-mx-6 lg:-mx-8' : ''}>
-              <div
-                className={`${isMiddle ? 'bg-light-sand px-6 lg:px-8' : ''}`}
-              >
-                <div
-                  className={`mx-auto max-w-[1200px] ${
-                    i < solutionBlocks.length - 1 ? 'border-b border-sand' : ''
-                  }`}
-                >
-                  <ScrollReveal delay={i * 0.1}>
-                    <div
-                      className={`grid grid-cols-1 items-center gap-10 py-12 lg:grid-cols-2 lg:gap-16 lg:py-16`}
-                    >
-                      {/* Text column */}
-                      <div
-                        className={`${
-                          block.reversed ? 'lg:order-2' : 'lg:order-1'
-                        }`}
-                      >
-                        {/* Community paraphrase */}
-                        <div className="mb-6 border-l-4 border-paddock-green/40 pl-4">
-                          <p
-                            className="font-display text-warm-brown"
-                            style={{
-                              fontSize:
-                                'clamp(1.1rem, 0.9rem + 0.8vw, 1.35rem)',
-                              fontWeight: 400,
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {block.paraphrase}
-                          </p>
-                        </div>
+        <ScrollReveal>
+          <div className="mb-14 text-center">
+            <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-slate-blue">
+              Why HandlerHub
+            </p>
+            <h2
+              className="font-display font-bold text-ringside-black"
+              style={{
+                fontSize: 'clamp(1.75rem, 1.2rem + 2vw, 2.75rem)',
+              }}
+            >
+              The dog show platform built for the ring.
+            </h2>
+          </div>
+        </ScrollReveal>
 
-                        {/* Heading */}
-                        <h3
-                          className="mb-4 mt-2 font-display text-ringside-black"
-                          style={{
-                            fontSize: 'clamp(1.5rem, 1.1rem + 1.5vw, 2rem)',
-                            fontWeight: 700,
-                            lineHeight: 1.15,
-                            letterSpacing: '-0.02em',
-                          }}
-                        >
-                          {block.heading}
-                        </h3>
-
-                        {/* Body */}
-                        <p className="max-w-lg font-body text-base leading-relaxed text-warm-brown/80">
-                          {block.body}
-                        </p>
-                      </div>
-
-                      {/* Visual column */}
-                      <div
-                        className={`${
-                          block.reversed ? 'lg:order-1' : 'lg:order-2'
-                        }`}
-                      >
-                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_4px_24px_rgba(28,18,8,0.08)]">
-                          <Image
-                            src={block.image}
-                            alt={block.imageAlt}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </ScrollReveal>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {valueProps.map((card, i) => (
+            <ScrollReveal key={i} delay={i * 0.1}>
+              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+                {/* Community paraphrase */}
+                <div className="mb-6 border-l-4 border-paddock-green/40 pl-4">
+                  <p
+                    className="font-display italic text-warm-brown"
+                    style={{
+                      fontSize: 'clamp(1.05rem, 0.9rem + 0.5vw, 1.2rem)',
+                      fontWeight: 400,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {card.paraphrase}
+                  </p>
                 </div>
+
+                {/* Heading */}
+                <h3
+                  className="mb-3 font-display font-bold text-ringside-black"
+                  style={{
+                    fontSize: 'clamp(1.2rem, 1rem + 0.8vw, 1.5rem)',
+                    lineHeight: 1.2,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {card.heading}
+                </h3>
+
+                {/* Body */}
+                <p className="font-body text-sm leading-relaxed text-warm-brown/80">
+                  {card.body}
+                </p>
               </div>
-            </div>
-          )
-        })}
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
     </section>
   )
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 4 - Community Voice Strip                                  */
+/*  Section 6 — Community Voice Strip                                  */
 /* ------------------------------------------------------------------ */
 
 const communityQuotes = [
@@ -380,9 +582,9 @@ function VoiceQuote({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 5 - Founding CTA                                           */
+/*  Section 7 — Founding CTA                                           */
 /* ------------------------------------------------------------------ */
-function FoundingCtaSection() {
+function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
   return (
     <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
@@ -427,6 +629,25 @@ function FoundingCtaSection() {
             </span>
           </div>
 
+          {/* Handler count + handler CTA */}
+          <div className="mt-10 border-t border-white/20 pt-8 text-center">
+            <p className="mb-1 font-body text-base text-white/70">
+              {handlerCount > 0
+                ? `${handlerCount} handlers have already joined.`
+                : 'Handlers are joining now.'}
+            </p>
+            <p className="font-body text-sm text-white/50">
+              Are you a handler?{' '}
+              <Link
+                href="/register"
+                className="text-white/80 underline underline-offset-2 transition-colors hover:text-white"
+              >
+                Create your free profile
+              </Link>{' '}
+              and be visible on the circuit.
+            </p>
+          </div>
+
           <p className="mt-10 text-sm text-white/50">
             Built by a dog person.{' '}
             <Link
@@ -447,16 +668,22 @@ function FoundingCtaSection() {
 /* ------------------------------------------------------------------ */
 export default function LandingHome({
   featuredHandlers,
+  handlerCount,
+  showCount,
 }: {
   featuredHandlers: HandlerCardData[]
+  handlerCount: number
+  showCount: number
 }) {
   return (
     <div className="bg-ring-cream">
       <HeroSection />
+      <TrustBandSection handlerCount={handlerCount} showCount={showCount} />
+      <ServiceShowcaseSection />
       <FeaturedHandlersSection handlers={featuredHandlers} />
-      <SolutionBlocksSection />
+      <WhyHandlerHubSection />
       <CommunityVoiceSection />
-      <FoundingCtaSection />
+      <FoundingCtaSection handlerCount={handlerCount} />
     </div>
   )
 }

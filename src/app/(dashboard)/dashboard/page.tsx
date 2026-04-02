@@ -2,10 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { prisma } from '@/lib/db'
-import {
-  calculateProfileCompleteness,
-  getIncompleteFields,
-} from '@/lib/profile-completeness'
 import { getCurrentUser } from '@/lib/session'
 
 import { Button as BrandButton } from '@/components/ui/button'
@@ -31,8 +27,6 @@ export const dynamic = 'force-dynamic'
 async function HandlerDashboard({ userId }: { userId: string }) {
   let profile: Awaited<ReturnType<typeof prisma.handlerProfile.findUnique>> =
     null
-  let completeness = 0
-  let incompleteFields: ReturnType<typeof getIncompleteFields> = []
   let recentConversations: Array<{
     id: string
     messages: Array<{
@@ -54,11 +48,6 @@ async function HandlerDashboard({ userId }: { userId: string }) {
     profile = await prisma.handlerProfile.findUnique({
       where: { userId },
     })
-
-    if (profile) {
-      completeness = calculateProfileCompleteness(profile)
-      incompleteFields = getIncompleteFields(profile).slice(0, 5)
-    }
 
     // Recent messages
     const convos = await prisma.conversation.findMany({
@@ -118,41 +107,26 @@ async function HandlerDashboard({ userId }: { userId: string }) {
 
   return (
     <>
-      {/* Profile completion banner */}
-      {completeness < 80 && (
-        <Card className="border-paddock-green/30 bg-sage/20">
-          <CardContent className="flex items-center justify-between gap-6 p-4">
-            <div className="flex-1">
-              <p className="font-semibold text-ringside-black">
-                Complete your profile to go live
+      {/* Stats row — placeholder for upcoming activity metrics */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[
+          { label: 'Profile Views', value: '--' },
+          { label: 'Pending Inquiries', value: '0' },
+          { label: 'Response Rate', value: '--' },
+        ].map((stat) => (
+          <Card key={stat.label} variant="static" className="bg-ring-cream/40">
+            <CardContent className="p-5">
+              <p className="font-display text-sm font-medium text-ringside-black">
+                {stat.label}
               </p>
-              <p className="text-sm text-warm-gray">
-                Your profile is {completeness}% complete. Exhibitors are more
-                likely to book handlers with complete profiles.
+              <p className="mt-1 font-display text-2xl font-light text-ringside-black">
+                {stat.value}
               </p>
-              {incompleteFields.length > 0 && (
-                <p className="mt-1 text-xs text-warm-gray">
-                  Missing: {incompleteFields.map((f) => f.label).join(', ')}
-                </p>
-              )}
-              <div className="mt-3 flex items-center gap-3">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-sand">
-                  <div
-                    className="h-2 rounded-full bg-paddock-green transition-all duration-500"
-                    style={{ width: `${completeness}%` }}
-                  />
-                </div>
-                <span className="text-xs font-semibold text-ringside-black">
-                  {completeness}%
-                </span>
-              </div>
-            </div>
-            <Link href="/dashboard/profile">
-              <BrandButton size="lg">Complete Profile</BrandButton>
-            </Link>
-          </CardContent>
-        </Card>
-      )}
+              <p className="mt-1 text-[11px] text-warm-gray">Coming soon</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Recent Messages */}
@@ -430,7 +404,7 @@ export default async function DashboardPage() {
         heading={`Welcome back, ${firstName}`}
         text={
           userRole === 'HANDLER'
-            ? "Here's what's happening with your bookings."
+            ? 'Your handler activity at a glance'
             : userRole === 'EXHIBITOR'
               ? "Here's what's happening with your dogs."
               : 'Welcome to HandlerHub.'

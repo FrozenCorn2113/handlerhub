@@ -87,12 +87,8 @@ export function EventsMap({
           defaultCenter={center}
           defaultZoom={pins.length > 0 ? 4 : 4}
           height={600}
-          onClick={({ event }) => {
-            // Only close if clicking on the map itself, not on an overlay
-            const target = event.target as HTMLElement
-            if (!target.closest('[data-pin-overlay]')) {
-              handleMapClick()
-            }
+          onClick={() => {
+            handleMapClick()
           }}
           attribution={false}
         >
@@ -149,68 +145,96 @@ export function EventsMap({
           {selectedPin && (
             <Overlay
               anchor={[selectedPin.lat, selectedPin.lng]}
-              offset={[0, -20]}
+              offset={[140, 20]}
             >
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
               <div
-                data-pin-overlay
-                className="rounded-lg border border-sand bg-white p-3 shadow-md"
-                style={{ minWidth: 220, maxWidth: 300 }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                className="w-[280px] overflow-hidden rounded-2xl border border-sand bg-white shadow-lg"
               >
-                <div className="border-b-2 border-paddock-green pb-1 font-display text-sm font-bold text-ringside-black">
-                  {selectedPin.name}
-                </div>
-                <p className="mb-2 mt-1 text-xs text-warm-gray">
-                  {selectedPin.city}, {selectedPin.state}
-                </p>
-                {selectedPin.events.slice(0, 5).map((e) => {
-                  const date = new Date(e.startDate).toLocaleDateString(
-                    'en-US',
-                    { month: 'short', day: 'numeric' }
-                  )
-                  const typeLabel = EVENT_TYPE_LABELS[e.eventType]
-                  const statusCfg = ENTRY_STATUS_CONFIG[e.entryStatus]
-                  return (
-                    <a
-                      key={e.id}
-                      href={`/events/${e.slug}`}
-                      className="block border-b border-sand py-1.5 no-underline"
+                <div className="flex items-center justify-between bg-ring-cream px-4 py-3">
+                  <div>
+                    <h3 className="font-display text-sm font-bold text-ringside-black">
+                      {selectedPin.name}
+                    </h3>
+                    <p className="mt-0.5 text-xs text-warm-gray">
+                      {selectedPin.city}, {selectedPin.state}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPin(null)}
+                    className="flex size-6 items-center justify-center rounded-full text-warm-gray transition-colors hover:bg-sand hover:text-ringside-black"
+                  >
+                    <svg
+                      className="size-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
                     >
-                      <div className="text-[13px] font-semibold text-ringside-black">
-                        {e.clubName}
-                      </div>
-                      <div className="mt-0.5 flex items-center gap-1.5">
-                        <span className="text-[11px] text-warm-gray">
-                          {date}
-                        </span>
-                        <span className="text-[11px] text-warm-gray">
-                          {typeLabel}
-                        </span>
-                        <span
-                          className="rounded-full px-1.5 py-px text-[11px]"
-                          style={{
-                            color: statusCfg.color,
-                            background: statusCfg.bgColor,
-                          }}
-                        >
-                          {statusCfg.label}
-                        </span>
-                      </div>
-                    </a>
-                  )
-                })}
-                {selectedPin.events.length > 5 && (
-                  <p className="py-1 text-xs text-warm-gray">
-                    + {selectedPin.events.length - 5} more events
-                  </p>
-                )}
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPin.lat},${selectedPin.lng}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1 rounded-lg bg-paddock-green px-2.5 py-1 text-xs font-semibold text-white no-underline"
-                >
-                  Get Directions
-                </a>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="max-h-[240px] overflow-y-auto">
+                  {selectedPin.events.slice(0, 8).map((e) => {
+                    const date = new Date(e.startDate).toLocaleDateString(
+                      'en-US',
+                      { month: 'short', day: 'numeric' }
+                    )
+                    const typeLabel = EVENT_TYPE_LABELS[e.eventType]
+                    const statusCfg = ENTRY_STATUS_CONFIG[e.entryStatus]
+                    return (
+                      <a
+                        key={e.id}
+                        href={`/events/${e.slug}`}
+                        className="block border-b border-sand px-4 py-2.5 no-underline transition-colors hover:bg-ring-cream/50"
+                      >
+                        <div className="text-[13px] font-semibold text-ringside-black">
+                          {e.clubName}
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <span className="text-[11px] text-warm-gray">
+                            {date}
+                          </span>
+                          <span className="rounded bg-light-sand px-1.5 py-0.5 text-[11px] text-warm-brown">
+                            {typeLabel}
+                          </span>
+                          <span
+                            className="rounded-full px-1.5 py-0.5 text-[11px] font-medium"
+                            style={{
+                              color: statusCfg.color,
+                              background: statusCfg.bgColor,
+                            }}
+                          >
+                            {statusCfg.label}
+                          </span>
+                        </div>
+                      </a>
+                    )
+                  })}
+                  {selectedPin.events.length > 8 && (
+                    <p className="px-4 py-2 text-xs text-warm-gray">
+                      + {selectedPin.events.length - 8} more events
+                    </p>
+                  )}
+                </div>
+                <div className="border-t border-sand bg-ring-cream/30 px-4 py-2.5">
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPin.lat},${selectedPin.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-3 py-1.5 text-xs font-semibold text-white no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all hover:scale-[1.02]"
+                  >
+                    Get Directions
+                  </a>
+                </div>
               </div>
             </Overlay>
           )}

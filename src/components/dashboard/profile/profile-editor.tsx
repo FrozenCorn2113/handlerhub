@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -243,6 +243,361 @@ function SaveButton({ loading, saved }: { loading: boolean; saved: boolean }) {
   )
 }
 
+// -- Gallery Tab Component --
+
+const MAX_GALLERY_PHOTOS = 8
+
+function getGalleryUrl(key: string): string {
+  if (key.startsWith('http')) return key
+  return `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${key}`
+}
+
+function GalleryTab({
+  userId,
+  galleryImages,
+  onImagesChange,
+  saving,
+  saved,
+  onSave,
+}: {
+  userId: string
+  galleryImages: string[]
+  onImagesChange: (images: string[]) => void
+  saving: boolean
+  saved: boolean
+  onSave: (images: string[]) => void
+}) {
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  const handleFiles = useCallback(
+    async (files: FileList) => {
+      const imageFiles = Array.from(files).filter((f) =>
+        f.type.startsWith('image/')
+      )
+      if (imageFiles.length === 0) {
+        toast.error('Please select image files')
+        return
+      }
+      const remaining = MAX_GALLERY_PHOTOS - galleryImages.length
+      if (remaining <= 0) {
+        toast.error(`Maximum ${MAX_GALLERY_PHOTOS} photos allowed`)
+        return
+      }
+      const filesToUpload = imageFiles.slice(0, remaining)
+      if (filesToUpload.length < imageFiles.length) {
+        toast.info(
+          `Uploading ${filesToUpload.length} of ${imageFiles.length} (max ${MAX_GALLERY_PHOTOS} total)`
+        )
+      }
+
+      setUploading(true)
+      const newKeys: string[] = []
+
+      try {
+        for (const file of filesToUpload) {
+          const presignedRes = await fetch('/api/upload/presigned-url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contentType: file.type,
+              contentLength: file.size,
+              target: 'handler-gallery',
+              entityId: userId,
+            }),
+          })
+
+          if (!presignedRes.ok) {
+            const err = await presignedRes.json().catch(() => ({}))
+            throw new Error(err.error || 'Failed to get upload URL')
+          }
+
+          const { url: presignedUrl, key } = await presignedRes.json()
+
+          const uploadRes = await fetch(presignedUrl, {
+            method: 'PUT',
+            body: file,
+            headers: { 'Content-Type': file.type },
+          })
+
+          if (!uploadRes.ok) throw new Error('Upload failed')
+          newKeys.push(key)
+        }
+
+        const updated = [...galleryImages, ...newKeys]
+        onImagesChange(updated)
+        toast.success(
+          `${newKeys.length} photo${newKeys.length > 1 ? 's' : ''} uploaded`
+        )
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Upload failed')
+      } finally {
+        setUploading(false)
+      }
+    },
+    [galleryImages, onImagesChange, userId]
+  )
+
+  const removeImage = useCallback(
+    (index: number) => {
+      onImagesChange(galleryImages.filter((_, i) => i !== index))
+    },
+    [galleryImages, onImagesChange]
+  )
+
+  const handleDragStart = useCallback((index: number) => {
+    setDragSourceIndex(index)
+  }, [])
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent, index: number) => {
+      e.preventDefault()
+      if (
+        dragSourceIndex !== null &&
+        index !== dragSourceIndex &&
+        index < galleryImages.length
+      ) {
+        setDragOverIndex(index)
+      }
+    },
+    [dragSourceIndex, galleryImages.length]
+  )
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverIndex(null)
+  }, [])
+
+  const handleReorderDrop = useCallback(
+    (e: React.DragEvent, targetIndex: number) => {
+      e.preventDefault()
+      setDragOverIndex(null)
+      if (dragSourceIndex === null || dragSourceIndex === targetIndex) {
+        setDragSourceIndex(null)
+        return
+      }
+      if (targetIndex >= galleryImages.length) {
+        setDragSourceIndex(null)
+        return
+      }
+      const newOrder = [...galleryImages]
+      const [moved] = newOrder.splice(dragSourceIndex, 1)
+      newOrder.splice(targetIndex, 0, moved)
+      onImagesChange(newOrder)
+      setDragSourceIndex(null)
+    },
+    [dragSourceIndex, galleryImages, onImagesChange]
+  )
+
+  const handleDragEnd = useCallback(() => {
+    setDragSourceIndex(null)
+    setDragOverIndex(null)
+  }, [])
+
+  const handleFileDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      setDragOverIndex(null)
+      setDragSourceIndex(null)
+      if (e.dataTransfer.files?.length) {
+        handleFiles(e.dataTransfer.files)
+      }
+    },
+    [handleFiles]
+  )
+
+  const slots = Array.from({ length: MAX_GALLERY_PHOTOS }, (_, i) => i)
+  const firstEmptyIndex = galleryImages.length
+
+  return (
+    <Card variant="static" className="overflow-hidden">
+      <CardHeader className="bg-ring-cream/50">
+        <CardTitle className="flex items-center gap-2">
+          <Images className="size-5 text-paddock-green" />
+          Gallery
+        </CardTitle>
+        <p className="font-body text-sm text-warm-gray">
+          Showcase your best ringside moments. Profiles with photos get
+          significantly more inquiries.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-6 pt-6">
+        {galleryImages.length === 0 ? (
+          <EmptyState
+            icon={Camera}
+            message="Add 3+ ringside photos to increase your profile views by up to 4x. Show exhibitors your handling style, your wins, and the dogs you work with."
+            actionLabel="Upload Photos"
+            onAction={() => fileInputRef.current?.click()}
+          />
+        ) : null}
+
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+          {slots.map((slotIndex) => {
+            const hasPhoto = slotIndex < galleryImages.length
+            const isUploadTrigger = slotIndex === firstEmptyIndex
+            const isEmpty = slotIndex > firstEmptyIndex
+
+            if (hasPhoto) {
+              const key = galleryImages[slotIndex]
+              const isDragSource = dragSourceIndex === slotIndex
+              const isDragTarget = dragOverIndex === slotIndex
+
+              return (
+                <div
+                  key={key}
+                  draggable
+                  onDragStart={() => handleDragStart(slotIndex)}
+                  onDragOver={(e) => handleDragOver(e, slotIndex)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleReorderDrop(e, slotIndex)}
+                  onDragEnd={handleDragEnd}
+                  className={cn(
+                    'group relative aspect-square cursor-grab overflow-hidden rounded-xl border bg-white transition-all active:cursor-grabbing',
+                    isDragTarget
+                      ? 'border-2 border-solid border-paddock-green'
+                      : 'border-sand',
+                    isDragSource ? 'opacity-40' : 'opacity-100'
+                  )}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={getGalleryUrl(key)}
+                    alt={`Gallery photo ${slotIndex + 1}`}
+                    className="size-full object-cover"
+                    draggable={false}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(slotIndex)}
+                    className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-ringside-black/60 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                  >
+                    <svg
+                      className="size-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                  {slotIndex === 0 && (
+                    <span className="absolute bottom-1 left-1 rounded bg-ringside-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                      Featured
+                    </span>
+                  )}
+                </div>
+              )
+            }
+
+            if (isUploadTrigger) {
+              return (
+                <div
+                  key={`upload-trigger-${slotIndex}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleFileDrop}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      fileInputRef.current?.click()
+                    }
+                  }}
+                  className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-sand transition-colors hover:border-paddock-green"
+                >
+                  {uploading ? (
+                    <SpinnerGap className="size-6 animate-spin text-paddock-green" />
+                  ) : (
+                    <svg
+                      className="size-8 text-warm-gray"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  )}
+                </div>
+              )
+            }
+
+            if (isEmpty) {
+              return (
+                <div
+                  key={`empty-${slotIndex}`}
+                  className="aspect-square rounded-xl border-2 border-dashed border-sand"
+                />
+              )
+            }
+
+            return null
+          })}
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => {
+            if (e.target.files?.length) {
+              handleFiles(e.target.files)
+            }
+          }}
+          className="hidden"
+        />
+
+        <p className="font-body text-xs text-warm-gray">
+          Upload up to 8 photos. Drag to reorder. First image is your featured
+          photo.
+        </p>
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => onSave(galleryImages)}
+            className={cn(
+              'inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-body text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60',
+              saved
+                ? 'bg-gradient-to-b from-[#24845a] to-paddock-green'
+                : 'bg-gradient-to-b from-[#2a2015] to-ringside-black'
+            )}
+          >
+            {saving ? (
+              <>
+                <SpinnerGap className="size-4 animate-spin" />
+                Saving...
+              </>
+            ) : saved ? (
+              <>
+                <CheckCircle weight="fill" className="size-4" />
+                Saved
+              </>
+            ) : (
+              <>
+                <FloppyDisk className="size-4" />
+                Save Gallery
+              </>
+            )}
+          </button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 // -- Main Component --
 
 export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
@@ -305,6 +660,9 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
     showHighlights: profile?.showHighlights || '',
     pastClients: profile?.pastClients || '',
     handlerResume: profile?.handlerResume || '',
+
+    // Gallery
+    galleryImages: (profile?.galleryImages || []) as string[],
 
     // Trust
     isInsured: profile?.isInsured || false,
@@ -1270,32 +1628,18 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
 
         {/* ========== GALLERY TAB ========== */}
         <TabsContent value="gallery">
-          <Card variant="static" className="overflow-hidden">
-            <CardHeader className="bg-ring-cream/50">
-              <CardTitle className="flex items-center gap-2">
-                <Images className="size-5 text-paddock-green" />
-                Gallery
-              </CardTitle>
-              <p className="font-body text-sm text-warm-gray">
-                Showcase your best ringside moments. Profiles with photos get
-                significantly more inquiries.
-              </p>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <EmptyState
-                icon={Camera}
-                message="Add 3+ ringside photos to increase your profile views by up to 4x. Show exhibitors your handling style, your wins, and the dogs you work with."
-                actionLabel="Upload Photos"
-              />
-              <div className="mt-4 flex items-start gap-2 rounded-xl bg-slate-blue-light/50 p-3">
-                <Info className="mt-0.5 size-4 shrink-0 text-slate-blue" />
-                <p className="font-body text-xs text-warm-gray">
-                  Gallery photo uploads are coming in a future update. Make sure
-                  your profile photo is professional and current.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <GalleryTab
+            userId={user.id}
+            galleryImages={formData.galleryImages}
+            onImagesChange={(images) =>
+              setFormData((prev) => ({ ...prev, galleryImages: images }))
+            }
+            saving={isSaving('gallery')}
+            saved={isSaved('gallery')}
+            onSave={(images) =>
+              saveSection('gallery', { galleryImages: images })
+            }
+          />
         </TabsContent>
 
         {/* ========== BREEDS & REGIONS TAB ========== */}

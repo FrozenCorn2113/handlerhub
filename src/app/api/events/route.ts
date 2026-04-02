@@ -25,9 +25,13 @@ export async function GET(req: NextRequest) {
     const superintendent = searchParams.get('superintendent') || undefined
     const sortBy =
       (searchParams.get('sortBy') as 'date' | 'closingDate') || undefined
-    const dateFrom = searchParams.get('dateFrom')
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const parsedDateFrom = searchParams.get('dateFrom')
       ? new Date(searchParams.get('dateFrom')!)
       : undefined
+    const dateFrom =
+      parsedDateFrom && parsedDateFrom > today ? parsedDateFrom : today
     const dateTo = searchParams.get('dateTo')
       ? new Date(searchParams.get('dateTo')!)
       : undefined

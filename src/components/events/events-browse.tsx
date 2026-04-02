@@ -64,6 +64,10 @@ export function EventsBrowse({
   const listContainerRef = useRef<HTMLDivElement>(null)
   const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
   const eventCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const fetchEventsRef = useRef<
+    (f: FilterState, append?: boolean) => Promise<void>
+  >(null!)
+  const eventsLengthRef = useRef(initialEvents.length)
 
   // Track viewport to render only one map instance
   useEffect(() => {
@@ -84,56 +88,63 @@ export function EventsBrowse({
     overscan: 5,
   })
 
+  // Keep events length ref in sync for use in fetch without stale closures
+  useEffect(() => {
+    eventsLengthRef.current = events.length
+  }, [events.length])
+
   // Unified fetch: events + pins in one call
-  const fetchEvents = useCallback(
-    async (f: FilterState, append = false) => {
+  const fetchEvents = useCallback(async (f: FilterState, append = false) => {
+    if (append) {
+      setLoadingMore(true)
+    } else {
+      setLoading(true)
+    }
+
+    try {
+      const params = new URLSearchParams()
+      if (f.search) params.set('search', f.search)
+      if (f.state) params.set('state', f.state)
+      if (f.eventType) params.set('eventType', f.eventType)
+      if (f.entryStatus) params.set('entryStatus', f.entryStatus)
+      if (f.dateFrom) params.set('dateFrom', f.dateFrom)
+      if (f.dateTo) params.set('dateTo', f.dateTo)
+      if (f.breed) params.set('breed', f.breed)
+      if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
+      if (f.superintendent) params.set('superintendent', f.superintendent)
+      if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
+      params.set('limit', String(PAGE_SIZE))
+      params.set('offset', append ? String(eventsLengthRef.current) : '0')
+      params.set('view', 'unified')
+
+      const res = await fetch(`/api/events?${params.toString()}`)
+      const data = await res.json()
+
       if (append) {
-        setLoadingMore(true)
-      } else {
-        setLoading(true)
-      }
-
-      try {
-        const params = new URLSearchParams()
-        if (f.search) params.set('search', f.search)
-        if (f.state) params.set('state', f.state)
-        if (f.eventType) params.set('eventType', f.eventType)
-        if (f.entryStatus) params.set('entryStatus', f.entryStatus)
-        if (f.dateFrom) params.set('dateFrom', f.dateFrom)
-        if (f.dateTo) params.set('dateTo', f.dateTo)
-        if (f.breed) params.set('breed', f.breed)
-        if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
-        if (f.superintendent) params.set('superintendent', f.superintendent)
-        if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
-        params.set('limit', String(PAGE_SIZE))
-        params.set('offset', append ? String(events.length) : '0')
-        params.set('view', 'unified')
-
-        const res = await fetch(`/api/events?${params.toString()}`)
-        const data = await res.json()
-
-        if (append) {
-          if (data.events) {
-            setEvents((prev) => [...prev, ...data.events])
-          }
-        } else {
-          if (data.events) {
-            setEvents(data.events)
-            setTotal(data.total)
-          }
-          if (data.pins) {
-            setPins(data.pins)
-          }
+        if (data.events) {
+          setEvents((prev) => [...prev, ...data.events])
         }
-      } catch (err) {
-        console.error('Failed to fetch events:', err)
-      } finally {
-        setLoading(false)
-        setLoadingMore(false)
+        if (data.total !== undefined) {
+          setTotal(data.total)
+        }
+      } else {
+        if (data.events) {
+          setEvents(data.events)
+          setTotal(data.total)
+        }
+        if (data.pins) {
+          setPins(data.pins)
+        }
       }
-    },
-    [events.length]
-  )
+    } catch (err) {
+      console.error('Failed to fetch events:', err)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }, [])
+
+  fetchEventsRef.current = fetchEvents
 
   // Debounced filter changes (500ms)
   useEffect(() => {
@@ -159,16 +170,15 @@ export function EventsBrowse({
       (entries) => {
         const entry = entries[0]
         if (entry?.isIntersecting && hasMore && !loading && !loadingMore) {
-          fetchEvents(filters, true)
+          fetchEventsRef.current(filters, true)
         }
       },
-      { rootMargin: '200px' }
+      { rootMargin: '400px' }
     )
 
     observer.observe(triggerEl)
     return () => observer.disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMore, loading, loadingMore, filters, events.length])
+  }, [hasMore, loading, loadingMore, filters])
 
   // Map/list sync: click pin scrolls to card
   const handlePinClick = useCallback((eventId: string) => {

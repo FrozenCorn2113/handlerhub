@@ -56,8 +56,8 @@ function HeroSection() {
       {/* Dark gradient overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
 
-      <div className="relative z-10 mx-auto max-w-[1200px] px-6 pb-16 pt-20 lg:px-8 lg:pb-24 lg:pt-28">
-        <div className="mx-auto max-w-3xl text-center">
+      <div className="relative z-10 flex min-h-[520px] items-center justify-center lg:min-h-[600px]">
+        <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
           <h1
             className="mb-6 font-display text-white"
             style={{
@@ -156,25 +156,6 @@ function FeaturedHandlersSection({
         </div>
       </div>
     </section>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Dog Lineup Decorative Break                                        */
-/* ------------------------------------------------------------------ */
-function DogLineupBreak() {
-  return (
-    <div className="bg-ring-cream py-4">
-      <div className="mx-auto flex max-w-4xl justify-center px-6 lg:px-8">
-        <Image
-          src="/images/dog-lineup.png"
-          alt="Illustrated lineup of dog breeds"
-          width={1200}
-          height={400}
-          className="block h-auto w-full max-w-3xl object-contain opacity-60 sm:max-w-4xl"
-        />
-      </div>
-    </div>
   )
 }
 
@@ -473,7 +454,6 @@ export default function LandingHome({
     <div className="bg-ring-cream">
       <HeroSection />
       <FeaturedHandlersSection handlers={featuredHandlers} />
-      <DogLineupBreak />
       <SolutionBlocksSection />
       <CommunityVoiceSection />
       <FoundingCtaSection />

@@ -189,12 +189,16 @@ const solutionBlocks = [
     heading: 'See every handler\u2019s record before you reach out',
     body: 'Every profile shows breeds they\u2019ve finished, shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. Evaluate a pro handler before you ever pick up the phone.',
     reversed: false,
+    image: '/images/backgrounds/black-poodle-conformation-stacked.jpg',
+    imageAlt: 'Black poodle stacked in conformation pose at a dog show',
   },
   {
     paraphrase: 'Good communication makes the whole ring experience better.',
     heading: 'Message any handler directly. No middleman, no waiting.',
     body: 'Reach out to any handler on the platform and start a conversation. Every profile shows the breeds they\u2019ve finished, their show record, and their experience, so you can make an informed choice before you ever send a message.',
     reversed: true,
+    image: '/images/backgrounds/handler-gaiting-boxer-outdoor-show.jpg',
+    imageAlt: 'Handler gaiting a boxer at an outdoor dog show',
   },
   {
     paraphrase:
@@ -203,6 +207,8 @@ const solutionBlocks = [
       'Whether it\u2019s your first show or your hundredth, find the right handler for your dog',
     body: 'Search by breed, region, or circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
     reversed: false,
+    image: '/images/backgrounds/five-dogs-sitting-field-lineup.jpg',
+    imageAlt: 'Five dogs sitting together in a field',
   },
 ]
 
@@ -266,13 +272,21 @@ function SolutionBlocksSection() {
                         </p>
                       </div>
 
-                      {/* Visual column (subtle placeholder) */}
+                      {/* Visual column */}
                       <div
                         className={`${
                           block.reversed ? 'lg:order-1' : 'lg:order-2'
                         }`}
                       >
-                        <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-light-sand via-sand/50 to-light-sand shadow-[0_4px_24px_rgba(28,18,8,0.08)]" />
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[0_4px_24px_rgba(28,18,8,0.08)]">
+                          <Image
+                            src={block.image}
+                            alt={block.imageAlt}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 100vw, 50vw"
+                          />
+                        </div>
                       </div>
                     </div>
                   </ScrollReveal>
@@ -314,9 +328,20 @@ function CommunityVoiceSection() {
     <section className="bg-[#EDE5D8] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
-          <p className="mb-14 text-center font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
-            From the dog show world
-          </p>
+          <div className="mb-16 text-center">
+            <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
+              From the dog show world
+            </p>
+            <h2
+              className="font-display text-paddock-green"
+              style={{
+                fontSize: 'clamp(1.5rem, 1rem + 1.8vw, 2.25rem)',
+                fontWeight: 700,
+              }}
+            >
+              Voices from the ring
+            </h2>
+          </div>
         </ScrollReveal>
 
         {/* Desktop: even grid */}
@@ -355,9 +380,9 @@ function VoiceQuote({
   attribution: string
 }) {
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex h-full flex-col justify-between rounded-xl bg-white/50 p-6">
       <p
-        className="mb-5 font-display italic text-ringside-black/85"
+        className="mb-6 font-display italic text-ringside-black/85"
         style={{
           fontSize: 'clamp(1rem, 0.85rem + 0.6vw, 1.15rem)',
           fontWeight: 400,
@@ -366,7 +391,7 @@ function VoiceQuote({
       >
         &ldquo;{text}&rdquo;
       </p>
-      <p className="font-body text-xs font-medium uppercase tracking-wide text-warm-gray">
+      <p className="mt-auto font-body text-xs font-medium uppercase tracking-wide text-warm-gray">
         {attribution}
       </p>
     </div>

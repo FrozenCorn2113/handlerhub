@@ -43,11 +43,23 @@ function ScrollReveal({
 /* ------------------------------------------------------------------ */
 function HeroSection() {
   return (
-    <section className="bg-ring-cream pb-0 pt-12 lg:pt-20">
-      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
+    <section className="relative min-h-[520px] overflow-hidden lg:min-h-[600px]">
+      {/* Background image */}
+      <Image
+        src="/images/hero-bg.jpg"
+        alt=""
+        fill
+        className="object-cover object-center"
+        priority
+        sizes="100vw"
+      />
+      {/* Dark gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+
+      <div className="relative z-10 mx-auto max-w-[1200px] px-6 pb-16 pt-20 lg:px-8 lg:pb-24 lg:pt-28">
         <div className="mx-auto max-w-3xl text-center">
           <h1
-            className="mb-6 font-display text-paddock-green"
+            className="mb-6 font-display text-white"
             style={{
               fontSize: 'clamp(2.25rem, 1.8rem + 3.5vw, 4.25rem)',
               lineHeight: 1.08,
@@ -60,7 +72,7 @@ function HeroSection() {
             who knows your breed
           </h1>
 
-          <p className="mx-auto mb-8 max-w-xl font-body text-lg leading-relaxed text-warm-brown/70">
+          <p className="mx-auto mb-8 max-w-xl font-body text-lg leading-relaxed text-white/80">
             The dog show world&apos;s first directory of professional handlers,
             searchable by breed, region, and record.
           </p>
@@ -76,28 +88,16 @@ function HeroSection() {
           </div>
 
           {/* Secondary CTA */}
-          <p className="font-body text-sm text-warm-brown/70">
+          <p className="font-body text-sm text-white/70">
             Are you a handler?{' '}
             <Link
               href="/register"
-              className="font-semibold text-paddock-green underline-offset-2 hover:underline"
+              className="font-semibold text-white underline-offset-2 hover:underline"
             >
               Create your free profile
             </Link>
           </p>
         </div>
-      </div>
-
-      {/* Dog lineup banner */}
-      <div className="mt-8 flex justify-center lg:mt-10">
-        <Image
-          src="/images/dog-lineup.png"
-          alt="Illustrated lineup of dog breeds"
-          width={1200}
-          height={400}
-          className="block h-auto w-full max-w-3xl object-contain object-bottom sm:max-w-4xl"
-          priority
-        />
       </div>
     </section>
   )
@@ -160,6 +160,25 @@ function FeaturedHandlersSection({
 }
 
 /* ------------------------------------------------------------------ */
+/*  Dog Lineup Decorative Break                                        */
+/* ------------------------------------------------------------------ */
+function DogLineupBreak() {
+  return (
+    <div className="bg-ring-cream py-4">
+      <div className="mx-auto flex max-w-4xl justify-center px-6 lg:px-8">
+        <Image
+          src="/images/dog-lineup.png"
+          alt="Illustrated lineup of dog breeds"
+          width={1200}
+          height={400}
+          className="block h-auto w-full max-w-3xl object-contain opacity-60 sm:max-w-4xl"
+        />
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
 /*  Section 3 - Solution Blocks                                        */
 /* ------------------------------------------------------------------ */
 
@@ -174,7 +193,7 @@ const solutionBlocks = [
   {
     paraphrase: 'Good communication makes the whole ring experience better.',
     heading: 'Message any handler directly. No middleman, no waiting.',
-    body: 'Reach out to any handler on the platform and start a conversation. Response time is tracked and visible on every profile, so you know what to expect.',
+    body: 'Reach out to any handler on the platform and start a conversation. Every profile shows the breeds they\u2019ve finished, their show record, and their experience, so you can make an informed choice before you ever send a message.',
     reversed: true,
   },
   {
@@ -182,7 +201,7 @@ const solutionBlocks = [
       'Every exhibitor started somewhere. The ring is better when the door is open.',
     heading:
       'Whether it\u2019s your first show or your hundredth, find the right handler for your dog',
-    body: 'Search by breed, by region, by circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
+    body: 'Search by breed, region, or circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog.',
     reversed: false,
   },
 ]
@@ -292,16 +311,16 @@ const communityQuotes = [
 
 function CommunityVoiceSection() {
   return (
-    <section className="bg-[#EDE5D8] py-20 lg:py-24">
+    <section className="bg-[#EDE5D8] py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
-          <p className="mb-12 text-center font-body text-xs font-semibold uppercase tracking-[0.15em] text-warm-gray">
+          <p className="mb-14 text-center font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
             From the dog show world
           </p>
         </ScrollReveal>
 
-        {/* Desktop: grid */}
-        <div className="hidden gap-10 lg:grid lg:grid-cols-4">
+        {/* Desktop: even grid */}
+        <div className="hidden gap-12 lg:grid lg:grid-cols-4">
           {communityQuotes.map((quote, i) => (
             <ScrollReveal key={i} delay={i * 0.08}>
               <VoiceQuote text={quote.text} attribution={quote.attribution} />
@@ -310,9 +329,15 @@ function CommunityVoiceSection() {
         </div>
 
         {/* Mobile: horizontal snap-scroll */}
-        <div className="flex snap-x snap-mandatory gap-8 overflow-x-auto pb-4 lg:hidden">
+        <div
+          className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 lg:hidden"
+          style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
+        >
           {communityQuotes.map((quote, i) => (
-            <div key={i} className="w-[85vw] max-w-[320px] shrink-0 snap-start">
+            <div
+              key={i}
+              className="w-[280px] shrink-0 snap-center first:ml-0 last:mr-6"
+            >
               <VoiceQuote text={quote.text} attribution={quote.attribution} />
             </div>
           ))}
@@ -330,18 +355,18 @@ function VoiceQuote({
   attribution: string
 }) {
   return (
-    <div>
+    <div className="flex h-full flex-col justify-between">
       <p
-        className="mb-4 font-display italic text-ringside-black/85"
+        className="mb-5 font-display italic text-ringside-black/85"
         style={{
-          fontSize: 'clamp(1rem, 0.85rem + 0.6vw, 1.2rem)',
+          fontSize: 'clamp(1rem, 0.85rem + 0.6vw, 1.15rem)',
           fontWeight: 400,
-          lineHeight: 1.6,
+          lineHeight: 1.65,
         }}
       >
-        {text}
+        &ldquo;{text}&rdquo;
       </p>
-      <p className="font-body text-xs font-medium text-warm-gray">
+      <p className="font-body text-xs font-medium uppercase tracking-wide text-warm-gray">
         {attribution}
       </p>
     </div>
@@ -423,6 +448,7 @@ export default function LandingHome({
     <div className="bg-ring-cream">
       <HeroSection />
       <FeaturedHandlersSection handlers={featuredHandlers} />
+      <DogLineupBreak />
       <SolutionBlocksSection />
       <CommunityVoiceSection />
       <FoundingCtaSection />

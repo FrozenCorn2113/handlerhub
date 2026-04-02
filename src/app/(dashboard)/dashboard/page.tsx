@@ -422,16 +422,17 @@ export default async function DashboardPage() {
   }
 
   const userRole = user.role
+  const firstName = user.name?.split(' ')[0] || 'there'
 
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Dashboard"
+        heading={`Welcome back, ${firstName}`}
         text={
           userRole === 'HANDLER'
-            ? 'Manage your handler profile and bookings.'
+            ? "Here's what's happening with your bookings."
             : userRole === 'EXHIBITOR'
-              ? 'Find handlers and manage your requests.'
+              ? "Here's what's happening with your dogs."
               : 'Welcome to HandlerHub.'
         }
       >

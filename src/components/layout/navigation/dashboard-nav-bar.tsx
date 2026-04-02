@@ -17,20 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
 
 import { UserAvatar } from '@/components/shared/user-avatar'
 
 import {
   Bell,
   CalendarBlank,
+  CaretDown,
   ChartBar,
   ChatCircle,
   Envelope,
@@ -190,80 +183,86 @@ export function DashboardNavBar() {
         </Link>
       </div>
 
-      {/* Center nav links -- Radix NavigationMenu with viewport portal */}
-      <div className="hidden flex-1 md:flex">
-        <NavigationMenu className="z-50">
-          <NavigationMenuList className="gap-1">
-            {items.map((item) => {
-              const active = isItemActive(item)
+      {/* Center nav links -- DropdownMenu per trigger (portal-based) */}
+      <div className="hidden flex-1 items-center gap-1 md:flex">
+        {items.map((item) => {
+          const active = isItemActive(item)
 
-              // Simple link (no children)
-              if (!item.children) {
-                return (
-                  <NavigationMenuItem key={item.title}>
-                    <Link href={item.href} legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={`whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-medium transition-all ${
-                          active
-                            ? 'bg-paddock-green text-white'
-                            : 'text-warm-brown hover:bg-light-sand hover:text-ringside-black'
+          // Simple link (no children)
+          if (!item.children) {
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className={`whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-medium transition-all ${
+                  active
+                    ? 'bg-paddock-green text-white'
+                    : 'text-warm-brown hover:bg-light-sand hover:text-ringside-black'
+                }`}
+              >
+                {item.title}
+              </Link>
+            )
+          }
+
+          // Dropdown item (has children)
+          return (
+            <DropdownMenu key={item.title}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={`flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-medium transition-all focus:outline-none ${
+                    active
+                      ? 'bg-paddock-green text-white hover:bg-paddock-green/90'
+                      : 'text-warm-brown hover:bg-light-sand hover:text-ringside-black'
+                  }`}
+                >
+                  {item.title}
+                  <CaretDown
+                    size={12}
+                    weight="bold"
+                    className={active ? 'text-white/80' : 'text-warm-gray'}
+                  />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                sideOffset={8}
+                className="min-w-[200px] rounded-xl border-tan/80 bg-white py-2 shadow-[0_8px_30px_rgba(28,18,8,0.14),0_2px_8px_rgba(28,18,8,0.06)]"
+              >
+                {item.children.map((child) => {
+                  const ChildIcon = iconMap[child.title]
+                  const isChildActive =
+                    pathname === child.href ||
+                    (child.href !== '/dashboard' &&
+                      pathname.startsWith(child.href))
+                  return (
+                    <DropdownMenuItem key={child.title} asChild>
+                      <Link
+                        href={child.href}
+                        className={`flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left font-sans text-[13px] font-medium transition-all hover:bg-paddock-green/5 hover:text-ringside-black ${
+                          isChildActive
+                            ? 'bg-paddock-green/5 text-paddock-green'
+                            : 'text-warm-brown'
                         }`}
                       >
-                        {item.title}
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                )
-              }
-
-              // Dropdown item (has children)
-              return (
-                <NavigationMenuItem key={item.title}>
-                  <NavigationMenuTrigger
-                    className={`whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-medium transition-all ${
-                      active
-                        ? 'bg-paddock-green text-white hover:bg-paddock-green/90 focus:bg-paddock-green/90'
-                        : 'bg-transparent text-warm-brown hover:bg-light-sand hover:text-ringside-black focus:bg-light-sand'
-                    }`}
-                  >
-                    {item.title}
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="min-w-[200px] rounded-xl border border-tan/80 bg-white py-2 shadow-[0_8px_30px_rgba(28,18,8,0.14),0_2px_8px_rgba(28,18,8,0.06)]">
-                    {item.children.map((child) => {
-                      const ChildIcon = iconMap[child.title]
-                      const isChildActive =
-                        pathname === child.href ||
-                        (child.href !== '/dashboard' &&
-                          pathname.startsWith(child.href))
-                      return (
-                        <Link
-                          key={child.title}
-                          href={child.href}
-                          className={`flex w-full items-center gap-3 px-4 py-2.5 text-left font-sans text-[13px] font-medium transition-all hover:bg-paddock-green/5 hover:text-ringside-black ${
-                            isChildActive
-                              ? 'bg-paddock-green/5 text-paddock-green'
-                              : 'text-warm-brown'
-                          }`}
-                        >
-                          {ChildIcon && (
-                            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-paddock-green/10">
-                              <ChildIcon
-                                size={15}
-                                weight="regular"
-                                className="text-paddock-green"
-                              />
-                            </span>
-                          )}
-                          {child.title}
-                        </Link>
-                      )
-                    })}
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              )
-            })}
-          </NavigationMenuList>
-        </NavigationMenu>
+                        {ChildIcon && (
+                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-paddock-green/10">
+                            <ChildIcon
+                              size={15}
+                              weight="regular"
+                              className="text-paddock-green"
+                            />
+                          </span>
+                        )}
+                        {child.title}
+                      </Link>
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )
+        })}
       </div>
 
       {/* Right cluster */}

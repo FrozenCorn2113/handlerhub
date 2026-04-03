@@ -269,6 +269,10 @@ const serviceCards = [
 ]
 
 function ServiceShowcaseSection() {
+  const [activeService, setActiveService] = useState(0)
+  const card = serviceCards[activeService]
+  const Icon = card.icon
+
   return (
     <section className="border-t border-sand bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
@@ -292,69 +296,75 @@ function ServiceShowcaseSection() {
           </div>
         </ScrollReveal>
 
-        <div className="mx-auto flex max-w-[960px] flex-col">
-          {serviceCards.map((card, i) => {
-            const Icon = card.icon
-            const isLast = i === serviceCards.length - 1
-            return (
-              <ScrollReveal key={card.name} delay={i * 0.1}>
-                <div
-                  className={`flex flex-col gap-8 py-10 lg:flex-row lg:items-center lg:gap-12 lg:py-14 ${
-                    !isLast ? 'border-b border-sand' : ''
-                  }`}
-                >
-                  {/* Image — left side */}
-                  <div className="w-full shrink-0 lg:w-[48%]">
-                    <div className="overflow-hidden rounded-xl">
-                      <img
-                        src={card.image}
-                        alt={card.name}
-                        className="aspect-[3/2] w-full object-cover object-center"
-                      />
-                    </div>
-                  </div>
+        {/* Pill filter buttons */}
+        <div className="mb-10 flex flex-wrap justify-center gap-3">
+          {serviceCards.map((svc, i) => (
+            <button
+              key={svc.name}
+              type="button"
+              onClick={() => setActiveService(i)}
+              className={`rounded-full px-5 py-2 font-display text-sm font-semibold transition-all duration-200 ${
+                activeService === i
+                  ? 'bg-paddock-green text-white'
+                  : 'border border-paddock-green bg-transparent text-paddock-green hover:bg-paddock-green/10'
+              }`}
+            >
+              {svc.name}
+            </button>
+          ))}
+        </div>
 
-                  {/* Text — right side */}
-                  <div className="flex-1">
-                    {/* Icon + title row */}
-                    <div className="mb-1.5 flex items-center gap-2.5">
-                      <Icon
-                        size={22}
-                        weight="fill"
-                        className="text-paddock-green"
-                      />
-                      <span className="font-display text-xl font-bold text-ringside-black lg:text-2xl">
-                        {card.name}
-                      </span>
-                    </div>
+        {/* Active service content */}
+        <div className="mx-auto max-w-[960px]">
+          <div
+            key={activeService}
+            className="flex animate-fade-in flex-col gap-8 lg:flex-row lg:items-center lg:gap-12"
+          >
+            {/* Image — left side */}
+            <div className="w-full shrink-0 lg:w-[48%]">
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={card.image}
+                  alt={card.name}
+                  className="max-h-[280px] w-full object-cover object-center"
+                />
+              </div>
+            </div>
 
-                    {/* Subtitle */}
-                    <p className="mb-3 font-body text-xs font-medium uppercase tracking-wide text-warm-brown/50">
-                      {card.subtitle}
-                    </p>
+            {/* Text — right side */}
+            <div className="flex-1">
+              {/* Icon + title row */}
+              <div className="mb-1.5 flex items-center gap-2.5">
+                <Icon size={22} weight="fill" className="text-paddock-green" />
+                <span className="font-display text-xl font-bold text-ringside-black lg:text-2xl">
+                  {card.name}
+                </span>
+              </div>
 
-                    {/* Description */}
-                    <p className="mb-6 font-body text-base leading-relaxed text-warm-brown/80">
-                      {card.description}
-                    </p>
+              {/* Subtitle */}
+              <p className="mb-3 font-body text-xs font-medium uppercase tracking-wide text-warm-brown/50">
+                {card.subtitle}
+              </p>
 
-                    {/* CTA button */}
-                    <Link
-                      href={card.href}
-                      className="group inline-flex items-center gap-2 rounded-lg border border-paddock-green px-5 py-2.5 font-display text-sm font-semibold text-paddock-green transition-all duration-200 hover:bg-paddock-green hover:text-white"
-                    >
-                      {card.cta}
-                      <ArrowRight
-                        size={14}
-                        weight="bold"
-                        className="transition-transform duration-200 group-hover:translate-x-0.5"
-                      />
-                    </Link>
-                  </div>
-                </div>
-              </ScrollReveal>
-            )
-          })}
+              {/* Description */}
+              <p className="mb-6 font-body text-base leading-relaxed text-warm-brown/80">
+                {card.description}
+              </p>
+
+              {/* CTA button */}
+              <Link
+                href={card.href}
+                className="group inline-flex items-center gap-2 rounded-lg border border-paddock-green px-5 py-2.5 font-display text-sm font-semibold text-paddock-green transition-all duration-200 hover:bg-paddock-green hover:text-white"
+              >
+                {card.cta}
+                <ArrowRight
+                  size={14}
+                  weight="bold"
+                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -555,76 +565,33 @@ const communityQuotes = [
 
 function CommunityVoiceSection() {
   return (
-    <section className="bg-white py-12 lg:py-14">
+    <section className="bg-ring-cream py-10 lg:py-12">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
-          <div className="mb-10 text-center">
-            <p className="mb-2 font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
-              From the dog show world
-            </p>
-            <h2
-              className="font-display text-paddock-green"
-              style={{
-                fontSize: 'clamp(1.5rem, 1rem + 1.8vw, 2.25rem)',
-                fontWeight: 700,
-              }}
-            >
-              Voices from the ring
-            </h2>
-          </div>
+          <h2 className="mb-8 text-center font-display text-xl font-bold text-paddock-green lg:text-2xl">
+            Voices from the ring
+          </h2>
         </ScrollReveal>
 
-        {/* Desktop: even grid */}
-        <div className="hidden gap-8 lg:grid lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
           {communityQuotes.map((quote, i) => (
             <ScrollReveal key={i} delay={i * 0.08}>
-              <VoiceQuote text={quote.text} attribution={quote.attribution} />
+              <div className="flex gap-3">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-paddock-green" />
+                <div>
+                  <p className="font-display text-sm italic leading-relaxed text-warm-brown lg:text-base">
+                    &ldquo;{quote.text}&rdquo;
+                  </p>
+                  <p className="mt-1 font-body text-xs font-medium uppercase tracking-wide text-warm-brown/50">
+                    {quote.attribution}
+                  </p>
+                </div>
+              </div>
             </ScrollReveal>
-          ))}
-        </div>
-
-        {/* Mobile: horizontal snap-scroll */}
-        <div
-          className="-mx-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4 lg:hidden"
-          style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
-        >
-          {communityQuotes.map((quote, i) => (
-            <div
-              key={i}
-              className="w-[270px] shrink-0 snap-center first:ml-0 last:mr-6"
-            >
-              <VoiceQuote text={quote.text} attribution={quote.attribution} />
-            </div>
           ))}
         </div>
       </div>
     </section>
-  )
-}
-
-function VoiceQuote({
-  text,
-  attribution,
-}: {
-  text: string
-  attribution: string
-}) {
-  return (
-    <div className="flex h-full flex-col justify-between rounded-xl bg-ring-cream/60 p-5">
-      <p
-        className="mb-4 font-display italic text-ringside-black/85"
-        style={{
-          fontSize: 'clamp(0.95rem, 0.82rem + 0.5vw, 1.1rem)',
-          fontWeight: 400,
-          lineHeight: 1.6,
-        }}
-      >
-        &ldquo;{text}&rdquo;
-      </p>
-      <p className="mt-auto font-body text-xs font-medium uppercase tracking-wide text-warm-gray">
-        {attribution}
-      </p>
-    </div>
   )
 }
 

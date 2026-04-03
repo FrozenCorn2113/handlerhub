@@ -303,12 +303,10 @@ function ServiceShowcaseSection() {
                 >
                   {/* Image area */}
                   <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-xl">
-                    <Image
+                    <img
                       src={card.image}
                       alt={card.name}
-                      fill
-                      className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, 460px"
+                      className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { prisma } from '@/lib/db'
+import { geocodeCityState } from '@/lib/geocode'
 import { calculateProfileCompleteness } from '@/lib/profile-completeness'
 import { getCurrentUser } from '@/lib/session'
 
@@ -123,9 +124,19 @@ export async function POST(req: Request) {
     const json = await req.json()
     const body = handlerProfileSchema.parse(json)
 
+    // Geocode city/state to lat/lng for map display
+    let geoCoords: { latitude: number; longitude: number } | undefined
+    if (body.city && body.state) {
+      const coords = await geocodeCityState(body.city, body.state, body.country)
+      if (coords) {
+        geoCoords = { latitude: coords.lat, longitude: coords.lng }
+      }
+    }
+
     // Add termsAgreedAt timestamp if terms are being agreed to
     const updateData = {
       ...body,
+      ...geoCoords,
       ...(body.agreedToTerms && { termsAgreedAt: new Date() }),
     }
 
@@ -178,6 +189,35 @@ export async function PATCH(req: Request) {
 
     if (body.agreedToTerms) {
       updateData.termsAgreedAt = new Date()
+    }
+
+    // Geocode if city or state is being updated
+    if (body.city !== undefined || body.state !== undefined) {
+      // We need both city and state - fetch current profile if one is missing
+      const cityToGeocode = body.city
+      const stateToGeocode = body.state
+      if (cityToGeocode && stateToGeocode) {
+        const coords = await geocodeCityState(cityToGeocode, stateToGeocode)
+        if (coords) {
+          updateData.latitude = coords.lat
+          updateData.longitude = coords.lng
+        }
+      } else if (cityToGeocode !== undefined || stateToGeocode !== undefined) {
+        // One of city/state is changing — load current values for the missing field
+        const current = await prisma.handlerProfile.findUnique({
+          where: { userId: user.id },
+          select: { city: true, state: true },
+        })
+        const city = cityToGeocode ?? current?.city
+        const state = stateToGeocode ?? current?.state
+        if (city && state) {
+          const coords = await geocodeCityState(city, state)
+          if (coords) {
+            updateData.latitude = coords.lat
+            updateData.longitude = coords.lng
+          }
+        }
+      }
     }
 
     // Upsert: create if not exists, update if it does

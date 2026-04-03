@@ -42,6 +42,8 @@ interface Handler {
   regions: string[]
   city: string | null
   state: string | null
+  latitude: number | null
+  longitude: number | null
   rating: number | null
   reviewCount: number
   ratePerShow: number | null

@@ -111,6 +111,8 @@ export async function GET(req: NextRequest) {
       regions: h.regions || [],
       city: h.city || null,
       state: h.state || null,
+      latitude: h.latitude ?? null,
+      longitude: h.longitude ?? null,
       rating: h.averageRating || null,
       reviewCount: h.totalCompletedBookings || 0,
       ratePerShow: h.ratePerShow || null,

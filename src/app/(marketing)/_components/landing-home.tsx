@@ -231,32 +231,39 @@ const serviceCards = [
     image: '/images/backgrounds/handler-gaiting-boxer-outdoor-show.jpg',
     icon: Dog,
     name: 'Handling',
-    description: 'Expert hands in the ring. Browse by breed and show record.',
-    cta: 'Browse handlers',
+    subtitle: 'In the ring \u00b7 All breeds',
+    description:
+      'Your dog in expert hands. Browse handlers by breed, region, and show record.',
+    cta: 'Explore Handlers',
     href: '/handlers?type=handler',
   },
   {
     image: '/images/backgrounds/black-poodle-conformation-stacked.jpg',
     icon: Scissors,
     name: 'Grooming',
-    description: 'Ring-ready grooming from breed specialists.',
-    cta: 'Browse groomers',
+    subtitle: 'Ringside prep \u00b7 Breed-specific',
+    description:
+      "Ring-ready grooming from pros who know your breed's standard.",
+    cta: 'Explore Groomers',
     href: '/handlers?type=groomer',
   },
   {
     image: '/images/backgrounds/five-dogs-sitting-field-lineup.jpg',
     icon: Van,
     name: 'Transport',
-    description: 'Safe transport across the circuit.',
-    cta: 'Browse transport',
+    subtitle: 'Show to show \u00b7 Nationwide',
+    description:
+      'Safe, reliable transport to and from shows across the circuit.',
+    cta: 'Explore Transport',
     href: '/handlers?type=transport',
   },
   {
-    image: '/images/backgrounds/tan-sighthound-blue-award-ribbon.jpg',
+    image: '/images/backgrounds/agility-jump-border-collie-action.jpg',
     icon: Camera,
     name: 'Photography',
-    description: 'Professional ring and portrait photography.',
-    cta: 'Browse photographers',
+    subtitle: 'Ring shots \u00b7 Portraits',
+    description: 'Professional ring and portrait photography for your wins.',
+    cta: 'Explore Photographers',
     href: '/handlers?type=photographer',
   },
 ]
@@ -285,42 +292,58 @@ function ServiceShowcaseSection() {
           </div>
         </ScrollReveal>
 
-        <div className="mx-auto grid max-w-[900px] grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
+        <div className="mx-auto grid max-w-[960px] grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
           {serviceCards.map((card, i) => {
             const Icon = card.icon
             return (
               <ScrollReveal key={card.name} delay={i * 0.1}>
                 <Link
                   href={card.href}
-                  className="group relative block aspect-[16/9] cursor-pointer overflow-hidden rounded-2xl shadow-[0_2px_12px_rgba(28,18,8,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(28,18,8,0.18)] sm:aspect-[4/3]"
+                  className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <Image
-                    src={card.image}
-                    alt={card.name}
-                    fill
-                    className="object-cover object-center"
-                    sizes="(max-width: 640px) 100vw, 450px"
-                  />
-                  {/* Dark gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/20" />
+                  {/* Image area */}
+                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-xl">
+                    <Image
+                      src={card.image}
+                      alt={card.name}
+                      fill
+                      className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, 460px"
+                    />
+                  </div>
 
-                  {/* Content */}
-                  <div className="absolute inset-x-0 bottom-0 p-5 lg:p-6">
-                    <div className="mb-1.5 flex items-center gap-2">
-                      <Icon size={20} weight="fill" className="text-white/90" />
-                      <span className="font-display text-xl font-bold text-white lg:text-2xl">
+                  {/* Text content */}
+                  <div className="flex flex-1 flex-col p-5 lg:p-6">
+                    {/* Icon + title row */}
+                    <div className="mb-1 flex items-center gap-2">
+                      <Icon
+                        size={20}
+                        weight="fill"
+                        className="text-paddock-green"
+                      />
+                      <span className="font-display text-lg font-bold text-ringside-black lg:text-xl">
                         {card.name}
                       </span>
                     </div>
-                    <p className="max-w-[28ch] font-body text-sm leading-snug text-white/75">
+
+                    {/* Subtitle */}
+                    <p className="mb-3 font-body text-xs font-medium uppercase tracking-wide text-warm-brown/50">
+                      {card.subtitle}
+                    </p>
+
+                    {/* Description */}
+                    <p className="mb-5 flex-1 font-body text-sm leading-relaxed text-warm-brown/80">
                       {card.description}
                     </p>
-                    {/* Browse CTA — always visible on mobile, hover reveal on desktop */}
-                    <span className="mt-3 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-white opacity-100 transition-all duration-300 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
+
+                    {/* CTA button */}
+                    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-paddock-green px-4 py-2.5 font-display text-sm font-semibold text-paddock-green transition-all duration-200 group-hover:bg-paddock-green group-hover:text-white">
                       {card.cta}
-                      <ArrowRight size={14} weight="bold" />
+                      <ArrowRight
+                        size={14}
+                        weight="bold"
+                        className="transition-transform duration-200 group-hover:translate-x-0.5"
+                      />
                     </span>
                   </div>
                 </Link>

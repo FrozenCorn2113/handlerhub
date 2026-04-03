@@ -64,13 +64,14 @@ export function BookingActions({
         throw new Error('Failed to update booking')
       }
 
-      toast.success(
-        newStatus === 'ACCEPTED'
-          ? 'Booking accepted!'
-          : newStatus === 'DECLINED'
-            ? 'Booking declined'
-            : 'Booking marked as completed'
-      )
+      const messages: Record<string, string> = {
+        ACCEPTED: 'Booking accepted!',
+        DECLINED: 'Booking declined',
+        CONFIRMED: 'Booking confirmed!',
+        COMPLETED: 'Booking marked as completed',
+        CANCELLED: 'Booking cancelled',
+      }
+      toast.success(messages[newStatus] || 'Booking updated')
 
       router.refresh()
     } catch (error) {
@@ -84,7 +85,9 @@ export function BookingActions({
 
   const handleAccept = () => updateBookingStatus('ACCEPTED')
   const handleDecline = () => updateBookingStatus('DECLINED', declineReason)
+  const handleConfirm = () => updateBookingStatus('CONFIRMED')
   const handleComplete = () => updateBookingStatus('COMPLETED')
+  const handleCancel = () => updateBookingStatus('CANCELLED')
 
   const handleMessage = async () => {
     setIsLoading(true)
@@ -174,21 +177,66 @@ export function BookingActions({
     )
   }
 
-  // Handler actions for ACCEPTED bookings
-  if (userRole === 'HANDLER' && status === 'ACCEPTED') {
+  // Actions for ACCEPTED bookings - both handler and exhibitor can confirm
+  if (status === 'ACCEPTED') {
     return (
-      <Button
-        onClick={handleComplete}
-        disabled={isLoading}
-        size="sm"
-        variant="secondary"
-      >
-        {isLoading ? (
-          <SpinnerGap className="size-4 animate-spin" />
-        ) : (
-          'Mark as Completed'
+      <div className="flex gap-2">
+        <Button
+          onClick={handleConfirm}
+          disabled={isLoading}
+          size="sm"
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          {isLoading ? (
+            <SpinnerGap className="size-4 animate-spin" />
+          ) : (
+            <>
+              <Check className="mr-2 size-4" />
+              Confirm Booking
+            </>
+          )}
+        </Button>
+        <Button
+          onClick={handleCancel}
+          disabled={isLoading}
+          size="sm"
+          variant="outline"
+        >
+          <X className="mr-2 size-4" />
+          Cancel
+        </Button>
+      </div>
+    )
+  }
+
+  // Actions for CONFIRMED bookings
+  if (status === 'CONFIRMED') {
+    return (
+      <div className="flex gap-2">
+        {userRole === 'HANDLER' && (
+          <Button
+            onClick={handleComplete}
+            disabled={isLoading}
+            size="sm"
+            variant="secondary"
+          >
+            {isLoading ? (
+              <SpinnerGap className="size-4 animate-spin" />
+            ) : (
+              'Mark as Completed'
+            )}
+          </Button>
         )}
-      </Button>
+        <Button
+          onClick={handleCancel}
+          disabled={isLoading}
+          size="sm"
+          variant="outline"
+        >
+          <X className="mr-2 size-4" />
+          Cancel
+        </Button>
+      </div>
     )
   }
 

@@ -6,9 +6,25 @@ import { getCurrentUser } from '@/lib/session'
 
 import { z } from 'zod'
 
+const VALID_TRANSITIONS: Record<string, string[]> = {
+  PENDING: ['ACCEPTED', 'DECLINED'],
+  ACCEPTED: ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['COMPLETED', 'CANCELLED'],
+  DECLINED: [],
+  COMPLETED: [],
+  CANCELLED: [],
+}
+
 const updateBookingSchema = z.object({
   status: z
-    .enum(['PENDING', 'ACCEPTED', 'DECLINED', 'COMPLETED', 'CANCELLED'])
+    .enum([
+      'PENDING',
+      'ACCEPTED',
+      'CONFIRMED',
+      'DECLINED',
+      'COMPLETED',
+      'CANCELLED',
+    ])
     .optional(),
   handlerNotes: z.string().optional(),
 })
@@ -45,20 +61,31 @@ export async function PATCH(
       return new NextResponse('Forbidden', { status: 403 })
     }
 
-    // Handlers can update status and notes
-    // Exhibitors can only mark as COMPLETED or CANCELLED
-    if (
-      body.status &&
-      !isHandler &&
-      body.status !== 'COMPLETED' &&
-      body.status !== 'CANCELLED'
-    ) {
-      return new NextResponse(
-        'Exhibitors can only mark bookings as completed or cancelled',
-        {
-          status: 403,
-        }
-      )
+    // Validate status transition
+    if (body.status) {
+      const currentStatus = existingBooking.status
+      const allowed = VALID_TRANSITIONS[currentStatus] || []
+      if (!allowed.includes(body.status)) {
+        return NextResponse.json(
+          {
+            error: `Cannot transition from ${currentStatus} to ${body.status}`,
+          },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Role-based permission check
+    // Handlers can: ACCEPT, DECLINE (from PENDING), CONFIRM (from ACCEPTED), COMPLETE (from CONFIRMED), CANCEL
+    // Exhibitors can: CONFIRM (from ACCEPTED), CANCEL
+    if (body.status && isExhibitor) {
+      const exhibitorAllowed = ['CONFIRMED', 'CANCELLED']
+      if (!exhibitorAllowed.includes(body.status)) {
+        return new NextResponse(
+          'Exhibitors can only confirm or cancel bookings',
+          { status: 403 }
+        )
+      }
     }
 
     const updateData: any = {}

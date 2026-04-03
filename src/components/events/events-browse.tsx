@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 
 import type { EventWithVenue } from '@/lib/events/queries'
 
@@ -59,6 +60,12 @@ export function EventsBrowse({
   )
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
   const [isDesktop, setIsDesktop] = useState(false)
+  const [focusLocation, setFocusLocation] = useState<{
+    lat: number
+    lng: number
+  } | null>(null)
+
+  const router = useRouter()
 
   const debounceRef = useRef<NodeJS.Timeout>()
   const listContainerRef = useRef<HTMLDivElement>(null)
@@ -188,6 +195,20 @@ export function EventsBrowse({
     }
     setHighlightedEventId(eventId)
   }, [])
+
+  // Card click: zoom map + open slide-over (desktop only)
+  const handleCardClick = useCallback(
+    (event: EventWithVenue) => {
+      if (event.venue?.latitude && event.venue?.longitude) {
+        setFocusLocation({
+          lat: event.venue.latitude,
+          lng: event.venue.longitude,
+        })
+      }
+      router.push(`/events/${event.slug}`, { scroll: false })
+    },
+    [router]
+  )
 
   // Build filter summary for mobile sheet
   const filterSummary = useMemo(() => {
@@ -337,6 +358,7 @@ export function EventsBrowse({
                   event={event}
                   isHighlighted={highlightedEventId === event.id}
                   onHover={setHighlightedEventId}
+                  onClick={handleCardClick}
                 />
               </div>
             )
@@ -363,6 +385,7 @@ export function EventsBrowse({
         highlightedEventId={highlightedEventId}
         onPinHover={setHighlightedEventId}
         onPinClick={handlePinClick}
+        focusLocation={focusLocation}
       />
     </ErrorBoundary>
   )

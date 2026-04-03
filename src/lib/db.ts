@@ -19,6 +19,22 @@ function getDatabaseUrl(): string | undefined {
     return `${url}${joiner}sslmode=require`
   }
 
+  // When using Supabase's connection pooler (pgbouncer), Prisma needs
+  // pgbouncer=true and a low connection_limit for serverless environments.
+  if (
+    process.env.NODE_ENV === 'production' &&
+    url.includes('pooler.supabase.com')
+  ) {
+    const u = new URL(url)
+    if (!u.searchParams.has('pgbouncer')) {
+      u.searchParams.set('pgbouncer', 'true')
+    }
+    if (!u.searchParams.has('connection_limit')) {
+      u.searchParams.set('connection_limit', '1')
+    }
+    return u.toString()
+  }
+
   return url
 }
 

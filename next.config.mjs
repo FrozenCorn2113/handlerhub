@@ -3,8 +3,8 @@ import { createContentlayerPlugin } from 'next-contentlayer'
 
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
-  connect-src 'self' https://*.r2.cloudflarestorage.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com;
+  connect-src 'self' https://*.r2.cloudflarestorage.com https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com;
   img-src 'self' blob: data: https:;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   font-src 'self' https://fonts.gstatic.com;

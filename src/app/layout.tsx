@@ -21,7 +21,7 @@ import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GA } from 'pliny/analytics/GoogleAnalytics'
 
-const googleAnalyticsId = env.NEXT_PUBLIC_ANALITYCS_ID!
+const googleAnalyticsId = env.NEXT_PUBLIC_ANALITYCS_ID
 
 export const viewport: Viewport = {
   themeColor: [{ media: '(prefers-color-scheme: light)', color: '#1F6B4A' }],
@@ -98,7 +98,9 @@ export default function RootLayout({ children, modal }: RootLayoutProps) {
           {children}
           {modal}
 
-          {!isDev && <GA googleAnalyticsId={googleAnalyticsId} />}
+          {!isDev && googleAnalyticsId && (
+            <GA googleAnalyticsId={googleAnalyticsId} />
+          )}
           <VercelAnalytics />
           <SpeedInsights />
           <Toaster richColors closeButton position="top-center" />

@@ -1,9 +1,10 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
 
+import { useMapClusters } from './use-map-clusters'
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
 import { Map, Marker, Overlay } from 'pigeon-maps'
@@ -32,6 +33,7 @@ interface EventsMapProps {
   highlightedEventId?: string | null
   onPinHover?: (eventId: string | null) => void
   onPinClick?: (eventId: string) => void
+  focusLocation?: { lat: number; lng: number } | null
 }
 
 export function EventsMap({
@@ -39,6 +41,7 @@ export function EventsMap({
   highlightedEventId,
   onPinHover,
   onPinClick,
+  focusLocation,
 }: EventsMapProps) {
   const [selectedPin, setSelectedPin] = useState<VenuePin | null>(null)
 
@@ -54,12 +57,35 @@ export function EventsMap({
   }, [highlightedEventId, pins])
 
   // Compute center from pins or default to US center
-  const center = useMemo<[number, number]>(() => {
+  const initialCenter = useMemo<[number, number]>(() => {
     if (pins.length === 0) return [39.8283, -98.5795]
     const avgLat = pins.reduce((sum, p) => sum + p.lat, 0) / pins.length
     const avgLng = pins.reduce((sum, p) => sum + p.lng, 0) / pins.length
     return [avgLat, avgLng]
   }, [pins])
+
+  // Controlled map state
+  const [mapCenter, setMapCenter] = useState<[number, number]>(initialCenter)
+  const [mapZoom, setMapZoom] = useState(4)
+  const [mapBounds, setMapBounds] = useState<{
+    ne: [number, number]
+    sw: [number, number]
+  } | null>(null)
+
+  // Clustering
+  const { clusters, getExpansionZoom } = useMapClusters(
+    pins,
+    mapBounds,
+    mapZoom
+  )
+
+  // Focus location support (Phase 3 will use this)
+  useEffect(() => {
+    if (focusLocation) {
+      setMapCenter([focusLocation.lat, focusLocation.lng])
+      setMapZoom(12)
+    }
+  }, [focusLocation])
 
   // Close overlay when clicking outside (map click)
   const handleMapClick = useCallback(() => {
@@ -80,14 +106,66 @@ export function EventsMap({
     <div className="relative h-full w-full">
       <div className="h-full w-full cursor-grab overflow-hidden rounded-2xl border border-sand active:cursor-grabbing">
         <Map
-          defaultCenter={center}
-          defaultZoom={pins.length > 0 ? 4 : 4}
+          center={mapCenter}
+          zoom={mapZoom}
+          onBoundsChanged={({ center: c, zoom: z, bounds: b }) => {
+            setMapCenter(c)
+            setMapZoom(z)
+            if (b) {
+              setMapBounds(b)
+            }
+          }}
           onClick={() => {
             handleMapClick()
           }}
           attribution={false}
         >
-          {pins.map((pin) => {
+          {clusters.map((item, i) => {
+            if (item.isCluster) {
+              // Cluster pin - larger circle with count
+              const size = Math.min(
+                56,
+                36 + Math.floor(Math.log2(item.pointCount)) * 5
+              )
+              return (
+                <Marker
+                  key={`cluster-${item.clusterId ?? i}`}
+                  anchor={[item.lat, item.lng]}
+                  onClick={() => {
+                    if (item.clusterId != null) {
+                      const expansionZoom = getExpansionZoom(item.clusterId)
+                      setMapCenter([item.lat, item.lng])
+                      setMapZoom(expansionZoom)
+                    }
+                  }}
+                >
+                  <div
+                    style={{
+                      background: '#1F6B4A',
+                      width: size,
+                      height: size,
+                      borderRadius: '50%',
+                      border: '2.5px solid white',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {item.pointCount}
+                  </div>
+                </Marker>
+              )
+            }
+
+            // Single venue pin
+            const pin = item.venuePin
+            if (!pin) return null
+
             const primaryEvent = pin.events[0]
             const color = primaryEvent
               ? EVENT_TYPE_COLORS[primaryEvent.eventType]

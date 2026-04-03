@@ -116,7 +116,7 @@ function HeroSection() {
             className="mx-auto w-full max-w-[640px] rounded-2xl bg-white p-4 shadow-[0_8px_48px_rgba(0,0,0,0.28)]"
           >
             {/* Row 1 — Service Type Tabs */}
-            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-light-sand p-1 sm:grid-cols-4">
+            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-ring-cream p-1 sm:grid-cols-4">
               {serviceTypes.map((svc) => {
                 const Icon = svc.icon
                 const isActive = activeType === svc.param
@@ -196,7 +196,7 @@ function TrustBandSection({
   ]
 
   return (
-    <section className="border-t border-sand bg-light-sand py-8 lg:py-10">
+    <section className="border-t border-sand bg-ring-cream py-8 lg:py-10">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-tan">
           {stats.map((stat, i) => {
@@ -223,7 +223,7 @@ function TrustBandSection({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 3 — Service Showcase                                       */
+/*  Section 3 — Service Showcase (Rover-style full-width rows)         */
 /* ------------------------------------------------------------------ */
 
 const serviceCards = [
@@ -270,7 +270,7 @@ const serviceCards = [
 
 function ServiceShowcaseSection() {
   return (
-    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
+    <section className="border-t border-sand bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-14 text-center">
@@ -292,34 +292,38 @@ function ServiceShowcaseSection() {
           </div>
         </ScrollReveal>
 
-        <div className="mx-auto grid max-w-[960px] grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+        <div className="mx-auto flex max-w-[960px] flex-col">
           {serviceCards.map((card, i) => {
             const Icon = card.icon
+            const isLast = i === serviceCards.length - 1
             return (
               <ScrollReveal key={card.name} delay={i * 0.1}>
-                <Link
-                  href={card.href}
-                  className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                <div
+                  className={`flex flex-col gap-8 py-10 lg:flex-row lg:items-center lg:gap-12 lg:py-14 ${
+                    !isLast ? 'border-b border-sand' : ''
+                  }`}
                 >
-                  {/* Image area */}
-                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-xl">
-                    <img
-                      src={card.image}
-                      alt={card.name}
-                      className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                    />
+                  {/* Image — left side */}
+                  <div className="w-full shrink-0 lg:w-[48%]">
+                    <div className="overflow-hidden rounded-xl">
+                      <img
+                        src={card.image}
+                        alt={card.name}
+                        className="aspect-[3/2] w-full object-cover object-center"
+                      />
+                    </div>
                   </div>
 
-                  {/* Text content */}
-                  <div className="flex flex-1 flex-col p-5 lg:p-6">
+                  {/* Text — right side */}
+                  <div className="flex-1">
                     {/* Icon + title row */}
-                    <div className="mb-1 flex items-center gap-2">
+                    <div className="mb-1.5 flex items-center gap-2.5">
                       <Icon
-                        size={20}
+                        size={22}
                         weight="fill"
                         className="text-paddock-green"
                       />
-                      <span className="font-display text-lg font-bold text-ringside-black lg:text-xl">
+                      <span className="font-display text-xl font-bold text-ringside-black lg:text-2xl">
                         {card.name}
                       </span>
                     </div>
@@ -330,21 +334,24 @@ function ServiceShowcaseSection() {
                     </p>
 
                     {/* Description */}
-                    <p className="mb-5 flex-1 font-body text-sm leading-relaxed text-warm-brown/80">
+                    <p className="mb-6 font-body text-base leading-relaxed text-warm-brown/80">
                       {card.description}
                     </p>
 
                     {/* CTA button */}
-                    <span className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-paddock-green px-4 py-2.5 font-display text-sm font-semibold text-paddock-green transition-all duration-200 group-hover:bg-paddock-green group-hover:text-white">
+                    <Link
+                      href={card.href}
+                      className="group inline-flex items-center gap-2 rounded-lg border border-paddock-green px-5 py-2.5 font-display text-sm font-semibold text-paddock-green transition-all duration-200 hover:bg-paddock-green hover:text-white"
+                    >
                       {card.cta}
                       <ArrowRight
                         size={14}
                         weight="bold"
                         className="transition-transform duration-200 group-hover:translate-x-0.5"
                       />
-                    </span>
+                    </Link>
                   </div>
-                </Link>
+                </div>
               </ScrollReveal>
             )
           })}
@@ -411,7 +418,7 @@ function FeaturedHandlersSection({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 5 — Why HandlerHub                                         */
+/*  Section 5 — Why HandlerHub (alternating image/text blocks)         */
 /* ------------------------------------------------------------------ */
 
 const valueProps = [
@@ -419,13 +426,15 @@ const valueProps = [
     paraphrase:
       '"Shop around. Not for price, but for the handler who will be best for your dog."',
     heading:
-      'See every handler\u2019s breeds finished, show history, and reviews before you reach out.',
-    body: 'Every profile shows the breeds they\u2019ve finished, the shows they\u2019ve attended, and reviews from exhibitors who\u2019ve worked with them. Evaluate any handler before you ever send a message.',
+      'See every handler\u2019s breed specialties, show history, and credentials before you reach out.',
+    body: 'Every profile shows the breeds they\u2019ve finished, the shows they\u2019ve attended, and feedback from exhibitors who\u2019ve worked with them. Evaluate any handler before you ever send a message.',
+    image: '/images/backgrounds/conformation-table-cavalier-exam.jpg',
   },
   {
     paraphrase: '"Good communication makes the whole ring experience better."',
     heading: 'Message any handler directly. No middleman, no gatekeeping.',
     body: 'Reach out to any handler on the platform and start a conversation. No referral needed, no waiting to be introduced. Just direct access to every handler in your region.',
+    image: '/images/backgrounds/woman-handler-jack-russell-terrier.jpg',
   },
   {
     paraphrase:
@@ -433,12 +442,13 @@ const valueProps = [
     heading:
       'New to the sport? Every handler on HandlerHub is open to new clients.',
     body: 'Search by breed, region, or circuit. You don\u2019t need a decade in the breed or a personal referral to find a qualified pro handler for your dog. HandlerHub is how new exhibitors find their footing.',
+    image: '/images/backgrounds/lagotto-romagnolo-dog-show-green-carpet.jpg',
   },
 ]
 
 function WhyHandlerHubSection() {
   return (
-    <section className="border-t border-sand bg-light-sand py-20 lg:py-28">
+    <section className="border-t border-sand bg-ring-cream py-20 lg:py-28">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
           <div className="mb-14 text-center">
@@ -456,43 +466,64 @@ function WhyHandlerHubSection() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {valueProps.map((card, i) => (
-            <ScrollReveal key={i} delay={i * 0.1}>
-              <div className="rounded-2xl bg-white p-8 shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
-                {/* Community paraphrase */}
-                <div className="mb-6 border-l-4 border-paddock-green/40 pl-4">
-                  <p
-                    className="font-display italic text-warm-brown"
-                    style={{
-                      fontSize: 'clamp(1.05rem, 0.9rem + 0.5vw, 1.2rem)',
-                      fontWeight: 400,
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {card.paraphrase}
-                  </p>
-                </div>
-
-                {/* Heading */}
-                <h3
-                  className="mb-3 font-display font-bold text-ringside-black"
-                  style={{
-                    fontSize: 'clamp(1.2rem, 1rem + 0.8vw, 1.5rem)',
-                    lineHeight: 1.2,
-                    letterSpacing: '-0.02em',
-                  }}
+        <div className="flex flex-col gap-16 lg:gap-20">
+          {valueProps.map((card, i) => {
+            const imageLeft = i % 2 === 0
+            return (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <div
+                  className={`flex flex-col gap-8 lg:items-center lg:gap-12 ${
+                    imageLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'
+                  }`}
                 >
-                  {card.heading}
-                </h3>
+                  {/* Image side */}
+                  <div className="w-full shrink-0 lg:w-[48%]">
+                    <div className="overflow-hidden rounded-xl">
+                      <img
+                        src={card.image}
+                        alt={card.heading}
+                        className="aspect-[4/3] w-full object-cover object-center"
+                      />
+                    </div>
+                  </div>
 
-                {/* Body */}
-                <p className="font-body text-sm leading-relaxed text-warm-brown/80">
-                  {card.body}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
+                  {/* Text side */}
+                  <div className="flex-1">
+                    {/* Community paraphrase */}
+                    <div className="mb-6 border-l-4 border-paddock-green/40 pl-4">
+                      <p
+                        className="font-display italic text-warm-brown"
+                        style={{
+                          fontSize: 'clamp(1.05rem, 0.9rem + 0.5vw, 1.2rem)',
+                          fontWeight: 400,
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {card.paraphrase}
+                      </p>
+                    </div>
+
+                    {/* Heading */}
+                    <h3
+                      className="mb-3 font-display font-bold text-ringside-black"
+                      style={{
+                        fontSize: 'clamp(1.2rem, 1rem + 0.8vw, 1.5rem)',
+                        lineHeight: 1.2,
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      {card.heading}
+                    </h3>
+
+                    {/* Body */}
+                    <p className="font-body text-base leading-relaxed text-warm-brown/80">
+                      {card.body}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )
+          })}
         </div>
       </div>
     </section>
@@ -500,7 +531,7 @@ function WhyHandlerHubSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 6 — Community Voice Strip                                  */
+/*  Section 6 — Community Voice Strip (tighter padding)                */
 /* ------------------------------------------------------------------ */
 
 const communityQuotes = [
@@ -524,11 +555,11 @@ const communityQuotes = [
 
 function CommunityVoiceSection() {
   return (
-    <section className="bg-[#EDE5D8] py-20 lg:py-28">
+    <section className="bg-white py-12 lg:py-14">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
         <ScrollReveal>
-          <div className="mb-16 text-center">
-            <p className="mb-3 font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
+          <div className="mb-10 text-center">
+            <p className="mb-2 font-body text-sm font-semibold uppercase tracking-[0.15em] text-warm-gray">
               From the dog show world
             </p>
             <h2
@@ -544,7 +575,7 @@ function CommunityVoiceSection() {
         </ScrollReveal>
 
         {/* Desktop: even grid */}
-        <div className="hidden gap-12 lg:grid lg:grid-cols-4">
+        <div className="hidden gap-8 lg:grid lg:grid-cols-4">
           {communityQuotes.map((quote, i) => (
             <ScrollReveal key={i} delay={i * 0.08}>
               <VoiceQuote text={quote.text} attribution={quote.attribution} />
@@ -554,13 +585,13 @@ function CommunityVoiceSection() {
 
         {/* Mobile: horizontal snap-scroll */}
         <div
-          className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 lg:hidden"
+          className="-mx-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-6 pb-4 lg:hidden"
           style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
         >
           {communityQuotes.map((quote, i) => (
             <div
               key={i}
-              className="w-[280px] shrink-0 snap-center first:ml-0 last:mr-6"
+              className="w-[270px] shrink-0 snap-center first:ml-0 last:mr-6"
             >
               <VoiceQuote text={quote.text} attribution={quote.attribution} />
             </div>
@@ -579,13 +610,13 @@ function VoiceQuote({
   attribution: string
 }) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-xl bg-white/50 p-6">
+    <div className="flex h-full flex-col justify-between rounded-xl bg-ring-cream/60 p-5">
       <p
-        className="mb-6 font-display italic text-ringside-black/85"
+        className="mb-4 font-display italic text-ringside-black/85"
         style={{
-          fontSize: 'clamp(1rem, 0.85rem + 0.6vw, 1.15rem)',
+          fontSize: 'clamp(0.95rem, 0.82rem + 0.5vw, 1.1rem)',
           fontWeight: 400,
-          lineHeight: 1.65,
+          lineHeight: 1.6,
         }}
       >
         &ldquo;{text}&rdquo;
@@ -598,81 +629,71 @@ function VoiceQuote({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Section 7 — Founding CTA                                           */
+/*  Section 7 — Founding CTA (compact bar)                             */
 /* ------------------------------------------------------------------ */
 function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
   return (
-    <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-20 lg:py-28">
+    <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-10 lg:py-12">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2
-            className="mb-4 font-display text-white"
-            style={{
-              fontSize: 'clamp(1.75rem, 1.2rem + 2.5vw, 3rem)',
-              fontWeight: 700,
-              lineHeight: 1.15,
-            }}
-          >
-            Join the Founding 100
-          </h2>
-          <p className="mx-auto mb-10 max-w-lg font-body text-lg leading-relaxed text-white/80">
-            Be the first name exhibitors see when they search your breed in your
-            region. Early profiles get the most visibility.
-          </p>
-
-          <Button asChild size="lg" variant="secondary">
-            <Link
-              href="/register"
-              className="gap-3 border-0 bg-white font-display text-lg font-bold text-paddock-green shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-ring-cream hover:text-paddock-green"
+        <div className="mx-auto max-w-3xl text-center lg:flex lg:items-center lg:justify-between lg:gap-8 lg:text-left">
+          {/* Left: copy */}
+          <div className="mb-6 lg:mb-0">
+            <h2
+              className="mb-2 font-display text-white"
+              style={{
+                fontSize: 'clamp(1.5rem, 1.1rem + 2vw, 2.25rem)',
+                fontWeight: 700,
+                lineHeight: 1.15,
+              }}
             >
-              Create your free profile
-              <ArrowRight
-                size={20}
-                weight="bold"
-                className="transition-transform group-hover:translate-x-1"
-              />
-            </Link>
-          </Button>
-
-          <div className="mt-8 flex items-center justify-center gap-6 font-body text-base text-white/70">
-            <span className="flex items-center gap-2">
-              <PawPrint size={14} weight="fill" className="text-white/50" />
-              Free to join
-            </span>
-            <span className="flex items-center gap-2">
-              <PawPrint size={14} weight="fill" className="text-white/50" />
-              No platform fees
-            </span>
+              Join the Founding 100
+            </h2>
+            <p className="font-body text-base leading-relaxed text-white/75">
+              Be the first name exhibitors see when they search your breed in
+              your region.
+            </p>
           </div>
 
-          {/* Handler count + handler CTA */}
-          <div className="mt-10 border-t border-white/20 pt-8 text-center">
-            <p className="mb-1 font-body text-base text-white/70">
-              {handlerCount === 0
-                ? 'Handlers are joining now.'
-                : handlerCount === 1
-                  ? '1 handler has already joined.'
-                  : `${handlerCount} handlers have already joined.`}
-            </p>
-            <p className="font-body text-sm text-white/50">
-              Are you a handler?{' '}
+          {/* Right: CTA */}
+          <div className="flex shrink-0 flex-col items-center gap-3 lg:items-end">
+            <Button asChild size="lg" variant="secondary">
               <Link
                 href="/register"
-                className="text-white/80 underline underline-offset-2 transition-colors hover:text-white"
+                className="gap-3 border-0 bg-white font-display text-base font-bold text-paddock-green shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-ring-cream hover:text-paddock-green"
               >
                 Create your free profile
-              </Link>{' '}
-              and be visible on the circuit.
+                <ArrowRight
+                  size={18}
+                  weight="bold"
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </Link>
+            </Button>
+            <p className="text-sm text-white/50">
+              Built by a dog person.{' '}
+              <Link
+                href="/our-story"
+                className="text-white/70 underline underline-offset-2"
+              >
+                Our story
+              </Link>
             </p>
           </div>
+        </div>
 
-          <p className="mt-10 text-sm text-white/50">
-            Built by a dog person.{' '}
+        {/* Handler count line */}
+        <div className="mt-6 border-t border-white/15 pt-5 text-center">
+          <p className="font-body text-sm text-white/60">
+            {handlerCount === 0
+              ? 'Handlers are joining now.'
+              : handlerCount === 1
+                ? '1 handler has already joined.'
+                : `${handlerCount} handlers have already joined.`}{' '}
             <Link
-              href="/our-story"
-              className="text-white/70 underline underline-offset-2"
+              href="/register"
+              className="text-white/80 underline underline-offset-2 transition-colors hover:text-white"
             >
-              Our story
+              Create your free profile
             </Link>
           </p>
         </div>

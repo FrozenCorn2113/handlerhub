@@ -1,12 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
-import {
-  ENTRY_STATUS_CONFIG,
-  EVENT_TYPE_COLORS,
-  EVENT_TYPE_LABELS,
-} from '@/lib/events/constants'
+import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
 
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
@@ -82,11 +78,10 @@ export function EventsMap({
 
   return (
     <div className="relative h-full w-full">
-      <div className="h-full w-full overflow-hidden rounded-2xl border border-sand">
+      <div className="h-full w-full cursor-grab overflow-hidden rounded-2xl border border-sand active:cursor-grabbing">
         <Map
           defaultCenter={center}
           defaultZoom={pins.length > 0 ? 4 : 4}
-          height={600}
           onClick={() => {
             handleMapClick()
           }}
@@ -145,30 +140,25 @@ export function EventsMap({
           {selectedPin && (
             <Overlay
               anchor={[selectedPin.lat, selectedPin.lng]}
-              offset={[140, 20]}
+              offset={[110, 20]}
             >
               {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
               <div
                 onClick={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
-                className="w-[280px] overflow-hidden rounded-2xl border border-sand bg-white shadow-lg"
+                className="w-[220px] overflow-hidden rounded-xl bg-white shadow-md"
               >
-                <div className="flex items-center justify-between bg-ring-cream px-4 py-3">
-                  <div>
-                    <h3 className="font-display text-sm font-bold text-ringside-black">
-                      {selectedPin.name}
-                    </h3>
-                    <p className="mt-0.5 text-xs text-warm-gray">
-                      {selectedPin.city}, {selectedPin.state}
-                    </p>
-                  </div>
+                <div className="flex items-start justify-between px-3 pb-1 pt-2.5">
+                  <span className="text-[11px] font-medium text-warm-gray">
+                    {selectedPin.city}, {selectedPin.state}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setSelectedPin(null)}
-                    className="flex size-6 items-center justify-center rounded-full text-warm-gray transition-colors hover:bg-sand hover:text-ringside-black"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-warm-gray transition-colors hover:bg-sand hover:text-ringside-black"
                   >
                     <svg
-                      className="size-3.5"
+                      className="size-3"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -182,58 +172,30 @@ export function EventsMap({
                     </svg>
                   </button>
                 </div>
-                <div className="max-h-[240px] overflow-y-auto">
-                  {selectedPin.events.slice(0, 8).map((e) => {
+                <div className="px-3 pb-2.5">
+                  {selectedPin.events.slice(0, 3).map((e) => {
                     const date = new Date(e.startDate).toLocaleDateString(
                       'en-US',
                       { month: 'short', day: 'numeric' }
                     )
-                    const typeLabel = EVENT_TYPE_LABELS[e.eventType]
-                    const statusCfg = ENTRY_STATUS_CONFIG[e.entryStatus]
                     return (
                       <a
                         key={e.id}
                         href={`/events/${e.slug}`}
-                        className="block border-b border-sand px-4 py-2.5 no-underline transition-colors hover:bg-ring-cream/50"
+                        className="block truncate py-0.5 text-[12px] leading-snug text-ringside-black no-underline hover:text-paddock-green"
                       >
-                        <div className="text-[13px] font-semibold text-ringside-black">
-                          {e.clubName}
-                        </div>
-                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                          <span className="text-[11px] text-warm-gray">
-                            {date}
-                          </span>
-                          <span className="rounded bg-light-sand px-1.5 py-0.5 text-[11px] text-warm-brown">
-                            {typeLabel}
-                          </span>
-                          <span
-                            className="rounded-full px-1.5 py-0.5 text-[11px] font-medium"
-                            style={{
-                              color: statusCfg.color,
-                              background: statusCfg.bgColor,
-                            }}
-                          >
-                            {statusCfg.label}
-                          </span>
-                        </div>
+                        {e.clubName}
+                        <span className="ml-1.5 text-[11px] text-warm-gray">
+                          {date}
+                        </span>
                       </a>
                     )
                   })}
-                  {selectedPin.events.length > 8 && (
-                    <p className="px-4 py-2 text-xs text-warm-gray">
-                      + {selectedPin.events.length - 8} more events
+                  {selectedPin.events.length > 3 && (
+                    <p className="mt-0.5 text-[11px] text-warm-gray">
+                      +{selectedPin.events.length - 3} more events
                     </p>
                   )}
-                </div>
-                <div className="border-t border-sand bg-ring-cream/30 px-4 py-2.5">
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${selectedPin.lat},${selectedPin.lng}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-b from-[#24845a] to-paddock-green px-3 py-1.5 text-xs font-semibold text-white no-underline shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all hover:scale-[1.02]"
-                  >
-                    Get Directions
-                  </a>
                 </div>
               </div>
             </Overlay>

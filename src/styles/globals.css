@@ -371,6 +371,11 @@ html {
   }
 }
 
+/* Pigeon Maps: inherit grab cursor from container */
+.pigeon-tiles-box {
+  cursor: inherit !important;
+}
+
 @layer utilities {
   .step {
     counter-increment: step;

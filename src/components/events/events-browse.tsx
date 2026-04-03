@@ -379,7 +379,7 @@ export function EventsBrowse({
       {/* ── DESKTOP: split layout (lg+) ── */}
       <div className="hidden min-h-0 flex-1 lg:flex">
         {/* Left panel: filters + scrollable virtualized list */}
-        <div className="flex w-[420px] flex-col border-r border-sand xl:w-[480px]">
+        <div className="flex w-[55%] min-w-[380px] max-w-[640px] flex-col border-r border-sand">
           {/* Filters */}
           <div className="border-b border-sand bg-white p-4">
             {filterContent}

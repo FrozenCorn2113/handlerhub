@@ -602,9 +602,9 @@ function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
   return (
     <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-10 lg:py-12">
       <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center lg:flex lg:items-center lg:justify-between lg:gap-8 lg:text-left">
+        <div className="flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
           {/* Left: copy */}
-          <div className="mb-6 lg:mb-0">
+          <div>
             <h2
               className="mb-2 font-display text-white"
               style={{

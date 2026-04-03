@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import { REGIONS } from '@/lib/constants/regions'
 import { cn } from '@/lib/utils'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 
 import {
@@ -30,7 +28,6 @@ import {
   Dog,
   FloppyDisk,
   Images,
-  Info,
   MapPin,
   Medal,
   PencilSimpleLine,
@@ -111,7 +108,7 @@ interface ProfileEditorProps {
   profile: HandlerProfile | null
 }
 
-type TabId =
+type SectionId =
   | 'basic'
   | 'services'
   | 'gallery'
@@ -119,14 +116,14 @@ type TabId =
   | 'experience'
   | 'trust'
 
-interface TabConfig {
-  id: TabId
+interface SectionConfig {
+  id: SectionId
   label: string
   icon: React.ElementType
   mobileLabel: string
 }
 
-const TABS: TabConfig[] = [
+const SECTIONS: SectionConfig[] = [
   { id: 'basic', label: 'Basic Info', icon: UserIcon, mobileLabel: 'Basic' },
   {
     id: 'services',
@@ -135,7 +132,12 @@ const TABS: TabConfig[] = [
     mobileLabel: 'Rates',
   },
   { id: 'gallery', label: 'Gallery', icon: Images, mobileLabel: 'Gallery' },
-  { id: 'breeds', label: 'Breeds & Regions', icon: Dog, mobileLabel: 'Breeds' },
+  {
+    id: 'breeds',
+    label: 'Breeds & Regions',
+    icon: Dog,
+    mobileLabel: 'Breeds',
+  },
   { id: 'experience', label: 'Experience', icon: Medal, mobileLabel: 'Exp.' },
   {
     id: 'trust',
@@ -243,7 +245,34 @@ function SaveButton({ loading, saved }: { loading: boolean; saved: boolean }) {
   )
 }
 
-// -- Gallery Tab Component --
+// -- Compact Field Row --
+
+function FieldRow({
+  label,
+  htmlFor,
+  required,
+  children,
+}: {
+  label: string
+  htmlFor?: string
+  required?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4">
+      <Label
+        htmlFor={htmlFor}
+        className="w-full shrink-0 font-body text-sm font-semibold text-warm-brown sm:w-[140px] sm:text-right"
+      >
+        {label}
+        {required && ' *'}
+      </Label>
+      <div className="w-full min-w-0 flex-1">{children}</div>
+    </div>
+  )
+}
+
+// -- Gallery Section Component --
 
 const MAX_GALLERY_PHOTOS = 8
 
@@ -252,7 +281,7 @@ function getGalleryUrl(key: string): string {
   return `${process.env.NEXT_PUBLIC_R2_DEV_URL}/${key}`
 }
 
-function GalleryTab({
+function GallerySection({
   userId,
   galleryImages,
   onImagesChange,
@@ -411,190 +440,185 @@ function GalleryTab({
   const firstEmptyIndex = galleryImages.length
 
   return (
-    <Card variant="static" className="overflow-hidden">
-      <CardHeader className="bg-ring-cream/50">
-        <CardTitle className="flex items-center gap-2">
-          <Images className="size-5 text-paddock-green" />
-          Gallery
-        </CardTitle>
+    <div className="space-y-5">
+      <div>
         <p className="font-body text-sm text-warm-gray">
           Showcase your best ringside moments. Profiles with photos get
           significantly more inquiries.
         </p>
-      </CardHeader>
-      <CardContent className="space-y-6 pt-6">
-        {galleryImages.length === 0 ? (
-          <EmptyState
-            icon={Camera}
-            message="Add 3+ ringside photos to increase your profile views by up to 4x. Show exhibitors your handling style, your wins, and the dogs you work with."
-            actionLabel="Upload Photos"
-            onAction={() => fileInputRef.current?.click()}
-          />
-        ) : null}
+      </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-          {slots.map((slotIndex) => {
-            const hasPhoto = slotIndex < galleryImages.length
-            const isUploadTrigger = slotIndex === firstEmptyIndex
-            const isEmpty = slotIndex > firstEmptyIndex
-
-            if (hasPhoto) {
-              const key = galleryImages[slotIndex]
-              const isDragSource = dragSourceIndex === slotIndex
-              const isDragTarget = dragOverIndex === slotIndex
-
-              return (
-                <div
-                  key={key}
-                  draggable
-                  onDragStart={() => handleDragStart(slotIndex)}
-                  onDragOver={(e) => handleDragOver(e, slotIndex)}
-                  onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleReorderDrop(e, slotIndex)}
-                  onDragEnd={handleDragEnd}
-                  className={cn(
-                    'group relative aspect-square cursor-grab overflow-hidden rounded-xl border bg-white transition-all active:cursor-grabbing',
-                    isDragTarget
-                      ? 'border-2 border-solid border-paddock-green'
-                      : 'border-sand',
-                    isDragSource ? 'opacity-40' : 'opacity-100'
-                  )}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={getGalleryUrl(key)}
-                    alt={`Gallery photo ${slotIndex + 1}`}
-                    className="size-full object-cover"
-                    draggable={false}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(slotIndex)}
-                    className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-ringside-black/60 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
-                  >
-                    <svg
-                      className="size-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                  {slotIndex === 0 && (
-                    <span className="absolute bottom-1 left-1 rounded bg-ringside-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
-                      Featured
-                    </span>
-                  )}
-                </div>
-              )
-            }
-
-            if (isUploadTrigger) {
-              return (
-                <div
-                  key={`upload-trigger-${slotIndex}`}
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleFileDrop}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      fileInputRef.current?.click()
-                    }
-                  }}
-                  className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-sand transition-colors hover:border-paddock-green"
-                >
-                  {uploading ? (
-                    <SpinnerGap className="size-6 animate-spin text-paddock-green" />
-                  ) : (
-                    <svg
-                      className="size-8 text-warm-gray"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  )}
-                </div>
-              )
-            }
-
-            if (isEmpty) {
-              return (
-                <div
-                  key={`empty-${slotIndex}`}
-                  className="aspect-square rounded-xl border-2 border-dashed border-sand"
-                />
-              )
-            }
-
-            return null
-          })}
-        </div>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => {
-            if (e.target.files?.length) {
-              handleFiles(e.target.files)
-            }
-          }}
-          className="hidden"
+      {galleryImages.length === 0 ? (
+        <EmptyState
+          icon={Camera}
+          message="Add 3+ ringside photos to increase your profile views by up to 4x. Show exhibitors your handling style, your wins, and the dogs you work with."
+          actionLabel="Upload Photos"
+          onAction={() => fileInputRef.current?.click()}
         />
+      ) : null}
 
-        <p className="font-body text-xs text-warm-gray">
-          Upload up to 8 photos. Drag to reorder. First image is your featured
-          photo.
-        </p>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+        {slots.map((slotIndex) => {
+          const hasPhoto = slotIndex < galleryImages.length
+          const isUploadTrigger = slotIndex === firstEmptyIndex
+          const isEmpty = slotIndex > firstEmptyIndex
 
-        <div className="flex justify-end">
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => onSave(galleryImages)}
-            className={cn(
-              'inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-body text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60',
-              saved
-                ? 'bg-gradient-to-b from-[#24845a] to-paddock-green'
-                : 'bg-gradient-to-b from-[#2a2015] to-ringside-black'
-            )}
-          >
-            {saving ? (
-              <>
-                <SpinnerGap className="size-4 animate-spin" />
-                Saving...
-              </>
-            ) : saved ? (
-              <>
-                <CheckCircle weight="fill" className="size-4" />
-                Saved
-              </>
-            ) : (
-              <>
-                <FloppyDisk className="size-4" />
-                Save Gallery
-              </>
-            )}
-          </button>
-        </div>
-      </CardContent>
-    </Card>
+          if (hasPhoto) {
+            const key = galleryImages[slotIndex]
+            const isDragSource = dragSourceIndex === slotIndex
+            const isDragTarget = dragOverIndex === slotIndex
+
+            return (
+              <div
+                key={key}
+                draggable
+                onDragStart={() => handleDragStart(slotIndex)}
+                onDragOver={(e) => handleDragOver(e, slotIndex)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleReorderDrop(e, slotIndex)}
+                onDragEnd={handleDragEnd}
+                className={cn(
+                  'group relative aspect-square cursor-grab overflow-hidden rounded-xl border bg-white transition-all active:cursor-grabbing',
+                  isDragTarget
+                    ? 'border-2 border-solid border-paddock-green'
+                    : 'border-sand',
+                  isDragSource ? 'opacity-40' : 'opacity-100'
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getGalleryUrl(key)}
+                  alt={`Gallery photo ${slotIndex + 1}`}
+                  className="size-full object-cover"
+                  draggable={false}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(slotIndex)}
+                  className="absolute right-1 top-1 flex size-6 items-center justify-center rounded-full bg-ringside-black/60 text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                >
+                  <svg
+                    className="size-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+                {slotIndex === 0 && (
+                  <span className="absolute bottom-1 left-1 rounded bg-ringside-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                    Featured
+                  </span>
+                )}
+              </div>
+            )
+          }
+
+          if (isUploadTrigger) {
+            return (
+              <div
+                key={`upload-trigger-${slotIndex}`}
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleFileDrop}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    fileInputRef.current?.click()
+                  }
+                }}
+                className="flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-sand transition-colors hover:border-paddock-green"
+              >
+                {uploading ? (
+                  <SpinnerGap className="size-6 animate-spin text-paddock-green" />
+                ) : (
+                  <svg
+                    className="size-8 text-warm-gray"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                )}
+              </div>
+            )
+          }
+
+          if (isEmpty) {
+            return (
+              <div
+                key={`empty-${slotIndex}`}
+                className="aspect-square rounded-xl border-2 border-dashed border-sand"
+              />
+            )
+          }
+
+          return null
+        })}
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={(e) => {
+          if (e.target.files?.length) {
+            handleFiles(e.target.files)
+          }
+        }}
+        className="hidden"
+      />
+
+      <p className="font-body text-xs text-warm-gray">
+        Upload up to 8 photos. Drag to reorder. First image is your featured
+        photo.
+      </p>
+
+      <div className="flex justify-end border-t border-sand pt-4">
+        <button
+          type="button"
+          disabled={saving}
+          onClick={() => onSave(galleryImages)}
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-body text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-200 hover:scale-[1.02] hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60',
+            saved
+              ? 'bg-gradient-to-b from-[#24845a] to-paddock-green'
+              : 'bg-gradient-to-b from-[#2a2015] to-ringside-black'
+          )}
+        >
+          {saving ? (
+            <>
+              <SpinnerGap className="size-4 animate-spin" />
+              Saving...
+            </>
+          ) : saved ? (
+            <>
+              <CheckCircle weight="fill" className="size-4" />
+              Saved
+            </>
+          ) : (
+            <>
+              <FloppyDisk className="size-4" />
+              Save Gallery
+            </>
+          )}
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -602,7 +626,7 @@ function GalleryTab({
 
 export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<TabId>('basic')
+  const [activeSection, setActiveSection] = useState<SectionId>('basic')
   const [savingSection, setSavingSection] = useState<string | null>(null)
   const [savedSections, setSavedSections] = useState<Set<string>>(new Set())
 
@@ -832,7 +856,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
   const isSaved = (section: string) => savedSections.has(section)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Preview Profile Button */}
       {profile && (
         <div className="flex items-center justify-end">
@@ -848,48 +872,92 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
         </div>
       )}
 
-      {/* Tabbed Editor */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabId)}>
-        <TabsList className="flex h-auto w-full flex-wrap gap-1 rounded-2xl bg-light-sand p-1.5">
-          {TABS.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 font-body text-sm font-medium text-warm-gray transition-all data-[state=active]:bg-white data-[state=active]:text-ringside-black data-[state=active]:shadow-sm sm:px-4"
-              >
-                <Icon className="size-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-                <span className="sm:hidden">{tab.mobileLabel}</span>
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
+      {/* Sidebar + Content Layout */}
+      <div className="overflow-hidden rounded-2xl border border-sand bg-white shadow-[0_2px_12px_rgba(28,18,8,0.06)]">
+        {/* Mobile: Horizontal scrollable pill bar */}
+        <div className="border-b border-sand bg-ring-cream/50 p-2 md:hidden">
+          <div
+            className="flex gap-1.5 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: 'none' }}
+          >
+            {SECTIONS.map((section) => {
+              const Icon = section.icon
+              const isActive = activeSection === section.id
+              return (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => setActiveSection(section.id)}
+                  className={cn(
+                    'flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 font-body text-sm font-medium transition-all duration-200',
+                    isActive
+                      ? 'bg-white text-paddock-green shadow-sm'
+                      : 'text-warm-gray hover:bg-white/60 hover:text-warm-brown'
+                  )}
+                >
+                  <Icon className="size-4" />
+                  {section.mobileLabel}
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-        {/* ========== BASIC INFO TAB ========== */}
-        <TabsContent value="basic">
-          <form onSubmit={saveBasicInfo}>
-            <Card variant="static" className="overflow-hidden">
-              <CardHeader className="bg-ring-cream/50">
-                <CardTitle className="flex items-center gap-2">
-                  <UserIcon className="size-5 text-paddock-green" />
-                  Basic Information
-                </CardTitle>
-                <p className="font-body text-sm text-warm-gray">
-                  Your name, bio, and contact details visible to exhibitors.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                {/* Name row */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="fullName"
-                      className="font-body text-sm font-semibold text-warm-brown"
+        <div className="flex min-h-[500px]">
+          {/* Desktop: Left sidebar menu */}
+          <nav className="hidden w-[220px] shrink-0 border-r border-sand bg-ring-cream/30 md:block">
+            <div className="flex flex-col gap-0.5 p-3">
+              {SECTIONS.map((section) => {
+                const Icon = section.icon
+                const isActive = activeSection === section.id
+                return (
+                  <button
+                    key={section.id}
+                    type="button"
+                    onClick={() => setActiveSection(section.id)}
+                    className={cn(
+                      'flex items-center gap-3 rounded-xl px-3 py-2.5 text-left font-body text-sm font-medium transition-all duration-200',
+                      isActive
+                        ? 'bg-white text-paddock-green shadow-sm'
+                        : 'text-warm-gray hover:bg-white/60 hover:text-warm-brown'
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors',
+                        isActive ? 'bg-paddock-green/10' : 'bg-transparent'
+                      )}
                     >
-                      Full Name *
-                    </Label>
+                      <Icon
+                        className={cn(
+                          'size-[18px]',
+                          isActive ? 'text-paddock-green' : 'text-warm-gray'
+                        )}
+                      />
+                    </div>
+                    {section.label}
+                  </button>
+                )
+              })}
+            </div>
+          </nav>
+
+          {/* Right content area */}
+          <div className="flex-1 p-5 sm:p-6 lg:p-8">
+            {/* ========== BASIC INFO ========== */}
+            {activeSection === 'basic' && (
+              <form onSubmit={saveBasicInfo} className="space-y-5">
+                <div>
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Basic Information
+                  </h3>
+                  <p className="mt-0.5 font-body text-sm text-warm-gray">
+                    Your name, bio, and contact details visible to exhibitors.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <FieldRow label="Full Name" htmlFor="fullName" required>
                     <Input
                       id="fullName"
                       placeholder="John Smith"
@@ -900,14 +968,9 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       required
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="businessName"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Business Name
-                    </Label>
+                  </FieldRow>
+
+                  <FieldRow label="Business Name" htmlFor="businessName">
                     <Input
                       id="businessName"
                       placeholder="Elite Dog Handlers LLC"
@@ -920,7 +983,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       }
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
+                  </FieldRow>
                 </div>
 
                 {/* Bio */}
@@ -935,7 +998,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     }}
                   />
                 ) : null}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label
                     htmlFor="bio"
                     className="font-body text-sm font-semibold text-warm-brown"
@@ -945,7 +1008,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                   <Textarea
                     id="bio"
                     placeholder="Tell exhibitors about your experience, achievements, and handling style..."
-                    rows={5}
+                    rows={4}
                     value={formData.bio}
                     onChange={(e) =>
                       setFormData({ ...formData, bio: e.target.value })
@@ -955,74 +1018,56 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                 </div>
 
                 {/* Location */}
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="city"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      City *
-                    </Label>
-                    <Input
-                      id="city"
-                      placeholder="Los Angeles"
-                      value={formData.city}
-                      onChange={(e) =>
-                        setFormData({ ...formData, city: e.target.value })
-                      }
-                      required
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="state"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      State *
-                    </Label>
-                    <Input
-                      id="state"
-                      placeholder="CA"
-                      maxLength={2}
-                      value={formData.state}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          state: e.target.value.toUpperCase(),
-                        })
-                      }
-                      required
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="country"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Country
-                    </Label>
-                    <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) =>
-                        setFormData({ ...formData, country: e.target.value })
-                      }
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
+                <div className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <FieldRow label="City" htmlFor="city" required>
+                      <Input
+                        id="city"
+                        placeholder="Los Angeles"
+                        value={formData.city}
+                        onChange={(e) =>
+                          setFormData({ ...formData, city: e.target.value })
+                        }
+                        required
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
+                    <FieldRow label="State" htmlFor="state" required>
+                      <Input
+                        id="state"
+                        placeholder="CA"
+                        maxLength={2}
+                        value={formData.state}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            state: e.target.value.toUpperCase(),
+                          })
+                        }
+                        required
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
+                    <FieldRow label="Country" htmlFor="country">
+                      <Input
+                        id="country"
+                        value={formData.country}
+                        onChange={(e) =>
+                          setFormData({ ...formData, country: e.target.value })
+                        }
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
                   </div>
                 </div>
 
                 {/* Contact */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="contactEmail"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Contact Email *
-                    </Label>
+                <div className="space-y-4">
+                  <FieldRow
+                    label="Contact Email"
+                    htmlFor="contactEmail"
+                    required
+                  >
                     <Input
                       id="contactEmail"
                       type="email"
@@ -1037,14 +1082,8 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       required
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="contactPhone"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Phone Number
-                    </Label>
+                  </FieldRow>
+                  <FieldRow label="Phone" htmlFor="contactPhone">
                     <Input
                       id="contactPhone"
                       type="tel"
@@ -1058,51 +1097,40 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       }
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
-                </div>
-
-                {/* Preferred Contact */}
-                <div className="space-y-2">
-                  <Label
+                  </FieldRow>
+                  <FieldRow
+                    label="Contact Method"
                     htmlFor="preferredContactMethod"
-                    className="font-body text-sm font-semibold text-warm-brown"
                   >
-                    Preferred Contact Method
-                  </Label>
-                  <Select
-                    value={formData.preferredContactMethod}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        preferredContactMethod: value,
-                      })
-                    }
-                  >
-                    <SelectTrigger
-                      id="preferredContactMethod"
-                      className="rounded-xl border-sand"
+                    <Select
+                      value={formData.preferredContactMethod}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          preferredContactMethod: value,
+                        })
+                      }
                     >
-                      <SelectValue placeholder="Select preferred method" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {contactMethods.map((method) => (
-                        <SelectItem key={method} value={method}>
-                          {method}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      <SelectTrigger
+                        id="preferredContactMethod"
+                        className="rounded-xl border-sand"
+                      >
+                        <SelectValue placeholder="Select preferred method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {contactMethods.map((method) => (
+                          <SelectItem key={method} value={method}>
+                            {method}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FieldRow>
                 </div>
 
                 {/* Social links */}
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="website"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Website
-                    </Label>
+                <div className="space-y-4">
+                  <FieldRow label="Website" htmlFor="website">
                     <Input
                       id="website"
                       type="url"
@@ -1113,14 +1141,8 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       }
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="facebook"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Facebook
-                    </Label>
+                  </FieldRow>
+                  <FieldRow label="Facebook" htmlFor="facebook">
                     <Input
                       id="facebook"
                       placeholder="facebook.com/yourpage"
@@ -1130,14 +1152,8 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       }
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="instagram"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Instagram
-                    </Label>
+                  </FieldRow>
+                  <FieldRow label="Instagram" htmlFor="instagram">
                     <Input
                       id="instagram"
                       placeholder="@yourhandle"
@@ -1147,7 +1163,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       }
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
-                  </div>
+                  </FieldRow>
                 </div>
 
                 {/* Save */}
@@ -1157,26 +1173,22 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     saved={isSaved('basic')}
                   />
                 </div>
-              </CardContent>
-            </Card>
-          </form>
-        </TabsContent>
+              </form>
+            )}
 
-        {/* ========== SERVICES & RATES TAB ========== */}
-        <TabsContent value="services">
-          <form onSubmit={saveServicesRates}>
-            <Card variant="static" className="overflow-hidden">
-              <CardHeader className="bg-ring-cream/50">
-                <CardTitle className="flex items-center gap-2">
-                  <CurrencyDollar className="size-5 text-paddock-green" />
-                  Services & Rates
-                </CardTitle>
-                <p className="font-body text-sm text-warm-gray">
-                  Define your services, pricing, and availability. Transparent
-                  pricing attracts serious inquiries.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+            {/* ========== SERVICES & RATES ========== */}
+            {activeSection === 'services' && (
+              <form onSubmit={saveServicesRates} className="space-y-5">
+                <div>
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Services & Rates
+                  </h3>
+                  <p className="mt-0.5 font-body text-sm text-warm-gray">
+                    Define your services, pricing, and availability. Transparent
+                    pricing attracts serious inquiries.
+                  </p>
+                </div>
+
                 {/* Services selection */}
                 <div className="space-y-3">
                   <Label className="font-body text-sm font-semibold text-warm-brown">
@@ -1245,98 +1257,79 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                 </div>
 
                 {/* Rate fields */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="ratePerShow"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Rate Per Show ($)
-                    </Label>
-                    <Input
-                      id="ratePerShow"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="150.00"
-                      value={formData.ratePerShow}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          ratePerShow: e.target.value,
-                        })
-                      }
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
+                <div className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FieldRow label="Rate/Show ($)" htmlFor="ratePerShow">
+                      <Input
+                        id="ratePerShow"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="150.00"
+                        value={formData.ratePerShow}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            ratePerShow: e.target.value,
+                          })
+                        }
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
+                    <FieldRow label="Rate/Day ($)" htmlFor="ratePerDay">
+                      <Input
+                        id="ratePerDay"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="250.00"
+                        value={formData.ratePerDay}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            ratePerDay: e.target.value,
+                          })
+                        }
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
                   </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="ratePerDay"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Rate Per Day ($)
-                    </Label>
-                    <Input
-                      id="ratePerDay"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="250.00"
-                      value={formData.ratePerDay}
-                      onChange={(e) =>
-                        setFormData({ ...formData, ratePerDay: e.target.value })
-                      }
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
-                  </div>
-                </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="feeRangeMin"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Fee Range Min ($)
-                    </Label>
-                    <Input
-                      id="feeRangeMin"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="50.00"
-                      value={formData.feeRangeMin}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          feeRangeMin: e.target.value,
-                        })
-                      }
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="feeRangeMax"
-                      className="font-body text-sm font-semibold text-warm-brown"
-                    >
-                      Fee Range Max ($)
-                    </Label>
-                    <Input
-                      id="feeRangeMax"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="300.00"
-                      value={formData.feeRangeMax}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          feeRangeMax: e.target.value,
-                        })
-                      }
-                      className="rounded-xl border-sand focus:ring-paddock-green/30"
-                    />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FieldRow label="Fee Min ($)" htmlFor="feeRangeMin">
+                      <Input
+                        id="feeRangeMin"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="50.00"
+                        value={formData.feeRangeMin}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            feeRangeMin: e.target.value,
+                          })
+                        }
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
+                    <FieldRow label="Fee Max ($)" htmlFor="feeRangeMax">
+                      <Input
+                        id="feeRangeMax"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="300.00"
+                        value={formData.feeRangeMax}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            feeRangeMax: e.target.value,
+                          })
+                        }
+                        className="rounded-xl border-sand focus:ring-paddock-green/30"
+                      />
+                    </FieldRow>
                   </div>
                 </div>
 
@@ -1346,7 +1339,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     Detailed Fee Schedule
                   </h4>
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         All-Breed Show ($)
                       </Label>
@@ -1368,7 +1361,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                         className="rounded-xl border-sand focus:ring-paddock-green/30"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Specialty Show ($)
                       </Label>
@@ -1390,7 +1383,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                         className="rounded-xl border-sand focus:ring-paddock-green/30"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         National Specialty ($)
                       </Label>
@@ -1414,7 +1407,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Board Rate ($/mo)
                       </Label>
@@ -1436,7 +1429,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                         className="rounded-xl border-sand focus:ring-paddock-green/30"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Grooming ($/session)
                       </Label>
@@ -1458,7 +1451,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                         className="rounded-xl border-sand focus:ring-paddock-green/30"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Mileage ($/mile)
                       </Label>
@@ -1482,7 +1475,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     </div>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Win Bonus: BIS ($)
                       </Label>
@@ -1507,7 +1500,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                         className="rounded-xl border-sand focus:ring-paddock-green/30"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label className="font-body text-xs font-semibold text-warm-brown">
                         Win Bonus: Group ($)
                       </Label>
@@ -1533,7 +1526,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label className="font-body text-xs font-semibold text-warm-brown">
                       Fee Notes
                     </Label>
@@ -1560,7 +1553,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                   <h4 className="font-display text-base font-semibold text-ringside-black">
                     Availability
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label className="font-body text-xs font-semibold text-warm-brown">
                       Availability Notes
                     </Label>
@@ -1577,7 +1570,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                       className="rounded-xl border-sand focus:ring-paddock-green/30"
                     />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label className="font-body text-xs font-semibold text-warm-brown">
                       Schedule Link
                     </Label>
@@ -1621,42 +1614,45 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     saved={isSaved('services')}
                   />
                 </div>
-              </CardContent>
-            </Card>
-          </form>
-        </TabsContent>
+              </form>
+            )}
 
-        {/* ========== GALLERY TAB ========== */}
-        <TabsContent value="gallery">
-          <GalleryTab
-            userId={user.id}
-            galleryImages={formData.galleryImages}
-            onImagesChange={(images) =>
-              setFormData((prev) => ({ ...prev, galleryImages: images }))
-            }
-            saving={isSaving('gallery')}
-            saved={isSaved('gallery')}
-            onSave={(images) =>
-              saveSection('gallery', { galleryImages: images })
-            }
-          />
-        </TabsContent>
+            {/* ========== GALLERY ========== */}
+            {activeSection === 'gallery' && (
+              <div>
+                <div className="mb-5">
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Gallery
+                  </h3>
+                </div>
+                <GallerySection
+                  userId={user.id}
+                  galleryImages={formData.galleryImages}
+                  onImagesChange={(images) =>
+                    setFormData((prev) => ({ ...prev, galleryImages: images }))
+                  }
+                  saving={isSaving('gallery')}
+                  saved={isSaved('gallery')}
+                  onSave={(images) =>
+                    saveSection('gallery', { galleryImages: images })
+                  }
+                />
+              </div>
+            )}
 
-        {/* ========== BREEDS & REGIONS TAB ========== */}
-        <TabsContent value="breeds">
-          <form onSubmit={saveBreedsRegions}>
-            <Card variant="static" className="overflow-hidden">
-              <CardHeader className="bg-ring-cream/50">
-                <CardTitle className="flex items-center gap-2">
-                  <Dog className="size-5 text-paddock-green" />
-                  Breeds & Regions
-                </CardTitle>
-                <p className="font-body text-sm text-warm-gray">
-                  Tell exhibitors which breeds you specialize in and where you
-                  travel.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+            {/* ========== BREEDS & REGIONS ========== */}
+            {activeSection === 'breeds' && (
+              <form onSubmit={saveBreedsRegions} className="space-y-5">
+                <div>
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Breeds & Regions
+                  </h3>
+                  <p className="mt-0.5 font-body text-sm text-warm-gray">
+                    Tell exhibitors which breeds you specialize in and where you
+                    travel.
+                  </p>
+                </div>
+
                 {/* Breeds */}
                 <div className="space-y-3">
                   <Label className="font-body text-sm font-semibold text-warm-brown">
@@ -1737,33 +1733,23 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     saved={isSaved('breeds')}
                   />
                 </div>
-              </CardContent>
-            </Card>
-          </form>
-        </TabsContent>
+              </form>
+            )}
 
-        {/* ========== EXPERIENCE TAB ========== */}
-        <TabsContent value="experience">
-          <form onSubmit={saveExperience}>
-            <Card variant="static" className="overflow-hidden">
-              <CardHeader className="bg-ring-cream/50">
-                <CardTitle className="flex items-center gap-2">
-                  <Medal className="size-5 text-paddock-green" />
-                  Experience
-                </CardTitle>
-                <p className="font-body text-sm text-warm-gray">
-                  Highlight your achievements, history, and professional
-                  credentials.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="yearsExperience"
-                    className="font-body text-sm font-semibold text-warm-brown"
-                  >
-                    Years of Experience
-                  </Label>
+            {/* ========== EXPERIENCE ========== */}
+            {activeSection === 'experience' && (
+              <form onSubmit={saveExperience} className="space-y-5">
+                <div>
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Experience
+                  </h3>
+                  <p className="mt-0.5 font-body text-sm text-warm-gray">
+                    Highlight your achievements, history, and professional
+                    credentials.
+                  </p>
+                </div>
+
+                <FieldRow label="Years Experience" htmlFor="yearsExperience">
                   <Input
                     id="yearsExperience"
                     type="number"
@@ -1778,7 +1764,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     }
                     className="max-w-[200px] rounded-xl border-sand focus:ring-paddock-green/30"
                   />
-                </div>
+                </FieldRow>
 
                 {/* Show Highlights */}
                 {!formData.showHighlights ? (
@@ -1791,7 +1777,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     }
                   />
                 ) : null}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label
                     htmlFor="showHighlights"
                     className="font-body text-sm font-semibold text-warm-brown"
@@ -1814,7 +1800,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                 </div>
 
                 {/* Resume */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label
                     htmlFor="handlerResume"
                     className="font-body text-sm font-semibold text-warm-brown"
@@ -1837,7 +1823,7 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                 </div>
 
                 {/* Past Clients */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label
                     htmlFor="pastClients"
                     className="font-body text-sm font-semibold text-warm-brown"
@@ -1863,26 +1849,22 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     saved={isSaved('experience')}
                   />
                 </div>
-              </CardContent>
-            </Card>
-          </form>
-        </TabsContent>
+              </form>
+            )}
 
-        {/* ========== TRUST & CREDENTIALS TAB ========== */}
-        <TabsContent value="trust">
-          <form onSubmit={saveTrust}>
-            <Card variant="static" className="overflow-hidden">
-              <CardHeader className="bg-ring-cream/50">
-                <CardTitle className="flex items-center gap-2">
-                  <ShieldCheck className="size-5 text-paddock-green" />
-                  Trust & Credentials
-                </CardTitle>
-                <p className="font-body text-sm text-warm-gray">
-                  Build trust with exhibitors by sharing your credentials and
-                  verification status.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+            {/* ========== TRUST & CREDENTIALS ========== */}
+            {activeSection === 'trust' && (
+              <form onSubmit={saveTrust} className="space-y-5">
+                <div>
+                  <h3 className="font-display text-lg font-semibold text-ringside-black">
+                    Trust & Credentials
+                  </h3>
+                  <p className="mt-0.5 font-body text-sm text-warm-gray">
+                    Build trust with exhibitors by sharing your credentials and
+                    verification status.
+                  </p>
+                </div>
+
                 {/* Trust checkboxes */}
                 {!formData.isInsured &&
                 !formData.isBonded &&
@@ -1982,11 +1964,11 @@ export default function ProfileEditor({ user, profile }: ProfileEditorProps) {
                     saved={isSaved('trust')}
                   />
                 </div>
-              </CardContent>
-            </Card>
-          </form>
-        </TabsContent>
-      </Tabs>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

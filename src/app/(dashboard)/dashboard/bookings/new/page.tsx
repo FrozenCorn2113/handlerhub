@@ -3,9 +3,9 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
+import NewBookingFlow from '@/components/dashboard/bookings/new-booking-flow'
 import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
-import BookingRequestForm from '@/components/forms/booking-request-form'
 
 interface NewBookingPageProps {
   searchParams: {
@@ -63,7 +63,7 @@ export default async function NewBookingPage({
       />
 
       <div className="grid gap-10">
-        <BookingRequestForm
+        <NewBookingFlow
           user={user as any}
           handler={handler}
           dogProfiles={dogProfiles}

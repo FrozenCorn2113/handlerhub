@@ -13,6 +13,11 @@ const bookingRequestSchema = z.object({
   dogName: z.string().min(1),
   dogBreed: z.string().min(1),
   message: z.string().optional(),
+  dogProfileId: z.string().nullable().optional(),
+  classEntries: z.array(z.string()).optional(),
+  travelRequirements: z.string().optional(),
+  priorHandlerExperience: z.string().optional(),
+  eventId: z.string().optional(),
 })
 
 export async function POST(req: Request) {
@@ -56,6 +61,11 @@ export async function POST(req: Request) {
         dogBreed: body.dogBreed,
         message: body.message || '',
         status: 'PENDING',
+        dogProfileId: body.dogProfileId || undefined,
+        classEntries: body.classEntries || [],
+        travelRequirements: body.travelRequirements || undefined,
+        priorHandlerExperience: body.priorHandlerExperience || undefined,
+        eventId: body.eventId || undefined,
       },
     })
 

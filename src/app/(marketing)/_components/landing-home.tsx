@@ -600,69 +600,36 @@ function CommunityVoiceSection() {
 /* ------------------------------------------------------------------ */
 function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
   return (
-    <section className="bg-gradient-to-br from-paddock-green to-[#154D35] py-10 lg:py-12">
-      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-6 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-          {/* Left: copy */}
-          <div>
-            <h2
-              className="mb-2 font-display text-white"
-              style={{
-                fontSize: 'clamp(1.5rem, 1.1rem + 2vw, 2.25rem)',
-                fontWeight: 700,
-                lineHeight: 1.15,
-              }}
-            >
-              Join the Founding 100
-            </h2>
-            <p className="font-body text-base leading-relaxed text-white/75">
-              Be the first name exhibitors see when they search your breed in
-              your region.
-            </p>
-          </div>
-
-          {/* Right: CTA */}
-          <div className="flex shrink-0 flex-col items-center gap-3 lg:items-end">
-            <Button asChild size="lg" variant="secondary">
-              <Link
-                href="/register"
-                className="gap-3 border-0 bg-white font-display text-base font-bold text-paddock-green shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:bg-ring-cream hover:text-paddock-green"
-              >
-                Create your free profile
-                <ArrowRight
-                  size={18}
-                  weight="bold"
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </Link>
-            </Button>
-            <p className="text-sm text-white/50">
-              Built by a dog person.{' '}
-              <Link
-                href="/our-story"
-                className="text-white/70 underline underline-offset-2"
-              >
-                Our story
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* Handler count line */}
-        <div className="mt-6 border-t border-white/15 pt-5 text-center">
-          <p className="font-body text-sm text-white/60">
-            {handlerCount === 0
-              ? 'Handlers are joining now.'
-              : handlerCount === 1
-                ? '1 handler has already joined.'
-                : `${handlerCount} handlers have already joined.`}{' '}
+    <section className="bg-ring-cream py-14 lg:py-16">
+      <div className="mx-auto max-w-[800px] px-6 lg:px-8">
+        <div className="rounded-xl border border-paddock-green px-8 py-10 text-center lg:px-12 lg:py-12">
+          <h2
+            className="mb-3 font-display text-paddock-green"
+            style={{
+              fontSize: 'clamp(1.5rem, 1.1rem + 2vw, 2.25rem)',
+              fontWeight: 700,
+              lineHeight: 1.15,
+            }}
+          >
+            Join the Founding 100
+          </h2>
+          <p className="mx-auto mb-6 max-w-[38ch] font-body text-base leading-relaxed text-warm-brown/70">
+            Be the first name exhibitors see when they search your breed in your
+            region.
+          </p>
+          <Button asChild size="lg" variant="default">
             <Link
               href="/register"
-              className="text-white/80 underline underline-offset-2 transition-colors hover:text-white"
+              className="gap-3 font-display text-base font-bold"
             >
               Create your free profile
+              <ArrowRight
+                size={18}
+                weight="bold"
+                className="transition-transform group-hover:translate-x-1"
+              />
             </Link>
-          </p>
+          </Button>
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 
 import { getCurrentUser } from '@/lib/session'
 
-import { DashboardNavBar } from '@/components/layout/navigation/dashboard-nav-bar'
+import { DashboardSidebar } from '@/components/layout/navigation/dashboard-sidebar'
 import { SiteFooter } from '@/components/layout/site-footer'
 
 interface DashboardLayoutProps {
@@ -19,14 +19,16 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <DashboardNavBar />
+    <div className="flex min-h-screen">
+      <DashboardSidebar />
 
-      <main className="flex-1 bg-ring-cream py-8">
-        <div className="container">{children}</div>
-      </main>
+      <div className="flex flex-1 flex-col">
+        <main className="flex-1 bg-ring-cream py-8">
+          <div className="container">{children}</div>
+        </main>
 
-      <SiteFooter className="border-t" />
+        <SiteFooter className="border-t" />
+      </div>
     </div>
   )
 }

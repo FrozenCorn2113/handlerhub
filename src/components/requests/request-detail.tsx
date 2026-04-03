@@ -21,18 +21,6 @@ import {
 } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/enforces-shorthand */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/enforces-shorthand */
-
-/* eslint-disable tailwindcss/classnames-order */
-
-/* eslint-disable tailwindcss/enforces-shorthand */
-
-/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 interface ResponseItem {

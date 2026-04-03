@@ -277,8 +277,9 @@ export default function BookingRequestForm({
         throw new Error('Failed to send booking request')
       }
 
+      const newBooking = await response.json()
       toast.success('Booking request sent successfully!')
-      router.push('/dashboard/bookings')
+      router.push(`/dashboard/bookings/${newBooking.id}`)
     } catch (error) {
       toast.error('Failed to send booking request. Please try again.')
     } finally {

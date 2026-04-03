@@ -3,7 +3,7 @@
 /* eslint-disable tailwindcss/enforces-shorthand */
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -17,11 +17,19 @@ import { PaperPlaneRight } from '@phosphor-icons/react'
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
-
 /* eslint-disable tailwindcss/enforces-shorthand */
 
-/* eslint-disable tailwindcss/classnames-order */
-/* eslint-disable tailwindcss/enforces-shorthand */
+interface EventSuggestion {
+  id: string
+  name: string
+  startDate?: string
+  endDate?: string
+  venue?: {
+    name: string
+    city: string
+    state: string
+  } | null
+}
 
 export function NewRequestForm() {
   const router = useRouter()
@@ -37,6 +45,79 @@ export function NewRequestForm() {
   const [showName, setShowName] = useState('')
   const [showDate, setShowDate] = useState('')
   const [showLocation, setShowLocation] = useState('')
+
+  // Event autocomplete state
+  const [eventSuggestions, setEventSuggestions] = useState<EventSuggestion[]>(
+    []
+  )
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const suggestionsRef = useRef<HTMLDivElement>(null)
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const searchEvents = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setEventSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+
+    setIsSearching(true)
+    try {
+      const res = await fetch(
+        `/api/events?search=${encodeURIComponent(query)}&limit=10&view=list`
+      )
+      if (res.ok) {
+        const data = await res.json()
+        const events = data.events || []
+        setEventSuggestions(events)
+        setShowSuggestions(events.length > 0)
+      }
+    } catch {
+      // Silently fail -- autocomplete is optional
+    } finally {
+      setIsSearching(false)
+    }
+  }, [])
+
+  function handleShowNameChange(value: string) {
+    setShowName(value)
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      searchEvents(value)
+    }, 300)
+  }
+
+  function selectEvent(event: EventSuggestion) {
+    setShowName(event.name)
+    if (event.startDate) {
+      const dateStr = new Date(event.startDate).toISOString().split('T')[0]
+      setShowDate(dateStr)
+    }
+    if (event.venue) {
+      setShowLocation(
+        `${event.venue.name}, ${event.venue.city}, ${event.venue.state}`
+      )
+    }
+    setShowSuggestions(false)
+    setEventSuggestions([])
+  }
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -222,7 +303,7 @@ export function NewRequestForm() {
             Show Details (optional)
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
+            <div className="relative sm:col-span-2" ref={suggestionsRef}>
               <label htmlFor="showName" className={labelClass}>
                 Show Name
               </label>
@@ -230,10 +311,51 @@ export function NewRequestForm() {
                 id="showName"
                 type="text"
                 value={showName}
-                onChange={(e) => setShowName(e.target.value)}
-                placeholder="e.g., Westminster"
+                onChange={(e) => handleShowNameChange(e.target.value)}
+                onFocus={() => {
+                  if (eventSuggestions.length > 0) setShowSuggestions(true)
+                }}
+                placeholder="Start typing to search events..."
                 className={inputClass}
+                autoComplete="off"
               />
+              {isSearching && (
+                <div className="absolute right-3 top-[38px] text-xs text-warm-gray">
+                  Searching...
+                </div>
+              )}
+              {showSuggestions && eventSuggestions.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full rounded-xl border border-[#D4CFC4] bg-white shadow-lg">
+                  <ul className="max-h-60 overflow-auto py-1">
+                    {eventSuggestions.map((event) => (
+                      <li key={event.id}>
+                        <button
+                          type="button"
+                          onClick={() => selectEvent(event)}
+                          className="w-full px-4 py-2.5 text-left transition-colors hover:bg-ring-cream"
+                        >
+                          <p className="text-sm font-medium text-ringside-black">
+                            {event.name}
+                          </p>
+                          <p className="text-xs text-warm-gray">
+                            {event.venue
+                              ? `${event.venue.city}, ${event.venue.state}`
+                              : ''}
+                            {event.startDate &&
+                              ` - ${new Date(
+                                event.startDate
+                              ).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}`}
+                          </p>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             <div>
               <label htmlFor="showDate" className={labelClass}>
@@ -247,7 +369,7 @@ export function NewRequestForm() {
                 className={inputClass}
               />
             </div>
-            <div className="sm:col-span-2">
+            <div>
               <label htmlFor="showLocation" className={labelClass}>
                 Show Location
               </label>

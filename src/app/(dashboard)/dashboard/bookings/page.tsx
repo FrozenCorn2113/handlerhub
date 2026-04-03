@@ -1,26 +1,14 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button-ui'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
-import { BookingActions } from '@/components/dashboard/booking-actions'
+import { BookingsTabs } from '@/components/dashboard/bookings-tabs'
 import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
-
-import { Calendar, MapPin } from '@phosphor-icons/react/dist/ssr'
-import { format } from 'date-fns'
 
 export const metadata = {
   title: 'Bookings',
@@ -38,7 +26,7 @@ export default async function BookingsPage() {
     redirect('/dashboard')
   }
 
-  const where: any = {}
+  const where: Record<string, unknown> = {}
   if (user.role === 'HANDLER') {
     where.handlerId = user.id
   } else {
@@ -61,20 +49,14 @@ export default async function BookingsPage() {
     },
   })
 
-  const getStatusBadge = (status: string) => {
-    const variants: Record<
-      string,
-      'default' | 'secondary' | 'destructive' | 'outline'
-    > = {
-      PENDING: 'default',
-      ACCEPTED: 'secondary',
-      DECLINED: 'destructive',
-      COMPLETED: 'outline',
-      CANCELLED: 'outline',
-    }
-
-    return <Badge variant={variants[status] || 'default'}>{status}</Badge>
-  }
+  const serialized = bookingRequests.map((b) => ({
+    ...b,
+    showDate: b.showDate.toISOString(),
+    createdAt: b.createdAt.toISOString(),
+    updatedAt: b.updatedAt.toISOString(),
+    respondedAt: b.respondedAt?.toISOString() ?? null,
+    completedAt: b.completedAt?.toISOString() ?? null,
+  }))
 
   return (
     <DashboardShell>
@@ -91,160 +73,41 @@ export default async function BookingsPage() {
         )}
       </DashboardHeader>
 
-      <div className="space-y-4">
-        {bookingRequests.length === 0 ? (
-          <Card>
-            <CardContent className="py-10 text-center">
-              <p className="font-body text-warm-gray">
-                {user.role === 'HANDLER'
-                  ? 'No booking requests yet. A complete profile helps exhibitors find and trust you -- make sure yours is up to date.'
-                  : 'No bookings yet. Browse our network of trusted handlers to find the perfect match for your dog.'}
-              </p>
-              {user.role === 'EXHIBITOR' && (
-                <div className="mt-4 flex justify-center gap-3">
-                  <Button href="/handlers" variant="primary">
-                    Browse Handlers
-                  </Button>
-                  <Button href="/dashboard/bookings/new" variant="secondary">
-                    New Request
-                  </Button>
-                </div>
-              )}
-              {user.role === 'HANDLER' && (
-                <Button
-                  href="/dashboard/profile"
-                  variant="primary"
-                  className="mt-4"
-                >
-                  Complete Profile
+      {bookingRequests.length === 0 ? (
+        <Card>
+          <CardContent className="py-10 text-center">
+            <p className="font-body text-warm-gray">
+              {user.role === 'HANDLER'
+                ? 'No booking requests yet. A complete profile helps exhibitors find and trust you -- make sure yours is up to date.'
+                : 'No bookings yet. Browse our network of trusted handlers to find the perfect match for your dog.'}
+            </p>
+            {user.role === 'EXHIBITOR' && (
+              <div className="mt-4 flex justify-center gap-3">
+                <Button href="/handlers" variant="primary">
+                  Browse Handlers
                 </Button>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {bookingRequests.map((booking) => (
-              <Card key={booking.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4">
-                      {user.role === 'HANDLER' ? (
-                        <>
-                          <Avatar className="size-12">
-                            <AvatarImage
-                              src={booking.exhibitor.image || undefined}
-                              alt={booking.exhibitor.name || 'Exhibitor'}
-                            />
-                            <AvatarFallback>
-                              {booking.exhibitor.name?.charAt(0) || 'E'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-lg">
-                              {booking.showName}
-                            </CardTitle>
-                            <CardDescription>
-                              Requested by {booking.exhibitor.name}
-                            </CardDescription>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <Avatar className="size-12">
-                            <AvatarImage
-                              src={booking.handler.image || undefined}
-                              alt={booking.handler.name || 'Handler'}
-                            />
-                            <AvatarFallback>
-                              {booking.handler.name?.charAt(0) || 'H'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-lg">
-                              {booking.showName}
-                            </CardTitle>
-                            <CardDescription>
-                              Handler: {booking.handler.name}
-                            </CardDescription>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    {getStatusBadge(booking.status)}
-                  </div>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="size-4 text-muted-foreground" />
-                      <span>{format(new Date(booking.showDate), 'PPP')}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="size-4 text-muted-foreground" />
-                      <span>{booking.showLocation}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm font-medium">Dog Information</div>
-                    <div className="text-sm text-muted-foreground">
-                      {booking.dogName} • {booking.dogBreed}
-                    </div>
-                  </div>
-
-                  {booking.message && (
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium">Message</div>
-                      <div className="rounded-lg bg-muted p-3 text-sm">
-                        {booking.message}
-                      </div>
-                    </div>
-                  )}
-
-                  {booking.handlerNotes && user.role === 'EXHIBITOR' && (
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium">Handler Notes</div>
-                      <div className="rounded-lg bg-muted p-3 text-sm">
-                        {booking.handlerNotes}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <BookingActions
-                      bookingId={booking.id}
-                      status={booking.status}
-                      userRole={user.role as 'HANDLER' | 'EXHIBITOR'}
-                      handlerName={booking.handler.name || 'Handler'}
-                      hasReview={!!booking.review}
-                    />
-
-                    {user.role === 'EXHIBITOR' && (
-                      <Button
-                        variant="secondary"
-                        href={`/handlers/${booking.handler.id}`}
-                        className="px-3 py-2 text-sm"
-                      >
-                        View Handler Profile
-                      </Button>
-                    )}
-                    {booking.exhibitor.email && user.role === 'HANDLER' && (
-                      <a
-                        href={`mailto:${booking.exhibitor.email}`}
-                        className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        Contact Exhibitor
-                      </a>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+                <Button href="/dashboard/bookings/new" variant="secondary">
+                  New Request
+                </Button>
+              </div>
+            )}
+            {user.role === 'HANDLER' && (
+              <Button
+                href="/dashboard/profile"
+                variant="primary"
+                className="mt-4"
+              >
+                Complete Profile
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <BookingsTabs
+          bookings={serialized as any}
+          userRole={user.role as 'HANDLER' | 'EXHIBITOR'}
+        />
+      )}
     </DashboardShell>
   )
 }

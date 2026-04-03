@@ -25,6 +25,14 @@ import {
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 interface ResponseItem {
@@ -85,6 +93,7 @@ export function RequestDetail({
   const router = useRouter()
   const [responseMessage, setResponseMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isAccepting, setIsAccepting] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
@@ -93,6 +102,31 @@ export function RequestDetail({
   const alreadyResponded = request.responses.some(
     (r) => r.handler.id === currentUserId
   )
+  const isOpen = request.status === 'OPEN'
+
+  async function handleAcceptResponse(responseId: string) {
+    setIsAccepting(responseId)
+    try {
+      const res = await fetch(`/api/requests/${request.id}/accept-response`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responseId }),
+      })
+
+      if (!res.ok) {
+        const text = await res.text()
+        setError(text || 'Failed to accept response')
+        return
+      }
+
+      const data = await res.json()
+      router.push(`/dashboard/bookings/${data.bookingId}`)
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setIsAccepting(null)
+    }
+  }
 
   const chipColor =
     SERVICE_TYPE_COLORS[request.serviceType] || SERVICE_TYPE_COLORS.OTHER
@@ -341,14 +375,28 @@ export function RequestDetail({
                 >
                   {resp.message}
                 </p>
-                {resp.conversation && (
-                  <Link
-                    href="/dashboard/messages"
-                    className="text-sm font-medium text-paddock-green transition-colors hover:text-forest"
-                  >
-                    View Conversation &rarr;
-                  </Link>
-                )}
+                <div className="flex items-center gap-3">
+                  {resp.conversation && (
+                    <Link
+                      href="/dashboard/messages"
+                      className="text-sm font-medium text-paddock-green transition-colors hover:text-forest"
+                    >
+                      View Conversation &rarr;
+                    </Link>
+                  )}
+                  {isPoster && isOpen && (
+                    <button
+                      type="button"
+                      onClick={() => handleAcceptResponse(resp.id)}
+                      disabled={isAccepting === resp.id}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-paddock-green px-5 py-2 text-sm font-medium text-ring-cream transition-colors hover:bg-forest disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isAccepting === resp.id
+                        ? 'Accepting...'
+                        : 'Accept & Create Booking'}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

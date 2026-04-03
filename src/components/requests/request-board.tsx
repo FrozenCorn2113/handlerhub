@@ -20,6 +20,14 @@ import { MagnifyingGlass, Plus } from '@phosphor-icons/react'
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 /* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/enforces-shorthand */
+
+/* eslint-disable tailwindcss/classnames-order */
 /* eslint-disable tailwindcss/enforces-shorthand */
 
 export interface ServiceRequestItem {
@@ -156,6 +164,8 @@ export function RequestBoard({ requests }: RequestBoardProps) {
               key={r.id}
               id={r.id}
               title={r.title}
+              description={r.description}
+              posterName={r.user.name}
               breed={r.breed}
               akcGroup={r.akcGroup}
               serviceType={r.serviceType}

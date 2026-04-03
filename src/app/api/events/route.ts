@@ -26,14 +26,14 @@ export async function GET(req: NextRequest) {
     const sortBy =
       (searchParams.get('sortBy') as 'date' | 'closingDate') || undefined
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    today.setUTCHours(0, 0, 0, 0)
     const parsedDateFrom = searchParams.get('dateFrom')
-      ? new Date(searchParams.get('dateFrom')!)
+      ? new Date(searchParams.get('dateFrom')! + 'T00:00:00Z')
       : undefined
     const dateFrom =
-      parsedDateFrom && parsedDateFrom > today ? parsedDateFrom : today
+      parsedDateFrom && parsedDateFrom >= today ? parsedDateFrom : today
     const dateTo = searchParams.get('dateTo')
-      ? new Date(searchParams.get('dateTo')!)
+      ? new Date(searchParams.get('dateTo')! + 'T00:00:00Z')
       : undefined
     const limit = searchParams.get('limit')
       ? parseInt(searchParams.get('limit')!, 10)

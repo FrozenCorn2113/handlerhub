@@ -438,11 +438,12 @@ export function EventsBrowse({
           </div>
 
           {/* Viewport filter indicator */}
-          {mapBounds && displayedEvents.length !== events.length && (
+          {mapBounds && (
             <div className="border-b border-sand bg-light-sand px-4 py-2">
               <p className="text-xs text-warm-gray">
-                Showing {displayedEvents.length} of {events.length} events in
-                this area
+                {displayedEvents.length === events.length
+                  ? `Showing all ${events.length} events in view`
+                  : `Showing ${displayedEvents.length} of ${events.length} events in this area`}
               </p>
             </div>
           )}

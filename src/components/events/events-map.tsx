@@ -192,17 +192,23 @@ export function EventsMap({
         mapRef.current = map
         setMapReady(true)
 
-        // Notify parent of bounds changes on pan/zoom
-        map.on('moveend', () => {
+        // Helper to report current bounds to parent
+        const reportBounds = () => {
           if (isDestroyed) return
-          const bounds = map.getBounds()
+          const b = map.getBounds()
           onBoundsChangeRef.current?.({
-            north: bounds.getNorth(),
-            south: bounds.getSouth(),
-            east: bounds.getEast(),
-            west: bounds.getWest(),
+            north: b.getNorth(),
+            south: b.getSouth(),
+            east: b.getEast(),
+            west: b.getWest(),
           })
-        })
+        }
+
+        // Report initial bounds immediately so list filters on load
+        reportBounds()
+
+        // Notify parent of bounds changes on pan/zoom
+        map.on('moveend', reportBounds)
 
         // Click cluster -> expand
         map.on('click', CLUSTERS_LAYER, (e: any) => {

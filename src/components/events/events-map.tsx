@@ -44,6 +44,39 @@ if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
 const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
 function mapboxTransformRequest(url: string): { url: string } | undefined {
+  // MapLibre does not understand mapbox:// protocol URLs.
+  // Resolve them to real HTTPS URLs that MapLibre can fetch.
+  if (url.startsWith('mapbox://styles/')) {
+    return {
+      url:
+        url.replace('mapbox://styles/', 'https://api.mapbox.com/styles/v1/') +
+        '?access_token=' +
+        MAPBOX_TOKEN,
+    }
+  }
+  if (url.startsWith('mapbox://sprites/')) {
+    return {
+      url:
+        url.replace('mapbox://sprites/', 'https://api.mapbox.com/styles/v1/') +
+        '/sprite?access_token=' +
+        MAPBOX_TOKEN,
+    }
+  }
+  if (url.startsWith('mapbox://fonts/')) {
+    return {
+      url:
+        url.replace('mapbox://fonts/', 'https://api.mapbox.com/fonts/v1/') +
+        '?access_token=' +
+        MAPBOX_TOKEN,
+    }
+  }
+  if (url.startsWith('mapbox://')) {
+    // Tile sources like mapbox://mapbox.mapbox-streets-v8
+    const tileset = url.replace('mapbox://', '')
+    return {
+      url: `https://api.mapbox.com/v4/${tileset}.json?secure&access_token=${MAPBOX_TOKEN}`,
+    }
+  }
   if (
     url.startsWith('https://api.mapbox.com') ||
     url.startsWith('https://tiles.mapbox.com')

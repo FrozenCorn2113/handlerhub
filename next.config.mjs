@@ -7,7 +7,9 @@ const ContentSecurityPolicy = `
   connect-src 'self' https://*.r2.cloudflarestorage.com https://www.google-analytics.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://nominatim.openstreetmap.org;
   img-src 'self' blob: data: https:;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src 'self' https://fonts.gstatic.com;
+  font-src 'self' https://fonts.gstatic.com https://api.mapbox.com;
+  worker-src blob:;
+  child-src blob:;
   object-src 'none';
   base-uri 'self';
   form-action 'self';

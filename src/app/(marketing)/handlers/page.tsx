@@ -516,9 +516,16 @@ function HandlersPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get('search') || ''
-  )
+  const [searchQuery, setSearchQuery] = useState(() => {
+    const search = searchParams.get('search')
+    if (search) return search
+    const city = searchParams.get('city')
+    const state = searchParams.get('state')
+    if (city && state) return `${city}, ${state}`
+    if (city) return city
+    if (state) return state
+    return ''
+  })
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<EventSuggestion | null>(
     null
@@ -611,7 +618,17 @@ function HandlersPage() {
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    setFilter('search', searchQuery)
+    const params = new URLSearchParams(searchParams.toString())
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery)
+    } else {
+      params.delete('search')
+      params.delete('city')
+      params.delete('state')
+    }
+    params.delete('page')
+    setPage(1)
+    router.push(`/handlers?${params.toString()}`, { scroll: false })
   }
 
   function handleEventSelect(event: EventSuggestion) {

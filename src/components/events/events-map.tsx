@@ -35,13 +35,13 @@ interface EventsMapProps {
   focusLocation?: { lat: number; lng: number } | null
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
-if (!MAPTILER_KEY && typeof window !== 'undefined') {
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
   console.warn(
-    '[EventsMap] NEXT_PUBLIC_MAPTILER_KEY is not set. Map tiles will not load. Get a free key at https://cloud.maptiler.com/account/keys/'
+    '[EventsMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set. Map tiles will not load. Get a token at https://account.mapbox.com/'
   )
 }
-const MAPTILER_URL = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
@@ -106,7 +106,7 @@ export function EventsMap({
 
       map = new maplibregl.Map({
         container: containerRef.current!,
-        style: MAPTILER_URL,
+        style: MAP_STYLE_URL,
         center: initialCenter,
         zoom: 4,
         attributionControl: false,

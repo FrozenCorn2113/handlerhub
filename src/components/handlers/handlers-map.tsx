@@ -77,8 +77,8 @@ const STATE_COORDS: Record<string, [number, number]> = {
   WY: [42.755966, -107.30249],
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
-const MAPTILER_URL = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
 const SOURCE_ID = 'handlers'
 const CLUSTERS_LAYER = 'handler-clusters'
@@ -163,7 +163,7 @@ export function HandlersMap({
 
       map = new maplibregl.Map({
         container: containerRef.current!,
-        style: MAPTILER_URL,
+        style: MAP_STYLE_URL,
         center: initialCenter,
         zoom: 4,
         attributionControl: false,

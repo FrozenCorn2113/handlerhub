@@ -10,8 +10,8 @@ interface DetailMapProps {
   name: string
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
-const MAPTILER_URL = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -34,7 +34,7 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
 
       map = new maplibregl.Map({
         container: containerRef.current!,
-        style: MAPTILER_URL,
+        style: MAP_STYLE_URL,
         center: [lng, lat],
         zoom: 13,
         attributionControl: false,

@@ -62,27 +62,16 @@ async function getHandlerCount(): Promise<number> {
   }
 }
 
-async function getShowCount(): Promise<number> {
-  try {
-    return await prisma.event.count()
-  } catch (error) {
-    console.error('Failed to fetch show count:', error)
-    return 0
-  }
-}
-
 export default async function IndexPage() {
-  const [featuredHandlers, handlerCount, showCount] = await Promise.all([
+  const [featuredHandlers, handlerCount] = await Promise.all([
     getFeaturedHandlers(),
     getHandlerCount(),
-    getShowCount(),
   ])
 
   return (
     <LandingHome
       featuredHandlers={featuredHandlers}
       handlerCount={handlerCount}
-      showCount={showCount}
     />
   )
 }

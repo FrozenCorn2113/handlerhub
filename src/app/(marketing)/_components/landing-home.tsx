@@ -17,12 +17,9 @@ import {
   ArrowRight,
   Camera,
   Dog,
-  Gift,
   MagnifyingGlass,
   PawPrint,
   Scissors,
-  Trophy,
-  Users,
   Van,
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
@@ -126,66 +123,6 @@ function HeroSection() {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Section 2 — Trust Band                                             */
-/* ------------------------------------------------------------------ */
-function TrustBandSection({
-  handlerCount,
-  showCount,
-}: {
-  handlerCount: number
-  showCount: number
-}) {
-  const stats = [
-    {
-      icon: Users,
-      value: handlerCount === 0 ? 'Launching soon' : String(handlerCount),
-      label: 'handlers on the platform',
-    },
-    {
-      icon: Trophy,
-      value: showCount === 0 ? 'Launching soon' : `${showCount}+`,
-      label: 'dog shows represented',
-    },
-    {
-      icon: Gift,
-      value: 'Free',
-      label: 'for exhibitors',
-    },
-    {
-      icon: MagnifyingGlass,
-      value: 'Search by',
-      label: 'breed, region, and record',
-    },
-  ]
-
-  return (
-    <section className="border-t border-sand bg-ring-cream py-8 lg:py-10">
-      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-tan">
-          {stats.map((stat, i) => {
-            const Icon = stat.icon
-            return (
-              <div
-                key={i}
-                className="flex flex-col items-center px-6 py-2 text-center"
-              >
-                <Icon size={24} weight="fill" className="text-paddock-green" />
-                <p className="mb-0.5 mt-2 font-display text-2xl font-bold text-ringside-black lg:text-3xl">
-                  {stat.value}
-                </p>
-                <p className="font-body text-sm leading-snug text-warm-brown/70">
-                  {stat.label}
-                </p>
-              </div>
-            )
-          })}
         </div>
       </div>
     </section>
@@ -612,16 +549,13 @@ function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
 export default function LandingHome({
   featuredHandlers,
   handlerCount,
-  showCount,
 }: {
   featuredHandlers: HandlerCardData[]
   handlerCount: number
-  showCount: number
 }) {
   return (
     <div className="bg-ring-cream">
       <HeroSection />
-      <TrustBandSection handlerCount={handlerCount} showCount={showCount} />
       <ServiceShowcaseSection />
       <FeaturedHandlersSection handlers={featuredHandlers} />
       <WhyHandlerHubSection />

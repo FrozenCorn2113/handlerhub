@@ -43,6 +43,19 @@ if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
 }
 const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
+function mapboxTransformRequest(url: string): { url: string } | undefined {
+  if (
+    url.startsWith('https://api.mapbox.com') ||
+    url.startsWith('https://tiles.mapbox.com')
+  ) {
+    return {
+      url:
+        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
+    }
+  }
+  return undefined
+}
+
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
 const CLUSTER_COUNT_LAYER = 'venue-cluster-count'
@@ -110,6 +123,7 @@ export function EventsMap({
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
+        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(

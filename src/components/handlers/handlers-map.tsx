@@ -80,6 +80,19 @@ const STATE_COORDS: Record<string, [number, number]> = {
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
+function mapboxTransformRequest(url: string): { url: string } | undefined {
+  if (
+    url.startsWith('https://api.mapbox.com') ||
+    url.startsWith('https://tiles.mapbox.com')
+  ) {
+    return {
+      url:
+        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
+    }
+  }
+  return undefined
+}
+
 const SOURCE_ID = 'handlers'
 const CLUSTERS_LAYER = 'handler-clusters'
 const CLUSTER_COUNT_LAYER = 'handler-cluster-count'
@@ -167,6 +180,7 @@ export function HandlersMap({
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
+        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(

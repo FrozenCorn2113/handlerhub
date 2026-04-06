@@ -13,6 +13,19 @@ interface DetailMapProps {
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
 
+function mapboxTransformRequest(url: string): { url: string } | undefined {
+  if (
+    url.startsWith('https://api.mapbox.com') ||
+    url.startsWith('https://tiles.mapbox.com')
+  ) {
+    return {
+      url:
+        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
+    }
+  }
+  return undefined
+}
+
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
@@ -38,6 +51,7 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
         center: [lng, lat],
         zoom: 13,
         attributionControl: false,
+        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(

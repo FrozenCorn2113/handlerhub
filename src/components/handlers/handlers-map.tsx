@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 export interface HandlerPin {
   id: string
@@ -78,50 +78,6 @@ const STATE_COORDS: Record<string, [number, number]> = {
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
-const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
-
-function mapboxTransformRequest(url: string): { url: string } | undefined {
-  if (url.startsWith('mapbox://styles/')) {
-    return {
-      url:
-        url.replace('mapbox://styles/', 'https://api.mapbox.com/styles/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://sprites/')) {
-    return {
-      url:
-        url.replace('mapbox://sprites/', 'https://api.mapbox.com/styles/v1/') +
-        '/sprite?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://fonts/')) {
-    return {
-      url:
-        url.replace('mapbox://fonts/', 'https://api.mapbox.com/fonts/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://')) {
-    const tileset = url.replace('mapbox://', '')
-    return {
-      url: `https://api.mapbox.com/v4/${tileset}.json?secure&access_token=${MAPBOX_TOKEN}`,
-    }
-  }
-  if (
-    url.startsWith('https://api.mapbox.com') ||
-    url.startsWith('https://tiles.mapbox.com')
-  ) {
-    return {
-      url:
-        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
-    }
-  }
-  return undefined
-}
 
 const SOURCE_ID = 'handlers'
 const CLUSTERS_LAYER = 'handler-clusters'
@@ -200,21 +156,21 @@ export function HandlersMap({
     let isDestroyed = false
 
     const init = async () => {
-      const maplibre = await import('maplibre-gl')
-      const maplibregl = maplibre.default
+      const mapboxgl = (await import('mapbox-gl')).default
       if (isDestroyed) return
 
-      map = new maplibregl.Map({
+      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      map = new mapboxgl.Map({
         container: containerRef.current!,
-        style: MAP_STYLE_URL,
+        style: 'mapbox://styles/mapbox/streets-v12',
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
-        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
+        new mapboxgl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -258,7 +214,7 @@ export function HandlersMap({
           filter: ['has', 'point_count'],
           layout: {
             'text-field': '{point_count_abbreviated}',
-            'text-font': ['Noto Sans Bold'],
+            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 12,
           },
           paint: { 'text-color': '#ffffff' },
@@ -287,12 +243,13 @@ export function HandlersMap({
           })
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
-          map
-            .getSource(SOURCE_ID)
-            .getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+          ;(map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(
+            clusterId,
+            (err: any, zoom: number) => {
               if (err) return
               map.easeTo({ center: features[0].geometry.coordinates, zoom })
-            })
+            }
+          )
         })
 
         map.on('click', PINS_LAYER, (e: any) => {
@@ -317,7 +274,7 @@ export function HandlersMap({
             </div>
           `
 
-          const popup = new maplibregl.Popup({
+          const popup = new mapboxgl.Popup({
             closeButton: true,
             maxWidth: '280px',
             offset: 8,

@@ -6,7 +6,7 @@ import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
 
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 export interface VenuePin {
   venueId: string
@@ -41,53 +41,6 @@ if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
     '[EventsMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set. Map tiles will not load. Get a token at https://account.mapbox.com/'
   )
 }
-const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
-
-function mapboxTransformRequest(url: string): { url: string } | undefined {
-  // MapLibre does not understand mapbox:// protocol URLs.
-  // Resolve them to real HTTPS URLs that MapLibre can fetch.
-  if (url.startsWith('mapbox://styles/')) {
-    return {
-      url:
-        url.replace('mapbox://styles/', 'https://api.mapbox.com/styles/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://sprites/')) {
-    return {
-      url:
-        url.replace('mapbox://sprites/', 'https://api.mapbox.com/styles/v1/') +
-        '/sprite?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://fonts/')) {
-    return {
-      url:
-        url.replace('mapbox://fonts/', 'https://api.mapbox.com/fonts/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://')) {
-    // Tile sources like mapbox://mapbox.mapbox-streets-v8
-    const tileset = url.replace('mapbox://', '')
-    return {
-      url: `https://api.mapbox.com/v4/${tileset}.json?secure&access_token=${MAPBOX_TOKEN}`,
-    }
-  }
-  if (
-    url.startsWith('https://api.mapbox.com') ||
-    url.startsWith('https://tiles.mapbox.com')
-  ) {
-    return {
-      url:
-        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
-    }
-  }
-  return undefined
-}
 
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
@@ -119,9 +72,7 @@ export function EventsMap({
           city: pin.city,
           state: pin.state,
           eventCount: pin.eventCount,
-          // Encode events as JSON string for MapLibre property access
           events: JSON.stringify(pin.events),
-          // Primary event color
           color: pin.events[0]
             ? EVENT_TYPE_COLORS[pin.events[0].eventType]
             : '#1F6B4A',
@@ -146,21 +97,21 @@ export function EventsMap({
     let isDestroyed = false
 
     const init = async () => {
-      const maplibre = await import('maplibre-gl')
-      const maplibregl = maplibre.default
+      const mapboxgl = (await import('mapbox-gl')).default
       if (isDestroyed) return
 
-      map = new maplibregl.Map({
+      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      map = new mapboxgl.Map({
         container: containerRef.current!,
-        style: MAP_STYLE_URL,
+        style: 'mapbox://styles/mapbox/streets-v12',
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
-        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
+        new mapboxgl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -206,7 +157,7 @@ export function EventsMap({
           filter: ['has', 'point_count'],
           layout: {
             'text-field': '{point_count_abbreviated}',
-            'text-font': ['Noto Sans Bold'],
+            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
           },
           paint: { 'text-color': '#ffffff' },
@@ -230,22 +181,23 @@ export function EventsMap({
         mapRef.current = map
         setMapReady(true)
 
-        // Click cluster → expand
+        // Click cluster -> expand
         map.on('click', CLUSTERS_LAYER, (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [CLUSTERS_LAYER],
           })
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
-          map
-            .getSource(SOURCE_ID)
-            .getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+          ;(map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(
+            clusterId,
+            (err: any, zoom: number) => {
               if (err) return
               map.easeTo({ center: features[0].geometry.coordinates, zoom })
-            })
+            }
+          )
         })
 
-        // Click individual pin → show popup
+        // Click individual pin -> show popup
         map.on('click', UNCLUSTERED_LAYER, (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [UNCLUSTERED_LAYER],
@@ -287,7 +239,7 @@ export function EventsMap({
             </div>
           `
 
-          const popup = new maplibregl.Popup({
+          const popup = new mapboxgl.Popup({
             closeButton: true,
             maxWidth: '260px',
             offset: 8,

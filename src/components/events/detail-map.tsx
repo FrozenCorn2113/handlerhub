@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-import 'maplibre-gl/dist/maplibre-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 interface DetailMapProps {
   lat: number
@@ -11,50 +11,6 @@ interface DetailMapProps {
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
-const MAP_STYLE_URL = `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${MAPBOX_TOKEN}`
-
-function mapboxTransformRequest(url: string): { url: string } | undefined {
-  if (url.startsWith('mapbox://styles/')) {
-    return {
-      url:
-        url.replace('mapbox://styles/', 'https://api.mapbox.com/styles/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://sprites/')) {
-    return {
-      url:
-        url.replace('mapbox://sprites/', 'https://api.mapbox.com/styles/v1/') +
-        '/sprite?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://fonts/')) {
-    return {
-      url:
-        url.replace('mapbox://fonts/', 'https://api.mapbox.com/fonts/v1/') +
-        '?access_token=' +
-        MAPBOX_TOKEN,
-    }
-  }
-  if (url.startsWith('mapbox://')) {
-    const tileset = url.replace('mapbox://', '')
-    return {
-      url: `https://api.mapbox.com/v4/${tileset}.json?secure&access_token=${MAPBOX_TOKEN}`,
-    }
-  }
-  if (
-    url.startsWith('https://api.mapbox.com') ||
-    url.startsWith('https://tiles.mapbox.com')
-  ) {
-    return {
-      url:
-        url + (url.includes('?') ? '&' : '?') + 'access_token=' + MAPBOX_TOKEN,
-    }
-  }
-  return undefined
-}
 
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -67,25 +23,25 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
     let marker: any
 
     const init = async () => {
-      const maplibre = await import('maplibre-gl')
-      const maplibregl = maplibre.default
+      const mapboxgl = (await import('mapbox-gl')).default
 
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
       }
 
-      map = new maplibregl.Map({
+      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      map = new mapboxgl.Map({
         container: containerRef.current!,
-        style: MAP_STYLE_URL,
+        style: 'mapbox://styles/mapbox/streets-v12',
         center: [lng, lat],
         zoom: 13,
         attributionControl: false,
-        transformRequest: mapboxTransformRequest,
       })
 
       map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
+        new mapboxgl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -99,10 +55,10 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       `
 
-      marker = new maplibregl.Marker({ element: el })
+      marker = new mapboxgl.Marker({ element: el })
         .setLngLat([lng, lat])
         .setPopup(
-          new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+          new mapboxgl.Popup({ offset: 16, closeButton: false }).setHTML(
             `<div style="font-weight:600;font-size:13px;padding:2px 4px">${name}</div>`
           )
         )

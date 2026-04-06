@@ -56,23 +56,16 @@ function ScrollReveal({
 /*  Section 1 — Hero                                                   */
 /* ------------------------------------------------------------------ */
 
-const serviceTypes = [
-  { label: 'Handler', icon: Dog, param: 'handler' },
-  { label: 'Groomer', icon: Scissors, param: 'groomer' },
-  { label: 'Transport', icon: Van, param: 'transport' },
-  { label: 'Photographer', icon: Camera, param: 'photographer' },
-] as const
-
 function HeroSection() {
   const router = useRouter()
-  const [activeType, setActiveType] = useState('handler')
   const [location, setLocation] = useState('')
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    const params = new URLSearchParams({ type: activeType })
+    const params = new URLSearchParams()
     if (location.trim()) params.set('location', location.trim())
-    router.push(`/handlers?${params.toString()}`)
+    const qs = params.toString()
+    router.push(qs ? `/handlers?${qs}` : '/handlers')
   }
 
   return (
@@ -115,30 +108,7 @@ function HeroSection() {
             onSubmit={handleSearch}
             className="mx-auto w-full max-w-[640px] rounded-2xl bg-white p-4 shadow-[0_8px_48px_rgba(0,0,0,0.28)]"
           >
-            {/* Row 1 — Service Type Tabs */}
-            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-ring-cream p-1 sm:grid-cols-4">
-              {serviceTypes.map((svc) => {
-                const Icon = svc.icon
-                const isActive = activeType === svc.param
-                return (
-                  <button
-                    key={svc.param}
-                    type="button"
-                    onClick={() => setActiveType(svc.param)}
-                    className={`flex cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg px-3 py-2 font-body text-sm font-semibold transition-all duration-200 ${
-                      isActive
-                        ? 'bg-paddock-green text-white shadow-sm'
-                        : 'text-warm-brown/70 hover:text-warm-brown'
-                    }`}
-                  >
-                    <Icon size={16} weight={isActive ? 'fill' : 'regular'} />
-                    {svc.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Row 2 — Location Input + Search Button */}
+            {/* Location Input + Search Button */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 type="text"

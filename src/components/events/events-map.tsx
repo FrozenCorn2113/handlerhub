@@ -211,31 +211,52 @@ export function EventsMap({
             popupRef.current.remove()
           }
 
-          const eventsHtml = events
-            .slice(0, 3)
-            .map((ev) => {
-              const date = new Date(ev.startDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })
-              return `<a href="/events/${ev.slug}" style="display:block;padding:2px 0;font-size:12px;line-height:1.4;color:#1a1a1a;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              ${ev.clubName}<span style="margin-left:8px;font-size:11px;color:#7A6E5E">${date}</span>
-            </a>`
-            })
-            .join('')
+          // Compute date range
+          const EVENT_TYPE_LABELS: Record<string, string> = {
+            ALL_BREED: 'All Breed',
+            LIMITED_BREED: 'Limited Breed',
+            SPECIALTY: 'Specialty',
+            PARENT_SPECIALTY: 'Parent Specialty',
+            DESIGNATED_SPECIALTY: 'Designated Specialty',
+            JUNIOR_SHOWMANSHIP: 'Junior Showmanship',
+            SWEEPSTAKES: 'Sweepstakes',
+            OTHER: 'Other',
+          }
 
-          const moreHtml =
-            events.length > 3
-              ? `<p style="margin-top:4px;font-size:11px;color:#7A6E5E">+${events.length - 3} more events</p>`
-              : ''
+          const dates = events.map((ev) => new Date(ev.startDate).getTime())
+          const minDate = new Date(Math.min(...dates))
+          const maxDate = new Date(Math.max(...dates))
+          const fmtDate = (d: Date) =>
+            d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          const dateRange =
+            minDate.getTime() === maxDate.getTime()
+              ? fmtDate(minDate)
+              : `${fmtDate(minDate)} - ${fmtDate(maxDate)}`
+
+          // Unique club names
+          const uniqueClubs = Array.from(
+            new Set(events.map((ev) => ev.clubName))
+          )
+          const clubHtml =
+            uniqueClubs.length === 1
+              ? uniqueClubs[0]
+              : `${uniqueClubs[0]} <span style="color:#7A6E5E">+${uniqueClubs.length - 1} more club${uniqueClubs.length - 1 > 1 ? 's' : ''}</span>`
+
+          // Deduplicated event types
+          const uniqueTypes = Array.from(
+            new Set(events.map((ev) => ev.eventType))
+          )
+          const typesList = uniqueTypes
+            .map((t) => EVENT_TYPE_LABELS[t] || t)
+            .join(', ')
 
           const html = `
-            <div style="min-width:200px;max-width:240px">
-              <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
-                <span style="font-size:11px;font-weight:500;color:#7A6E5E">${props.city}, ${props.state}</span>
-              </div>
-              ${eventsHtml}
-              ${moreHtml}
+            <div style="min-width:200px;max-width:260px">
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:2px">${props.city}, ${props.state}</div>
+              <div style="font-size:12px;color:#7A6E5E;margin-bottom:6px">${dateRange}</div>
+              <div style="font-size:12px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${clubHtml}</div>
+              <div style="font-size:11px;color:#7A6E5E;margin-bottom:8px">${events.length} event${events.length > 1 ? 's' : ''}: ${typesList}</div>
+              <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:500;color:#1F6B4A;text-decoration:none">View event${events.length > 1 ? 's' : ''} &rarr;</a>
             </div>
           `
 

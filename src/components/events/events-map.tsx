@@ -27,12 +27,20 @@ export interface VenuePin {
   }>
 }
 
+export interface MapBounds {
+  north: number
+  south: number
+  east: number
+  west: number
+}
+
 interface EventsMapProps {
   pins: VenuePin[]
   highlightedEventId?: string | null
   onPinHover?: (eventId: string | null) => void
   onPinClick?: (eventId: string) => void
   focusLocation?: { lat: number; lng: number } | null
+  onBoundsChange?: (bounds: MapBounds) => void
 }
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
@@ -53,10 +61,13 @@ export function EventsMap({
   onPinHover,
   onPinClick,
   focusLocation,
+  onBoundsChange,
 }: EventsMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
   const popupRef = useRef<any>(null)
+  const onBoundsChangeRef = useRef(onBoundsChange)
+  onBoundsChangeRef.current = onBoundsChange
   const [mapReady, setMapReady] = useState(false)
 
   // Build GeoJSON from pins
@@ -180,6 +191,18 @@ export function EventsMap({
 
         mapRef.current = map
         setMapReady(true)
+
+        // Notify parent of bounds changes on pan/zoom
+        map.on('moveend', () => {
+          if (isDestroyed) return
+          const bounds = map.getBounds()
+          onBoundsChangeRef.current?.({
+            north: bounds.getNorth(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            west: bounds.getWest(),
+          })
+        })
 
         // Click cluster -> expand
         map.on('click', CLUSTERS_LAYER, (e: any) => {

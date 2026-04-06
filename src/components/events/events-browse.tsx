@@ -15,7 +15,7 @@ import {
   EventsFilters,
   type FilterState,
 } from './events-filters'
-import type { VenuePin } from './events-map'
+import type { MapBounds, VenuePin } from './events-map'
 import { EventsMobileSheet } from './events-mobile-sheet'
 import { MapPin } from '@phosphor-icons/react'
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -64,6 +64,7 @@ export function EventsBrowse({
     lat: number
     lng: number
   } | null>(null)
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
 
   const router = useRouter()
 
@@ -85,11 +86,34 @@ export function EventsBrowse({
     return () => mql.removeEventListener('change', handler)
   }, [])
 
+  // Build a set of visible venue IDs based on map bounds
+  const visibleVenueIds = useMemo(() => {
+    if (!mapBounds) return null // null = show all (no bounds filtering)
+    const ids = new Set<string>()
+    for (const pin of pins) {
+      if (
+        pin.lat >= mapBounds.south &&
+        pin.lat <= mapBounds.north &&
+        pin.lng >= mapBounds.west &&
+        pin.lng <= mapBounds.east
+      ) {
+        ids.add(pin.venueId)
+      }
+    }
+    return ids
+  }, [mapBounds, pins])
+
+  // Filter events to only those with venues visible on the map
+  const displayedEvents = useMemo(() => {
+    if (!visibleVenueIds) return events // no bounds = show all
+    return events.filter((e) => e.venue?.id && visibleVenueIds.has(e.venue.id))
+  }, [events, visibleVenueIds])
+
   const hasMore = events.length < total
 
   // Virtualizer for large lists
   const virtualizer = useVirtualizer({
-    count: events.length + (hasMore ? 1 : 0), // +1 for load-more sentinel
+    count: displayedEvents.length + (hasMore ? 1 : 0), // +1 for load-more sentinel
     getScrollElement: () => listContainerRef.current,
     estimateSize: () => 160, // estimated card height
     overscan: 5,
@@ -187,6 +211,10 @@ export function EventsBrowse({
     return () => observer.disconnect()
   }, [hasMore, loading, loadingMore, filters])
 
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    setMapBounds(bounds)
+  }, [])
+
   // Map/list sync: click pin scrolls to card
   const handlePinClick = useCallback((eventId: string) => {
     const cardEl = eventCardRefs.current.get(eventId)
@@ -237,18 +265,18 @@ export function EventsBrowse({
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
         </div>
-      ) : events.length === 0 ? (
+      ) : displayedEvents.length === 0 ? (
         <div className="px-4 py-12 text-center">
           <p className="text-base font-medium text-ringside-black">
-            No events found
+            No events in this area
           </p>
           <p className="mt-1 text-sm text-warm-gray">
-            Try adjusting your filters or search terms
+            Try zooming out or panning the map to see more events
           </p>
         </div>
       ) : (
         <div className="space-y-3 p-4">
-          {events.map((event) => (
+          {displayedEvents.map((event) => (
             <div
               key={event.id}
               ref={(el) => {
@@ -286,13 +314,13 @@ export function EventsBrowse({
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
         </div>
-      ) : events.length === 0 ? (
+      ) : displayedEvents.length === 0 ? (
         <div className="px-4 py-12 text-center">
           <p className="text-base font-medium text-ringside-black">
-            No events found
+            No events in this area
           </p>
           <p className="mt-1 text-sm text-warm-gray">
-            Try adjusting your filters or search terms
+            Try zooming out or panning the map to see more events
           </p>
         </div>
       ) : (
@@ -304,7 +332,7 @@ export function EventsBrowse({
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
-            const isLoadMore = virtualItem.index === events.length
+            const isLoadMore = virtualItem.index === displayedEvents.length
 
             if (isLoadMore) {
               return (
@@ -332,7 +360,7 @@ export function EventsBrowse({
               )
             }
 
-            const event = events[virtualItem.index]
+            const event = displayedEvents[virtualItem.index]
             if (!event) return null
 
             return (
@@ -386,6 +414,7 @@ export function EventsBrowse({
         onPinHover={setHighlightedEventId}
         onPinClick={handlePinClick}
         focusLocation={focusLocation}
+        onBoundsChange={handleBoundsChange}
       />
     </ErrorBoundary>
   )
@@ -408,6 +437,16 @@ export function EventsBrowse({
             {filterContent}
           </div>
 
+          {/* Viewport filter indicator */}
+          {mapBounds && displayedEvents.length !== events.length && (
+            <div className="border-b border-sand bg-light-sand px-4 py-2">
+              <p className="text-xs text-warm-gray">
+                Showing {displayedEvents.length} of {events.length} events in
+                this area
+              </p>
+            </div>
+          )}
+
           {/* Virtualized event cards */}
           <div
             ref={listContainerRef}
@@ -429,7 +468,7 @@ export function EventsBrowse({
         {/* Bottom sheet drawer */}
         <EventsMobileSheet
           filterSummary={filterSummary}
-          eventCount={total}
+          eventCount={displayedEvents.length}
           filterContent={filterContent}
           listContent={eventListContent}
         />

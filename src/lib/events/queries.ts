@@ -7,6 +7,13 @@ export type EventWithVenue = Prisma.EventGetPayload<{
   include: { venue: true }
 }>
 
+export interface MapBoundsFilter {
+  north: number
+  south: number
+  east: number
+  west: number
+}
+
 export interface EventFilters {
   state?: string
   city?: string
@@ -21,6 +28,7 @@ export interface EventFilters {
   sortBy?: 'date' | 'closingDate'
   limit?: number
   offset?: number
+  bounds?: MapBoundsFilter
 }
 
 // ──────────────────────────────────────────────
@@ -51,6 +59,17 @@ function buildWhereClause(filters: EventFilters) {
 
   if (filters.indoorOutdoor) {
     venueWhere.indoorOutdoor = filters.indoorOutdoor
+  }
+
+  if (filters.bounds) {
+    venueWhere.latitude = {
+      gte: filters.bounds.south,
+      lte: filters.bounds.north,
+    }
+    venueWhere.longitude = {
+      gte: filters.bounds.west,
+      lte: filters.bounds.east,
+    }
   }
 
   if (Object.keys(venueWhere).length > 0) {
@@ -137,9 +156,14 @@ export async function getEventsWithPins(filters: EventFilters = {}) {
       ? { closingDateTime: 'asc' }
       : { startDate: 'asc' }
 
+  // Pins query uses filters WITHOUT bounds so the full map stays populated.
+  // Events query uses full filters (including bounds) so the list matches the viewport.
+  const pinsFilters = { ...filters }
+  delete pinsFilters.bounds
+
   // Remove limit/offset for pins query - we need all matching events for map
   const [eventsResult, pinsResult] = await Promise.all([
-    // Query 1: paginated events for the list
+    // Query 1: paginated events for the list (with bounds)
     Promise.all([
       prisma.event.findMany({
         where,
@@ -150,8 +174,8 @@ export async function getEventsWithPins(filters: EventFilters = {}) {
       }),
       prisma.event.count({ where }),
     ]),
-    // Query 2: aggregated pins via raw SQL for performance
-    getVenuePinsSQL(filters),
+    // Query 2: aggregated pins via raw SQL for performance (without bounds)
+    getVenuePinsSQL(pinsFilters),
   ])
 
   return {
@@ -224,6 +248,21 @@ export async function getVenuePinsSQL(filters: EventFilters = {}) {
       `(e."clubName" ILIKE $${paramIdx} OR e."eligibleBreeds" ILIKE $${paramIdx} OR v."city" ILIKE $${paramIdx} OR v."state" ILIKE $${paramIdx} OR v."name" ILIKE $${paramIdx} OR e."superintendentName" ILIKE $${paramIdx})`
     )
     params.push(`%${filters.search}%`)
+    paramIdx++
+  }
+
+  if (filters.bounds) {
+    conditions.push(`v."latitude" >= $${paramIdx}`)
+    params.push(filters.bounds.south)
+    paramIdx++
+    conditions.push(`v."latitude" <= $${paramIdx}`)
+    params.push(filters.bounds.north)
+    paramIdx++
+    conditions.push(`v."longitude" >= $${paramIdx}`)
+    params.push(filters.bounds.west)
+    paramIdx++
+    conditions.push(`v."longitude" <= $${paramIdx}`)
+    params.push(filters.bounds.east)
     paramIdx++
   }
 

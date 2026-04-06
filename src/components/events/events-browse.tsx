@@ -73,8 +73,14 @@ export function EventsBrowse({
   const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
   const eventCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const fetchEventsRef = useRef<
-    (f: FilterState, append?: boolean) => Promise<void>
+    (
+      f: FilterState,
+      append?: boolean,
+      bounds?: MapBounds | null
+    ) => Promise<void>
   >(null!)
+  const mapBoundsRef = useRef<MapBounds | null>(null)
+  const boundsDebounceRef = useRef<NodeJS.Timeout>()
   const eventsLengthRef = useRef(initialEvents.length)
 
   // Track viewport to render only one map instance
@@ -86,28 +92,8 @@ export function EventsBrowse({
     return () => mql.removeEventListener('change', handler)
   }, [])
 
-  // Build a set of visible venue IDs based on map bounds
-  const visibleVenueIds = useMemo(() => {
-    if (!mapBounds) return null // null = show all (no bounds filtering)
-    const ids = new Set<string>()
-    for (const pin of pins) {
-      if (
-        pin.lat >= mapBounds.south &&
-        pin.lat <= mapBounds.north &&
-        pin.lng >= mapBounds.west &&
-        pin.lng <= mapBounds.east
-      ) {
-        ids.add(pin.venueId)
-      }
-    }
-    return ids
-  }, [mapBounds, pins])
-
-  // Filter events to only those with venues visible on the map
-  const displayedEvents = useMemo(() => {
-    if (!visibleVenueIds) return events // no bounds = show all
-    return events.filter((e) => e.venue?.id && visibleVenueIds.has(e.venue.id))
-  }, [events, visibleVenueIds])
+  // Events are now filtered server-side by bounds, so display all loaded events
+  const displayedEvents = events
 
   const hasMore = events.length < total
 
@@ -125,55 +111,72 @@ export function EventsBrowse({
   }, [events.length])
 
   // Unified fetch: events + pins in one call
-  const fetchEvents = useCallback(async (f: FilterState, append = false) => {
-    if (append) {
-      setLoadingMore(true)
-    } else {
-      setLoading(true)
-    }
-
-    try {
-      const params = new URLSearchParams()
-      if (f.search) params.set('search', f.search)
-      if (f.state) params.set('state', f.state)
-      if (f.eventType) params.set('eventType', f.eventType)
-      if (f.entryStatus) params.set('entryStatus', f.entryStatus)
-      if (f.dateFrom) params.set('dateFrom', f.dateFrom)
-      if (f.dateTo) params.set('dateTo', f.dateTo)
-      if (f.breed) params.set('breed', f.breed)
-      if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
-      if (f.superintendent) params.set('superintendent', f.superintendent)
-      if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
-      params.set('limit', String(PAGE_SIZE))
-      params.set('offset', append ? String(eventsLengthRef.current) : '0')
-      params.set('view', 'unified')
-
-      const res = await fetch(`/api/events?${params.toString()}`)
-      const data = await res.json()
-
+  // When bounds are provided, they filter the event list server-side.
+  // Pins are fetched WITHOUT bounds so the full map remains populated.
+  const fetchEvents = useCallback(
+    async (f: FilterState, append = false, bounds?: MapBounds | null) => {
       if (append) {
-        if (data.events) {
-          setEvents((prev) => [...prev, ...data.events])
-        }
-        if (data.total !== undefined) {
-          setTotal(data.total)
-        }
+        setLoadingMore(true)
       } else {
-        if (data.events) {
-          setEvents(data.events)
-          setTotal(data.total)
-        }
-        if (data.pins) {
-          setPins(data.pins)
-        }
+        setLoading(true)
       }
-    } catch (err) {
-      console.error('Failed to fetch events:', err)
-    } finally {
-      setLoading(false)
-      setLoadingMore(false)
-    }
-  }, [])
+
+      try {
+        const params = new URLSearchParams()
+        if (f.search) params.set('search', f.search)
+        if (f.state) params.set('state', f.state)
+        if (f.eventType) params.set('eventType', f.eventType)
+        if (f.entryStatus) params.set('entryStatus', f.entryStatus)
+        if (f.dateFrom) params.set('dateFrom', f.dateFrom)
+        if (f.dateTo) params.set('dateTo', f.dateTo)
+        if (f.breed) params.set('breed', f.breed)
+        if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
+        if (f.superintendent) params.set('superintendent', f.superintendent)
+        if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
+        params.set('limit', String(PAGE_SIZE))
+        params.set('offset', append ? String(eventsLengthRef.current) : '0')
+
+        // Pass map bounds so the server filters events geographically
+        if (bounds) {
+          params.set('boundsNorth', String(bounds.north))
+          params.set('boundsSouth', String(bounds.south))
+          params.set('boundsEast', String(bounds.east))
+          params.set('boundsWest', String(bounds.west))
+        }
+
+        // For non-append fetches, also get pins (without bounds so map stays full)
+        if (!append) {
+          params.set('view', 'unified')
+        }
+
+        const res = await fetch(`/api/events?${params.toString()}`)
+        const data = await res.json()
+
+        if (append) {
+          if (data.events) {
+            setEvents((prev) => [...prev, ...data.events])
+          }
+          if (data.total !== undefined) {
+            setTotal(data.total)
+          }
+        } else {
+          if (data.events) {
+            setEvents(data.events)
+            setTotal(data.total)
+          }
+          if (data.pins) {
+            setPins(data.pins)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch events:', err)
+      } finally {
+        setLoading(false)
+        setLoadingMore(false)
+      }
+    },
+    []
+  )
 
   fetchEventsRef.current = fetchEvents
 
@@ -183,7 +186,7 @@ export function EventsBrowse({
       clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
-      fetchEvents(filters)
+      fetchEvents(filters, false, mapBoundsRef.current)
     }, 500)
 
     return () => {
@@ -201,7 +204,7 @@ export function EventsBrowse({
       (entries) => {
         const entry = entries[0]
         if (entry?.isIntersecting && hasMore && !loading && !loadingMore) {
-          fetchEventsRef.current(filters, true)
+          fetchEventsRef.current(filters, true, mapBoundsRef.current)
         }
       },
       { rootMargin: '400px' }
@@ -211,9 +214,21 @@ export function EventsBrowse({
     return () => observer.disconnect()
   }, [hasMore, loading, loadingMore, filters])
 
-  const handleBoundsChange = useCallback((bounds: MapBounds) => {
-    setMapBounds(bounds)
-  }, [])
+  const handleBoundsChange = useCallback(
+    (bounds: MapBounds) => {
+      setMapBounds(bounds)
+      mapBoundsRef.current = bounds
+
+      // Debounce bounds-driven refetch to avoid spamming during pan/zoom
+      if (boundsDebounceRef.current) {
+        clearTimeout(boundsDebounceRef.current)
+      }
+      boundsDebounceRef.current = setTimeout(() => {
+        fetchEventsRef.current(filters, false, bounds)
+      }, 300)
+    },
+    [filters]
+  )
 
   // Map/list sync: click pin scrolls to card
   const handlePinClick = useCallback((eventId: string) => {
@@ -441,9 +456,9 @@ export function EventsBrowse({
           {mapBounds && (
             <div className="border-b border-sand bg-light-sand px-4 py-2">
               <p className="text-xs text-warm-gray">
-                {displayedEvents.length === events.length
-                  ? `Showing all ${events.length} events in view`
-                  : `Showing ${displayedEvents.length} of ${events.length} events in this area`}
+                {hasMore
+                  ? `Showing ${displayedEvents.length} of ${total} events in this area`
+                  : `Showing all ${displayedEvents.length} events in this area`}
               </p>
             </div>
           )}

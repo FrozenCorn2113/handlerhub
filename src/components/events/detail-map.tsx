@@ -10,8 +10,8 @@ interface DetailMapProps {
   name: string
 }
 
-const MAPTILER_URL =
-  'https://api.maptiler.com/maps/streets-v2/style.json?key=get_a_free_key'
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+const MAPTILER_URL = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
 
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -40,7 +40,10 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
         attributionControl: false,
       })
 
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        'top-right'
+      )
 
       const el = document.createElement('div')
       el.style.cssText = `
@@ -55,8 +58,9 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
       marker = new maplibregl.Marker({ element: el })
         .setLngLat([lng, lat])
         .setPopup(
-          new maplibregl.Popup({ offset: 16, closeButton: false })
-            .setHTML(`<div style="font-weight:600;font-size:13px;padding:2px 4px">${name}</div>`)
+          new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+            `<div style="font-weight:600;font-size:13px;padding:2px 4px">${name}</div>`
+          )
         )
         .addTo(map)
 

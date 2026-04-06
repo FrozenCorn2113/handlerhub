@@ -2,13 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { MapPin } from '@phosphor-icons/react'
-
 import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
 
-import 'maplibre-gl/dist/maplibre-gl.css'
-
+import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
+import 'maplibre-gl/dist/maplibre-gl.css'
 
 export interface VenuePin {
   venueId: string
@@ -37,8 +35,13 @@ interface EventsMapProps {
   focusLocation?: { lat: number; lng: number } | null
 }
 
-const MAPTILER_URL =
-  'https://api.maptiler.com/maps/streets-v2/style.json?key=get_a_free_key'
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+if (!MAPTILER_KEY && typeof window !== 'undefined') {
+  console.warn(
+    '[EventsMap] NEXT_PUBLIC_MAPTILER_KEY is not set. Map tiles will not load. Get a free key at https://cloud.maptiler.com/account/keys/'
+  )
+}
+const MAPTILER_URL = `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
 
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
@@ -58,24 +61,29 @@ export function EventsMap({
   const [mapReady, setMapReady] = useState(false)
 
   // Build GeoJSON from pins
-  const geojson = useMemo(() => ({
-    type: 'FeatureCollection' as const,
-    features: pins.map((pin) => ({
-      type: 'Feature' as const,
-      geometry: { type: 'Point' as const, coordinates: [pin.lng, pin.lat] },
-      properties: {
-        venueId: pin.venueId,
-        name: pin.name,
-        city: pin.city,
-        state: pin.state,
-        eventCount: pin.eventCount,
-        // Encode events as JSON string for MapLibre property access
-        events: JSON.stringify(pin.events),
-        // Primary event color
-        color: pin.events[0] ? EVENT_TYPE_COLORS[pin.events[0].eventType] : '#1F6B4A',
-      },
-    })),
-  }), [pins])
+  const geojson = useMemo(
+    () => ({
+      type: 'FeatureCollection' as const,
+      features: pins.map((pin) => ({
+        type: 'Feature' as const,
+        geometry: { type: 'Point' as const, coordinates: [pin.lng, pin.lat] },
+        properties: {
+          venueId: pin.venueId,
+          name: pin.name,
+          city: pin.city,
+          state: pin.state,
+          eventCount: pin.eventCount,
+          // Encode events as JSON string for MapLibre property access
+          events: JSON.stringify(pin.events),
+          // Primary event color
+          color: pin.events[0]
+            ? EVENT_TYPE_COLORS[pin.events[0].eventType]
+            : '#1F6B4A',
+        },
+      })),
+    }),
+    [pins]
+  )
 
   // Initial center
   const initialCenter = useMemo<[number, number]>(() => {
@@ -104,7 +112,10 @@ export function EventsMap({
         attributionControl: false,
       })
 
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        'top-right'
+      )
 
       map.on('load', () => {
         if (isDestroyed) return
@@ -128,7 +139,11 @@ export function EventsMap({
             'circle-radius': [
               'step',
               ['get', 'point_count'],
-              20, 5, 28, 20, 36,
+              20,
+              5,
+              28,
+              20,
+              36,
             ],
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',
@@ -158,10 +173,7 @@ export function EventsMap({
           filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-color': ['get', 'color'],
-            'circle-radius': [
-              'case',
-              ['>', ['get', 'eventCount'], 1], 10, 7,
-            ],
+            'circle-radius': ['case', ['>', ['get', 'eventCount'], 1], 10, 7],
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',
             'circle-opacity': 0.95,
@@ -173,18 +185,24 @@ export function EventsMap({
 
         // Click cluster → expand
         map.on('click', CLUSTERS_LAYER, (e: any) => {
-          const features = map.queryRenderedFeatures(e.point, { layers: [CLUSTERS_LAYER] })
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [CLUSTERS_LAYER],
+          })
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
-          map.getSource(SOURCE_ID).getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
-            if (err) return
-            map.easeTo({ center: features[0].geometry.coordinates, zoom })
-          })
+          map
+            .getSource(SOURCE_ID)
+            .getClusterExpansionZoom(clusterId, (err: any, zoom: number) => {
+              if (err) return
+              map.easeTo({ center: features[0].geometry.coordinates, zoom })
+            })
         })
 
         // Click individual pin → show popup
         map.on('click', UNCLUSTERED_LAYER, (e: any) => {
-          const features = map.queryRenderedFeatures(e.point, { layers: [UNCLUSTERED_LAYER] })
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [UNCLUSTERED_LAYER],
+          })
           if (!features.length) return
           const props = features[0].properties
           const coords = features[0].geometry.coordinates.slice()
@@ -194,16 +212,23 @@ export function EventsMap({
             popupRef.current.remove()
           }
 
-          const eventsHtml = events.slice(0, 3).map((ev) => {
-            const date = new Date(ev.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-            return `<a href="/events/${ev.slug}" style="display:block;padding:2px 0;font-size:12px;line-height:1.4;color:#1a1a1a;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          const eventsHtml = events
+            .slice(0, 3)
+            .map((ev) => {
+              const date = new Date(ev.startDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })
+              return `<a href="/events/${ev.slug}" style="display:block;padding:2px 0;font-size:12px;line-height:1.4;color:#1a1a1a;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
               ${ev.clubName}<span style="margin-left:8px;font-size:11px;color:#7A6E5E">${date}</span>
             </a>`
-          }).join('')
+            })
+            .join('')
 
-          const moreHtml = events.length > 3
-            ? `<p style="margin-top:4px;font-size:11px;color:#7A6E5E">+${events.length - 3} more events</p>`
-            : ''
+          const moreHtml =
+            events.length > 3
+              ? `<p style="margin-top:4px;font-size:11px;color:#7A6E5E">+${events.length - 3} more events</p>`
+              : ''
 
           const html = `
             <div style="min-width:200px;max-width:240px">
@@ -215,7 +240,11 @@ export function EventsMap({
             </div>
           `
 
-          const popup = new maplibregl.Popup({ closeButton: true, maxWidth: '260px', offset: 8 })
+          const popup = new maplibregl.Popup({
+            closeButton: true,
+            maxWidth: '260px',
+            offset: 8,
+          })
             .setLngLat(coords as [number, number])
             .setHTML(html)
             .addTo(map)
@@ -228,11 +257,17 @@ export function EventsMap({
         })
 
         // Hover cursors
-        map.on('mouseenter', CLUSTERS_LAYER, () => { map.getCanvas().style.cursor = 'pointer' })
-        map.on('mouseleave', CLUSTERS_LAYER, () => { map.getCanvas().style.cursor = '' })
+        map.on('mouseenter', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = ''
+        })
         map.on('mouseenter', UNCLUSTERED_LAYER, (e: any) => {
           map.getCanvas().style.cursor = 'pointer'
-          const features = map.queryRenderedFeatures(e.point, { layers: [UNCLUSTERED_LAYER] })
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [UNCLUSTERED_LAYER],
+          })
           if (features.length) {
             const props = features[0].properties
             const events: VenuePin['events'] = JSON.parse(props.events || '[]')
@@ -256,7 +291,7 @@ export function EventsMap({
       setMapReady(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])  // Only init once; update source data separately below
+  }, []) // Only init once; update source data separately below
 
   // Update source data when pins change (after map is ready)
   useEffect(() => {
@@ -281,17 +316,24 @@ export function EventsMap({
     if (!map || !mapReady) return
     if (!highlightedEventId) {
       map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
-        'case', ['>', ['get', 'eventCount'], 1], 10, 7,
+        'case',
+        ['>', ['get', 'eventCount'], 1],
+        10,
+        7,
       ])
       return
     }
     // Find the venueId for this eventId
-    const pin = pins.find((p) => p.events.some((e) => e.id === highlightedEventId))
+    const pin = pins.find((p) =>
+      p.events.some((e) => e.id === highlightedEventId)
+    )
     if (!pin) return
     map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
       'case',
-      ['==', ['get', 'venueId'], pin.venueId], 13,
-      ['>', ['get', 'eventCount'], 1], 10,
+      ['==', ['get', 'venueId'], pin.venueId],
+      13,
+      ['>', ['get', 'eventCount'], 1],
+      10,
       7,
     ])
   }, [highlightedEventId, pins, mapReady])
@@ -308,7 +350,9 @@ export function EventsMap({
           <p className="text-sm font-medium text-warm-gray">
             No venues with coordinates found
           </p>
-          <p className="text-xs text-warm-gray/70">Try adjusting your filters</p>
+          <p className="text-xs text-warm-gray/70">
+            Try adjusting your filters
+          </p>
         </div>
       )}
     </div>

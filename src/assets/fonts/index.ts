@@ -1,13 +1,15 @@
-import { Inter as FontSans, Sen } from 'next/font/google'
+import localFont from 'next/font/local'
 
-export const fontSans = FontSans({
-  subsets: ['latin'],
+export const fontSans = localFont({
+  src: [
+    { path: './Inter-Regular.ttf', weight: '400', style: 'normal' },
+    { path: './Inter-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-sans',
 })
 
-export const fontSerif = Sen({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+export const fontSerif = localFont({
+  src: [{ path: './CalSans-SemiBold.woff2', weight: '600', style: 'normal' }],
   variable: '--font-display',
 })
 

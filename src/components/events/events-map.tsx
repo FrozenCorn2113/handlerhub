@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'maplibre-gl/dist/maplibre-gl.css'
 
-// Larger close button for Mapbox popups
+// Larger close button for MapLibre popups
 const POPUP_STYLE = `
-.hh-popup .mapboxgl-popup-close-button {
+.hh-popup .maplibregl-popup-close-button {
   font-size: 20px;
   width: 28px;
   height: 28px;
@@ -19,7 +19,7 @@ const POPUP_STYLE = `
   right: 4px;
   top: 4px;
 }
-.hh-popup .mapboxgl-popup-close-button:hover {
+.hh-popup .maplibregl-popup-close-button:hover {
   background: #f3f4f6;
 }
 `
@@ -59,12 +59,10 @@ interface EventsMapProps {
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
-if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
-  console.warn(
-    '[EventsMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set. Map tiles will not load. Get a token at https://account.mapbox.com/'
-  )
-}
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+const MAP_STYLE = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+  : 'https://demotiles.maplibre.org/style.json'
 
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
@@ -129,21 +127,19 @@ export function EventsMap({
     }
 
     const init = async () => {
-      const mapboxgl = (await import('mapbox-gl')).default
+      const maplibregl = (await import('maplibre-gl')).default
       if (isDestroyed) return
 
-      mapboxgl.accessToken = MAPBOX_TOKEN
-
-      map = new mapboxgl.Map({
+      map = new maplibregl.Map({
         container: containerRef.current!,
-        style: 'mapbox://styles/mapbox/streets-v12',
+        style: MAP_STYLE,
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
       })
 
       map.addControl(
-        new mapboxgl.NavigationControl({ showCompass: false }),
+        new maplibregl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -200,7 +196,7 @@ export function EventsMap({
           filter: ['has', 'point_count'],
           layout: {
             'text-field': ['to-string', ['get', 'totalEvents']],
-            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
           },
           paint: { 'text-color': '#ffffff' },
@@ -237,7 +233,7 @@ export function EventsMap({
           filter: ['!', ['has', 'point_count']],
           layout: {
             'text-field': ['to-string', ['get', 'eventCount']],
-            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
             'text-size': 12,
           },
           paint: { 'text-color': '#ffffff' },
@@ -264,20 +260,17 @@ export function EventsMap({
         // Notify parent of bounds changes on pan/zoom
         map.on('moveend', reportBounds)
 
-        // Click cluster -> expand
-        map.on('click', CLUSTERS_LAYER, (e: any) => {
+        // Click cluster -> expand (MapLibre v3+ uses Promise API)
+        map.on('click', CLUSTERS_LAYER, async (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [CLUSTERS_LAYER],
           })
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
-          ;(map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(
-            clusterId,
-            (err: any, zoom: number) => {
-              if (err) return
-              map.easeTo({ center: features[0].geometry.coordinates, zoom })
-            }
-          )
+          try {
+            const zoom = await (map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(clusterId)
+            map.easeTo({ center: features[0].geometry.coordinates, zoom })
+          } catch {}
         })
 
         // Click individual pin -> show popup
@@ -294,7 +287,6 @@ export function EventsMap({
             popupRef.current.remove()
           }
 
-          // Compute date range
           const EVENT_TYPE_LABELS: Record<string, string> = {
             ALL_BREED: 'All Breed',
             LIMITED_BREED: 'Limited Breed',
@@ -316,7 +308,6 @@ export function EventsMap({
               ? fmtDate(minDate)
               : `${fmtDate(minDate)} - ${fmtDate(maxDate)}`
 
-          // Unique club names
           const uniqueClubs = Array.from(
             new Set(events.map((ev) => ev.clubName))
           )
@@ -325,7 +316,6 @@ export function EventsMap({
               ? uniqueClubs[0]
               : `${uniqueClubs[0]} <span style="color:#7A6E5E">+${uniqueClubs.length - 1} more club${uniqueClubs.length - 1 > 1 ? 's' : ''}</span>`
 
-          // Deduplicated event types
           const uniqueTypes = Array.from(
             new Set(events.map((ev) => ev.eventType))
           )
@@ -333,7 +323,6 @@ export function EventsMap({
             .map((t) => EVENT_TYPE_LABELS[t] || t)
             .join(', ')
 
-          // Entry status label
           const entryStatuses = Array.from(
             new Set(events.map((ev) => ev.entryStatus).filter(Boolean))
           )
@@ -364,7 +353,7 @@ export function EventsMap({
             </div>
           `
 
-          const popup = new mapboxgl.Popup({
+          const popup = new maplibregl.Popup({
             closeButton: true,
             maxWidth: '300px',
             offset: 8,
@@ -442,7 +431,6 @@ export function EventsMap({
       map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', 14)
       return
     }
-    // Find the pin - match by venueId directly (cluster hover) or by eventId (pin hover)
     const pin =
       pins.find((p) => p.venueId === highlightedEventId) ||
       pins.find((p) => p.events.some((e) => e.id === highlightedEventId))

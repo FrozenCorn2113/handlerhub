@@ -17,6 +17,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font CSS variable classes — applied to <body> by the root layout */
+.font-sans-var {
+  --font-sans:
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.font-display-var {
+  --font-display: Sen, Georgia, 'Times New Roman', serif;
+}
+
 @layer base {
   :root {
     /* HandlerHub Brand Colors */

@@ -2,11 +2,27 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
-
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
+// Larger close button for Mapbox popups
+const POPUP_STYLE = `
+.hh-popup .mapboxgl-popup-close-button {
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0;
+  text-align: center;
+  border-radius: 4px;
+  right: 4px;
+  top: 4px;
+}
+.hh-popup .mapboxgl-popup-close-button:hover {
+  background: #f3f4f6;
+}
+`
 
 export interface VenuePin {
   venueId: string
@@ -84,9 +100,6 @@ export function EventsMap({
           state: pin.state,
           eventCount: pin.eventCount,
           events: JSON.stringify(pin.events),
-          color: pin.events[0]
-            ? EVENT_TYPE_COLORS[pin.events[0].eventType]
-            : '#1F6B4A',
         },
       })),
     }),
@@ -106,6 +119,14 @@ export function EventsMap({
 
     let map: any
     let isDestroyed = false
+
+    // Inject popup styles once
+    if (!document.getElementById('hh-popup-style')) {
+      const styleEl = document.createElement('style')
+      styleEl.id = 'hh-popup-style'
+      styleEl.textContent = POPUP_STYLE
+      document.head.appendChild(styleEl)
+    }
 
     const init = async () => {
       const mapboxgl = (await import('mapbox-gl')).default
@@ -144,7 +165,7 @@ export function EventsMap({
           source: SOURCE_ID,
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#1F6B4A',
+            'circle-color': '#3B82F6',
             'circle-radius': [
               'step',
               ['get', 'point_count'],
@@ -181,12 +202,26 @@ export function EventsMap({
           source: SOURCE_ID,
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': ['get', 'color'],
-            'circle-radius': ['case', ['>', ['get', 'eventCount'], 1], 10, 7],
+            'circle-color': '#3B82F6',
+            'circle-radius': 14,
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',
-            'circle-opacity': 0.95,
+            'circle-opacity': 0.92,
           },
+        })
+
+        // Event count label on individual pins
+        map.addLayer({
+          id: 'venue-unclustered-count',
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          layout: {
+            'text-field': ['to-string', ['get', 'eventCount']],
+            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+          paint: { 'text-color': '#ffffff' },
         })
 
         mapRef.current = map
@@ -285,7 +320,7 @@ export function EventsMap({
               <div style="font-size:12px;color:#7A6E5E;margin-bottom:6px">${dateRange}</div>
               <div style="font-size:12px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${clubHtml}</div>
               <div style="font-size:11px;color:#7A6E5E;margin-bottom:8px">${events.length} event${events.length > 1 ? 's' : ''}: ${typesList}</div>
-              <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:500;color:#1F6B4A;text-decoration:none">View event${events.length > 1 ? 's' : ''} &rarr;</a>
+              <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:500;color:#3B82F6;text-decoration:none">View event${events.length > 1 ? 's' : ''} &rarr;</a>
             </div>
           `
 
@@ -293,6 +328,7 @@ export function EventsMap({
             closeButton: true,
             maxWidth: '260px',
             offset: 8,
+            className: 'hh-popup',
           })
             .setLngLat(coords as [number, number])
             .setHTML(html)
@@ -363,12 +399,7 @@ export function EventsMap({
     const map = mapRef.current
     if (!map || !mapReady) return
     if (!highlightedEventId) {
-      map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
-        'case',
-        ['>', ['get', 'eventCount'], 1],
-        10,
-        7,
-      ])
+      map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', 14)
       return
     }
     // Find the pin - match by venueId directly (cluster hover) or by eventId (pin hover)
@@ -379,10 +410,8 @@ export function EventsMap({
     map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
       'case',
       ['==', ['get', 'venueId'], pin.venueId],
-      13,
-      ['>', ['get', 'eventCount'], 1],
-      10,
-      7,
+      18,
+      14,
     ])
   }, [highlightedEventId, pins, mapReady])
 

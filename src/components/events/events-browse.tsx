@@ -241,11 +241,21 @@ export function EventsBrowse({
     [filters]
   )
 
-  // Map/list sync: click pin scrolls to card
+  // Map/list sync: click pin scrolls card into view within the sidebar only
   const handlePinClick = useCallback((eventId: string) => {
     const cardEl = eventCardRefs.current.get(eventId)
-    if (cardEl && listContainerRef.current) {
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const container = listContainerRef.current
+    if (cardEl && container) {
+      // Scroll within the list container only, not the page
+      const containerRect = container.getBoundingClientRect()
+      const cardRect = cardEl.getBoundingClientRect()
+      const scrollTop =
+        cardRect.top -
+        containerRect.top +
+        container.scrollTop -
+        containerRect.height / 2 +
+        cardRect.height / 2
+      container.scrollTo({ top: scrollTop, behavior: 'smooth' })
     }
     setHighlightedEventId(eventId)
   }, [])

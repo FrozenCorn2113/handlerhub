@@ -156,6 +156,9 @@ export function EventsMap({
           cluster: true,
           clusterMaxZoom: 14,
           clusterRadius: 50,
+          clusterProperties: {
+            totalEvents: ['+', ['get', 'eventCount']],
+          },
         })
 
         // Cluster circles
@@ -167,20 +170,20 @@ export function EventsMap({
           paint: {
             'circle-color': [
               'step',
-              ['get', 'point_count'],
+              ['get', 'totalEvents'],
               '#60A5FA',
-              5,
+              10,
               '#3B82F6',
-              20,
+              30,
               '#1D4ED8',
             ],
             'circle-radius': [
               'step',
-              ['get', 'point_count'],
+              ['get', 'totalEvents'],
               20,
-              5,
+              10,
               28,
-              20,
+              30,
               36,
             ],
             'circle-stroke-width': 2.5,
@@ -196,7 +199,7 @@ export function EventsMap({
           source: SOURCE_ID,
           filter: ['has', 'point_count'],
           layout: {
-            'text-field': '{point_count_abbreviated}',
+            'text-field': ['to-string', ['get', 'totalEvents']],
             'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
           },

@@ -12,7 +12,16 @@ import {
 } from '@/lib/events/constants'
 import type { EventWithVenue } from '@/lib/events/queries'
 
-import { Calendar, MapPin, PawPrint, User, X } from '@phosphor-icons/react'
+import {
+  Calendar,
+  Clock,
+  CurrencyDollar,
+  MapPin,
+  PawPrint,
+  Tag,
+  User,
+  X,
+} from '@phosphor-icons/react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface EventDetailPanelProps {
@@ -32,8 +41,6 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
     year: 'numeric',
   })
 
-  const endDate: string | null = null
-
   const closingDate = event.closingDateTime
     ? new Date(event.closingDateTime).toLocaleDateString('en-US', {
         month: 'short',
@@ -41,6 +48,29 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
         year: 'numeric',
       })
     : null
+
+  const openingDate = event.openingDateTime
+    ? new Date(event.openingDateTime).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null
+
+  // Compute days until closing
+  let closingCountdown: string | null = null
+  if (event.closingDateTime) {
+    const now = new Date()
+    const closing = new Date(event.closingDateTime)
+    const days = Math.ceil(
+      (closing.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    )
+    if (days > 0) {
+      closingCountdown = `${days} day${days !== 1 ? 's' : ''} until entries close`
+    } else if (days === 0) {
+      closingCountdown = 'Entries close today'
+    }
+  }
 
   const handleClose = () => {
     router.back()
@@ -96,6 +126,11 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
             >
               {statusConfig.label}
             </span>
+            {event.venue.indoorOutdoor && (
+              <span className="inline-flex rounded-full border border-sand bg-light-sand px-2.5 py-0.5 text-xs font-medium text-warm-gray">
+                {event.venue.indoorOutdoor}
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -115,6 +150,9 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
               <h2 className="font-display text-xl font-bold text-ringside-black">
                 {event.clubName}
               </h2>
+              <p className="mt-0.5 text-xs text-warm-gray">
+                AKC #{event.eventNumber}
+              </p>
             </div>
 
             {/* Date */}
@@ -126,7 +164,6 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
               />
               <div>
                 <p className="font-medium">{startDate}</p>
-                {endDate && <p className="text-warm-gray">through {endDate}</p>}
               </div>
             </div>
 
@@ -145,8 +182,8 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
               </div>
             </div>
 
-            {/* Entry status + closing date */}
-            {closingDate && (
+            {/* Entry status + closing countdown */}
+            {closingCountdown && (
               <div
                 className="rounded-lg border p-3"
                 style={{
@@ -155,23 +192,70 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
                 }}
               >
                 <p
-                  className="text-sm font-medium"
+                  className="text-sm font-semibold"
                   style={{ color: statusConfig.color }}
                 >
-                  {statusConfig.label}
+                  {closingCountdown}
                 </p>
-                <p className="mt-0.5 text-xs text-warm-brown">
-                  Entries close {closingDate}
-                </p>
+                {closingDate && (
+                  <p className="mt-0.5 text-xs text-warm-brown">
+                    Closing: {closingDate}
+                    {event.timeZone ? ` (${event.timeZone})` : ''}
+                  </p>
+                )}
               </div>
             )}
 
-            {/* Indoor/Outdoor */}
-            {event.venue.indoorOutdoor && (
-              <div className="flex items-center gap-2 text-sm">
-                <span className="inline-flex rounded-full border border-sand bg-light-sand px-2.5 py-0.5 text-xs font-medium text-warm-gray">
-                  {event.venue.indoorOutdoor}
-                </span>
+            {/* Entry details grid */}
+            {(openingDate || closingDate || event.entryFee) && (
+              <div className="rounded-lg border border-sand bg-light-sand/50 p-4">
+                <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-warm-gray">
+                  <Clock size={14} weight="bold" />
+                  Entry Details
+                </h3>
+                <dl className="grid grid-cols-2 gap-3">
+                  {openingDate && (
+                    <div>
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+                        Opens
+                      </dt>
+                      <dd className="mt-0.5 text-sm font-medium text-ringside-black">
+                        {openingDate}
+                      </dd>
+                    </div>
+                  )}
+                  {closingDate && (
+                    <div>
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+                        Closes
+                      </dt>
+                      <dd className="mt-0.5 text-sm font-medium text-ringside-black">
+                        {closingDate}
+                      </dd>
+                    </div>
+                  )}
+                  {event.entryFee && (
+                    <div>
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+                        Entry Fee
+                      </dt>
+                      <dd className="mt-0.5 flex items-center gap-1 text-sm font-medium text-ringside-black">
+                        <CurrencyDollar size={14} className="text-warm-gray" />
+                        {event.entryFee.trim()}
+                      </dd>
+                    </div>
+                  )}
+                  {event.entryLimit && (
+                    <div>
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-warm-gray">
+                        Entry Limit
+                      </dt>
+                      <dd className="mt-0.5 text-sm font-medium text-ringside-black">
+                        {event.entryLimit}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
               </div>
             )}
 
@@ -188,6 +272,11 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
                     Superintendent
                   </p>
                   <p className="font-medium">{event.superintendentName}</p>
+                  {event.superintendentPhone && (
+                    <p className="text-xs text-warm-gray">
+                      {event.superintendentPhone}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -220,12 +309,13 @@ export function EventDetailPanel({ event }: EventDetailPanelProps) {
             <PawPrint size={16} weight="bold" />
             Find a Handler
           </Link>
-          <Link
+          {/* Use a plain <a> to force full navigation, bypassing the intercepting route */}
+          <a
             href={`/events/${event.slug}`}
             className="flex w-full items-center justify-center rounded-full border border-sand px-5 py-2.5 text-sm font-medium text-ringside-black transition-colors hover:bg-light-sand"
           >
             View Full Details
-          </Link>
+          </a>
         </div>
       </motion.div>
     </AnimatePresence>

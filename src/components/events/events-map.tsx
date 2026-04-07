@@ -165,7 +165,15 @@ export function EventsMap({
           source: SOURCE_ID,
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#3B82F6',
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#60A5FA',
+              5,
+              '#3B82F6',
+              20,
+              '#1D4ED8',
+            ],
             'circle-radius': [
               'step',
               ['get', 'point_count'],
@@ -202,7 +210,15 @@ export function EventsMap({
           source: SOURCE_ID,
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': '#3B82F6',
+            'circle-color': [
+              'step',
+              ['get', 'eventCount'],
+              '#60A5FA',
+              3,
+              '#3B82F6',
+              6,
+              '#2563EB',
+            ],
             'circle-radius': 14,
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',

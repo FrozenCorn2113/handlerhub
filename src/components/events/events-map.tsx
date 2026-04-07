@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
-// Larger close button for MapLibre popups
+// Larger close button for Mapbox popups
 const POPUP_STYLE = `
-.hh-popup .maplibregl-popup-close-button {
+.hh-popup .mapboxgl-popup-close-button {
   font-size: 20px;
   width: 28px;
   height: 28px;
@@ -19,7 +19,7 @@ const POPUP_STYLE = `
   right: 4px;
   top: 4px;
 }
-.hh-popup .maplibregl-popup-close-button:hover {
+.hh-popup .mapboxgl-popup-close-button:hover {
   background: #f3f4f6;
 }
 `
@@ -59,10 +59,12 @@ interface EventsMapProps {
   onBoundsChange?: (bounds: MapBounds) => void
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
-const MAP_STYLE = MAPTILER_KEY
-  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
-  : 'https://demotiles.maplibre.org/style.json'
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+if (!MAPBOX_TOKEN && typeof window !== 'undefined') {
+  console.warn(
+    '[EventsMap] NEXT_PUBLIC_MAPBOX_TOKEN is not set. Map tiles will not load. Get a token at https://account.mapbox.com/'
+  )
+}
 
 const SOURCE_ID = 'venues'
 const CLUSTERS_LAYER = 'venue-clusters'
@@ -127,19 +129,21 @@ export function EventsMap({
     }
 
     const init = async () => {
-      const maplibregl = (await import('maplibre-gl')).default
+      const mapboxgl = (await import('mapbox-gl')).default
       if (isDestroyed) return
 
-      map = new maplibregl.Map({
+      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      map = new mapboxgl.Map({
         container: containerRef.current!,
-        style: MAP_STYLE,
+        style: 'mapbox://styles/mapbox/streets-v12',
         center: initialCenter,
         zoom: 4,
         attributionControl: false,
       })
 
       map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
+        new mapboxgl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -196,7 +200,7 @@ export function EventsMap({
           filter: ['has', 'point_count'],
           layout: {
             'text-field': ['to-string', ['get', 'totalEvents']],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 13,
           },
           paint: { 'text-color': '#ffffff' },
@@ -233,7 +237,7 @@ export function EventsMap({
           filter: ['!', ['has', 'point_count']],
           layout: {
             'text-field': ['to-string', ['get', 'eventCount']],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             'text-size': 12,
           },
           paint: { 'text-color': '#ffffff' },
@@ -261,20 +265,19 @@ export function EventsMap({
         map.on('moveend', reportBounds)
 
         // Click cluster -> expand
-        map.on('click', CLUSTERS_LAYER, async (e: any) => {
+        map.on('click', CLUSTERS_LAYER, (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [CLUSTERS_LAYER],
           })
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
-          try {
-            const zoom = await (
-              map.getSource(SOURCE_ID) as any
-            ).getClusterExpansionZoom(clusterId)
-            map.easeTo({ center: features[0].geometry.coordinates, zoom })
-          } catch (_) {
-            // ignore
-          }
+          ;(map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(
+            clusterId,
+            (err: any, zoom: number) => {
+              if (err) return
+              map.easeTo({ center: features[0].geometry.coordinates, zoom })
+            }
+          )
         })
 
         // Click individual pin -> show popup
@@ -361,7 +364,7 @@ export function EventsMap({
             </div>
           `
 
-          const popup = new maplibregl.Popup({
+          const popup = new mapboxgl.Popup({
             closeButton: true,
             maxWidth: '300px',
             offset: 8,

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-import 'maplibre-gl/dist/maplibre-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
 interface DetailMapProps {
   lat: number
@@ -10,10 +10,7 @@ interface DetailMapProps {
   name: string
 }
 
-const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
-const MAP_STYLE = MAPTILER_KEY
-  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
-  : 'https://demotiles.maplibre.org/style.json'
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -26,23 +23,25 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
     let marker: any
 
     const init = async () => {
-      const maplibregl = (await import('maplibre-gl')).default
+      const mapboxgl = (await import('mapbox-gl')).default
 
       if (mapRef.current) {
         mapRef.current.remove()
         mapRef.current = null
       }
 
-      map = new maplibregl.Map({
+      mapboxgl.accessToken = MAPBOX_TOKEN
+
+      map = new mapboxgl.Map({
         container: containerRef.current!,
-        style: MAP_STYLE,
+        style: 'mapbox://styles/mapbox/streets-v12',
         center: [lng, lat],
         zoom: 13,
         attributionControl: false,
       })
 
       map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
+        new mapboxgl.NavigationControl({ showCompass: false }),
         'top-right'
       )
 
@@ -56,10 +55,10 @@ export function DetailMap({ lat, lng, name }: DetailMapProps) {
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       `
 
-      marker = new maplibregl.Marker({ element: el })
+      marker = new mapboxgl.Marker({ element: el })
         .setLngLat([lng, lat])
         .setPopup(
-          new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+          new mapboxgl.Popup({ offset: 16, closeButton: false }).setHTML(
             `<div style="font-weight:600;font-size:13px;padding:2px 4px">${name}</div>`
           )
         )

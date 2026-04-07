@@ -300,8 +300,8 @@ export function EventsMap({
 
           popupRef.current = popup
 
-          if (events.length > 0) {
-            onPinClick?.(events[0].id)
+          if (props.venueId) {
+            onPinClick?.(props.venueId)
           }
         })
 
@@ -319,8 +319,7 @@ export function EventsMap({
           })
           if (features.length) {
             const props = features[0].properties
-            const events: VenuePin['events'] = JSON.parse(props.events || '[]')
-            if (events.length > 0) onPinHover?.(events[0].id)
+            if (props.venueId) onPinHover?.(props.venueId)
           }
         })
         map.on('mouseleave', UNCLUSTERED_LAYER, () => {
@@ -372,10 +371,10 @@ export function EventsMap({
       ])
       return
     }
-    // Find the venueId for this eventId
-    const pin = pins.find((p) =>
-      p.events.some((e) => e.id === highlightedEventId)
-    )
+    // Find the pin - match by venueId directly (cluster hover) or by eventId (pin hover)
+    const pin =
+      pins.find((p) => p.venueId === highlightedEventId) ||
+      pins.find((p) => p.events.some((e) => e.id === highlightedEventId))
     if (!pin) return
     map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
       'case',

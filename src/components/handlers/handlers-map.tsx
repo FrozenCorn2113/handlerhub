@@ -1,9 +1,27 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
 import 'maplibre-gl/dist/maplibre-gl.css'
+
+// Larger close button for Mapbox popups (matching events map)
+const POPUP_STYLE = `
+.hh-popup .mapboxgl-popup-close-button {
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0;
+  text-align: center;
+  border-radius: 4px;
+  right: 4px;
+  top: 4px;
+}
+.hh-popup .mapboxgl-popup-close-button:hover {
+  background: #f3f4f6;
+}
+`
 
 export interface HandlerPin {
   id: string
@@ -11,9 +29,18 @@ export interface HandlerPin {
   city: string | null
   state: string | null
   serviceType: string
+  serviceTypes?: string[]
   ratePerShow: number | null
   latitude?: number | null
   longitude?: number | null
+  profileImage?: string | null
+}
+
+export interface MapBounds {
+  north: number
+  south: number
+  east: number
+  west: number
 }
 
 interface HandlersMapProps {
@@ -21,6 +48,7 @@ interface HandlersMapProps {
   highlightedId?: string | null
   onPinHover?: (id: string | null) => void
   onPinClick?: (id: string) => void
+  onBoundsChange?: (bounds: MapBounds) => void
 }
 
 // State center coordinates as fallback
@@ -87,15 +115,25 @@ const CLUSTERS_LAYER = 'handler-clusters'
 const CLUSTER_COUNT_LAYER = 'handler-cluster-count'
 const PINS_LAYER = 'handler-pins'
 
+const SERVICE_TYPE_LABELS: Record<string, string> = {
+  HANDLING: 'Handler',
+  GROOMING: 'Groomer',
+  TRANSPORT: 'Transport',
+  PHOTOGRAPHY: 'Photographer',
+}
+
 export function HandlersMap({
   handlers,
   highlightedId,
   onPinHover,
   onPinClick,
+  onBoundsChange,
 }: HandlersMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<any>(null)
   const popupRef = useRef<any>(null)
+  const onBoundsChangeRef = useRef(onBoundsChange)
+  onBoundsChangeRef.current = onBoundsChange
   const [mapReady, setMapReady] = useState(false)
 
   // Stable random offsets per handler id (so pins don't jump on re-render)
@@ -134,7 +172,11 @@ export function HandlersMap({
           city: handler.city || '',
           state: handler.state || '',
           serviceType: handler.serviceType,
+          serviceTypes: JSON.stringify(
+            handler.serviceTypes || [handler.serviceType]
+          ),
           ratePerShow: handler.ratePerShow,
+          profileImage: handler.profileImage || '',
         },
       })
     }
@@ -157,6 +199,14 @@ export function HandlersMap({
     if (!containerRef.current) return
     let map: any
     let isDestroyed = false
+
+    // Inject popup styles once
+    if (!document.getElementById('hh-handler-popup-style')) {
+      const styleEl = document.createElement('style')
+      styleEl.id = 'hh-handler-popup-style'
+      styleEl.textContent = POPUP_STYLE
+      document.head.appendChild(styleEl)
+    }
 
     const init = async () => {
       const maplibregl = (await import('maplibre-gl')).default
@@ -186,28 +236,38 @@ export function HandlersMap({
           clusterRadius: 50,
         })
 
+        // Cluster circles - blue gradient matching events map
         map.addLayer({
           id: CLUSTERS_LAYER,
           type: 'circle',
           source: SOURCE_ID,
           filter: ['has', 'point_count'],
           paint: {
-            'circle-color': '#1F6B4A',
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#60A5FA', // <10 handlers
+              10,
+              '#3B82F6', // 10-29
+              30,
+              '#1D4ED8', // 30+
+            ],
             'circle-radius': [
               'step',
               ['get', 'point_count'],
-              18,
-              5,
-              24,
-              15,
-              32,
+              20,
+              10,
+              28,
+              30,
+              36,
             ],
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',
-            'circle-opacity': 0.9,
+            'circle-opacity': 0.92,
           },
         })
 
+        // Cluster count labels - white bold text
         map.addLayer({
           id: CLUSTER_COUNT_LAYER,
           type: 'symbol',
@@ -216,29 +276,62 @@ export function HandlersMap({
           layout: {
             'text-field': '{point_count_abbreviated}',
             'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12,
+            'text-size': 13,
           },
           paint: { 'text-color': '#ffffff' },
         })
 
+        // Individual handler pins - blue gradient, 14px radius
         map.addLayer({
           id: PINS_LAYER,
           type: 'circle',
           source: SOURCE_ID,
           filter: ['!', ['has', 'point_count']],
           paint: {
-            'circle-color': '#1F6B4A',
-            'circle-radius': 7,
+            'circle-color': '#60A5FA',
+            'circle-radius': 14,
             'circle-stroke-width': 2.5,
             'circle-stroke-color': '#ffffff',
-            'circle-opacity': 0.95,
+            'circle-opacity': 0.92,
           },
+        })
+
+        // Count label on individual pins (always "1" for handlers)
+        map.addLayer({
+          id: 'handler-unclustered-count',
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          layout: {
+            'text-field': '1',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+          paint: { 'text-color': '#ffffff' },
         })
 
         mapRef.current = map
         setMapReady(true)
 
-        // Click cluster -> expand (MapLibre v3+ Promise API)
+        // Helper to report current bounds to parent
+        const reportBounds = () => {
+          if (isDestroyed) return
+          const b = map.getBounds()
+          onBoundsChangeRef.current?.({
+            north: b.getNorth(),
+            south: b.getSouth(),
+            east: b.getEast(),
+            west: b.getWest(),
+          })
+        }
+
+        // Report initial bounds immediately so list filters on load
+        reportBounds()
+
+        // Notify parent of bounds changes on pan/zoom
+        map.on('moveend', reportBounds)
+
+        // Click cluster -> expand (Promise API)
         map.on('click', CLUSTERS_LAYER, async (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [CLUSTERS_LAYER],
@@ -251,6 +344,7 @@ export function HandlersMap({
           } catch {}
         })
 
+        // Click individual pin -> show popup
         map.on('click', PINS_LAYER, (e: any) => {
           const features = map.queryRenderedFeatures(e.point, {
             layers: [PINS_LAYER],
@@ -262,21 +356,57 @@ export function HandlersMap({
           if (popupRef.current) popupRef.current.remove()
 
           const location = [props.city, props.state].filter(Boolean).join(', ')
-          const rate = props.ratePerShow ? ` · $${props.ratePerShow}/show` : ''
+          const rate = props.ratePerShow ? `$${props.ratePerShow}/show` : ''
+
+          // Parse service types for badges
+          let serviceTypes: string[] = []
+          try {
+            serviceTypes = JSON.parse(props.serviceTypes || '[]')
+          } catch {
+            serviceTypes = [props.serviceType]
+          }
+          const badgesHtml = serviceTypes
+            .map((t: string) => {
+              const label = SERVICE_TYPE_LABELS[t] || t
+              return `<span style="display:inline-block;padding:2px 8px;background:#EFF6FF;color:#2563EB;border-radius:9999px;font-size:11px;font-weight:500">${label}</span>`
+            })
+            .join(' ')
+
+          // Profile photo or initials
+          const initials = (props.name || '')
+            .split(' ')
+            .map((w: string) => w[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase()
+          const photoHtml = props.profileImage
+            ? `<img src="${props.profileImage}" alt="${props.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.1)" />`
+            : `<div style="width:44px;height:44px;border-radius:50%;background:#1F6B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.1)">${initials}</div>`
 
           const html = `
-            <div style="min-width:180px">
-              <div style="font-weight:700;font-size:14px;margin-bottom:4px;color:#1a1a1a">${props.name}</div>
-              <p style="margin:0 0 2px;font-size:12px;color:#7A6E5E">${location}</p>
-              <p style="margin:0 0 10px;font-size:12px;color:#7A6E5E">${props.serviceType}${rate}</p>
-              <a href="/handlers/${props.id}" style="display:inline-flex;align-items:center;padding:4px 10px;background:#1F6B4A;color:white;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none">View Profile</a>
+            <div style="min-width:220px;max-width:280px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                ${photoHtml}
+                <div style="min-width:0">
+                  <div style="font-size:14px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${props.name}</div>
+                  ${location ? `<div style="font-size:12px;color:#7A6E5E;margin-top:1px">${location}</div>` : ''}
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+                ${badgesHtml}
+              </div>
+              ${rate ? `<div style="font-size:13px;font-weight:600;color:#1F6B4A;margin-bottom:10px">${rate}</div>` : '<div style="margin-bottom:6px"></div>'}
+              <a href="/handlers/${props.id}" style="display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:#1F6B4A;text-decoration:none;padding:6px 12px;border:1px solid #1F6B4A;border-radius:6px;transition:background 0.15s"
+                 onmouseover="this.style.backgroundColor='#1F6B4A';this.style.color='#fff'"
+                 onmouseout="this.style.backgroundColor='transparent';this.style.color='#1F6B4A'">View Profile &rarr;</a>
             </div>
           `
 
           const popup = new maplibregl.Popup({
             closeButton: true,
-            maxWidth: '280px',
+            maxWidth: '300px',
             offset: 8,
+            className: 'hh-popup',
           })
             .setLngLat(coords as [number, number])
             .setHTML(html)
@@ -286,6 +416,7 @@ export function HandlersMap({
           onPinClick?.(props.id)
         })
 
+        // Hover cursors
         map.on('mouseenter', CLUSTERS_LAYER, () => {
           map.getCanvas().style.cursor = 'pointer'
         })
@@ -326,21 +457,23 @@ export function HandlersMap({
     if (source) source.setData(geojson)
   }, [geojson, mapReady])
 
-  // Highlight
+  // Highlight - updated for 14px base radius
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapReady) return
     map.setPaintProperty(
       PINS_LAYER,
       'circle-radius',
-      highlightedId ? ['case', ['==', ['get', 'id'], highlightedId], 11, 7] : 7
+      highlightedId
+        ? ['case', ['==', ['get', 'id'], highlightedId], 18, 14]
+        : 14
     )
     map.setPaintProperty(
       PINS_LAYER,
       'circle-opacity',
       highlightedId
         ? ['case', ['==', ['get', 'id'], highlightedId], 1, 0.7]
-        : 0.95
+        : 0.92
     )
   }, [highlightedId, mapReady])
 

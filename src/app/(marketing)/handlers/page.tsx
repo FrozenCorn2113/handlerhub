@@ -7,6 +7,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+import type { MapBounds } from '@/components/handlers/handlers-map'
+
 import {
   Camera,
   Car,
@@ -527,6 +529,7 @@ function HandlersPage() {
     return ''
   })
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<EventSuggestion | null>(
     null
   )
@@ -630,6 +633,10 @@ function HandlersPage() {
     setPage(1)
     router.push(`/handlers?${params.toString()}`, { scroll: false })
   }
+
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    setMapBounds(bounds)
+  }, [])
 
   function handleEventSelect(event: EventSuggestion) {
     setSelectedEvent(event)
@@ -915,6 +922,7 @@ function HandlersPage() {
             handlers={handlers}
             highlightedId={highlightedId}
             onPinHover={setHighlightedId}
+            onBoundsChange={handleBoundsChange}
           />
         </div>
       </div>

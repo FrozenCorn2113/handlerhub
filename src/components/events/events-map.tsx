@@ -330,19 +330,40 @@ export function EventsMap({
             .map((t) => EVENT_TYPE_LABELS[t] || t)
             .join(', ')
 
+          // Entry status label
+          const entryStatuses = Array.from(
+            new Set(events.map((ev) => ev.entryStatus).filter(Boolean))
+          )
+          const entryStatusLabels: Record<string, string> = {
+            OPEN: 'Entries Open',
+            CLOSED: 'Entries Closed',
+            PENDING: 'Entries Pending',
+          }
+          const entryStatusHtml = entryStatuses.length
+            ? `<div style="font-size:11px;color:#1F6B4A;font-weight:500;margin-bottom:10px">${entryStatuses.map((s) => entryStatusLabels[s] || s).join(', ')}</div>`
+            : ''
+
           const html = `
-            <div style="min-width:200px;max-width:260px">
+            <div style="min-width:220px;max-width:280px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
               <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:2px">${props.city}, ${props.state}</div>
-              <div style="font-size:12px;color:#7A6E5E;margin-bottom:6px">${dateRange}</div>
+              <div style="font-size:12px;color:#7A6E5E;margin-bottom:8px">${dateRange}</div>
               <div style="font-size:12px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${clubHtml}</div>
-              <div style="font-size:11px;color:#7A6E5E;margin-bottom:8px">${events.length} event${events.length > 1 ? 's' : ''}: ${typesList}</div>
-              <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:500;color:#3B82F6;text-decoration:none">View event${events.length > 1 ? 's' : ''} &rarr;</a>
+              <div style="font-size:11px;color:#7A6E5E;margin-bottom:6px">${events.length} event${events.length > 1 ? 's' : ''}: ${typesList}</div>
+              ${entryStatusHtml}
+              <div style="display:flex;gap:8px;align-items:center">
+                <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:600;color:#1F6B4A;text-decoration:none;padding:6px 12px;border:1px solid #1F6B4A;border-radius:6px;transition:background 0.15s;display:inline-block"
+                   onmouseover="this.style.backgroundColor='#1F6B4A';this.style.color='#fff'"
+                   onmouseout="this.style.backgroundColor='transparent';this.style.color='#1F6B4A'">View full details &rarr;</a>
+                <a href="/handlers?state=${encodeURIComponent(props.state)}&city=${encodeURIComponent(props.city)}" style="font-size:12px;font-weight:600;color:#fff;text-decoration:none;padding:6px 12px;background:#1F6B4A;border-radius:6px;transition:opacity 0.15s;display:inline-block"
+                   onmouseover="this.style.opacity='0.85'"
+                   onmouseout="this.style.opacity='1'">Find a Handler</a>
+              </div>
             </div>
           `
 
           const popup = new maplibregl.Popup({
             closeButton: true,
-            maxWidth: '260px',
+            maxWidth: '300px',
             offset: 8,
             className: 'hh-popup',
           })

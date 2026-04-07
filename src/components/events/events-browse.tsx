@@ -241,34 +241,24 @@ export function EventsBrowse({
     [filters]
   )
 
-  // Map/list sync: click pin scrolls card into view + opens slide-out panel
-  const handlePinClick = useCallback(
-    (venueId: string) => {
-      const cardEl = eventCardRefs.current.get(venueId)
-      const container = listContainerRef.current
-      if (cardEl && container) {
-        // Scroll within the list container only, not the page
-        const containerRect = container.getBoundingClientRect()
-        const cardRect = cardEl.getBoundingClientRect()
-        const scrollTop =
-          cardRect.top -
-          containerRect.top +
-          container.scrollTop -
-          containerRect.height / 2 +
-          cardRect.height / 2
-        container.scrollTo({ top: scrollTop, behavior: 'smooth' })
-      }
-      setHighlightedEventId(venueId)
-
-      // Open the slide-out detail panel via intercepting route
-      const pin = pins.find((p) => p.venueId === venueId)
-      const firstEvent = pin?.events[0]
-      if (firstEvent?.slug) {
-        router.push(`/events/${firstEvent.slug}`, { scroll: false })
-      }
-    },
-    [pins, router]
-  )
+  // Map/list sync: click pin highlights sidebar card and scrolls to it
+  const handlePinClick = useCallback((venueId: string) => {
+    const cardEl = eventCardRefs.current.get(venueId)
+    const container = listContainerRef.current
+    if (cardEl && container) {
+      // Scroll within the list container only, not the page
+      const containerRect = container.getBoundingClientRect()
+      const cardRect = cardEl.getBoundingClientRect()
+      const scrollTop =
+        cardRect.top -
+        containerRect.top +
+        container.scrollTop -
+        containerRect.height / 2 +
+        cardRect.height / 2
+      container.scrollTo({ top: scrollTop, behavior: 'smooth' })
+    }
+    setHighlightedEventId(venueId)
+  }, [])
 
   // Card click: zoom map + open slide-over (desktop only)
   const handleCardClick = useCallback(

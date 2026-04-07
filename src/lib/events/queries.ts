@@ -343,24 +343,30 @@ export async function getVenuePinsSQL(filters: EventFilters = {}) {
     }
   }
 
-  return venueRows.map((venue) => ({
-    venueId: venue.venueId,
-    name: venue.name,
-    lat: venue.lat,
-    lng: venue.lng,
-    city: venue.city,
-    state: venue.state,
-    eventCount: Number(venue.eventCount),
-    events: (eventsByVenue.get(venue.venueId) || []).slice(0, 8).map((e) => ({
-      id: e.id,
-      slug: e.slug,
-      clubName: e.clubName,
-      eventType: e.eventType as EventType,
-      eventTypeRaw: e.eventTypeRaw,
-      startDate: e.startDate,
-      entryStatus: e.entryStatus as EntryStatus,
-    })),
-  }))
+  return venueRows.map((venue) => {
+    const venueEvents = (eventsByVenue.get(venue.venueId) || [])
+      .slice(0, 8)
+      .map((e) => ({
+        id: e.id,
+        slug: e.slug,
+        clubName: e.clubName,
+        eventType: e.eventType as EventType,
+        eventTypeRaw: e.eventTypeRaw,
+        startDate: e.startDate,
+        entryStatus: e.entryStatus as EntryStatus,
+      }))
+
+    return {
+      venueId: venue.venueId,
+      name: venue.name,
+      lat: venue.lat,
+      lng: venue.lng,
+      city: venue.city,
+      state: venue.state,
+      eventCount: venueEvents.length,
+      events: venueEvents,
+    }
+  })
 }
 
 /** Fetch a single event by slug with venue data */

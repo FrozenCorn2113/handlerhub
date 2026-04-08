@@ -55,7 +55,7 @@ export function StitchMarketingFooter() {
               <li>
                 <Link
                   className="font-body text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/request-board"
+                  href="/requests"
                 >
                   Request Board
                 </Link>
@@ -88,7 +88,7 @@ export function StitchMarketingFooter() {
               <li>
                 <Link
                   className="font-body text-sm text-[#F8F4EE]/70 transition-colors hover:text-[#F8F4EE]"
-                  href="/resources"
+                  href="/help"
                 >
                   Resources
                 </Link>

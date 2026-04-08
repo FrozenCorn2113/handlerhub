@@ -22,6 +22,7 @@ const publicRoutes = [
   '/events',
   '/ops-preview',
   '/how-it-works',
+  '/claim',
   '/signup/verify-email',
   '/login/password-reset',
   '/signin/password-update',

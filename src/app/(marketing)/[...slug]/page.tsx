@@ -20,7 +20,7 @@ async function getPageFromParams(params) {
   const page = allPages.find((page) => page.slugAsParams === slug)
 
   if (!page) {
-    null
+    return null
   }
 
   return page
@@ -36,7 +36,7 @@ export async function generateMetadata({
   const { title, description } = page
 
   return constructMetadata({
-    title: `${title} – SaaS Starter`,
+    title: `${title} – HandlerHub`,
     description: description,
   })
 }

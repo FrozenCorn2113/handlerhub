@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 
 import { useCurrentRole } from '@/hooks/use-current-role'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 
 import { Icons } from '@/components/shared/icons'
 
@@ -47,8 +47,8 @@ export function DashboardNav({ items }: DashboardNavProps) {
         )
       })}
       {userRole === 'ADMIN' && (
-        <Button variant="tertiary" href="/dashboard-admin" className="mt-10">
-          Go to admin dashboard
+        <Button asChild variant="ghost" className="mt-10">
+          <Link href="/dashboard-admin">Go to admin dashboard</Link>
         </Button>
       )}
     </nav>

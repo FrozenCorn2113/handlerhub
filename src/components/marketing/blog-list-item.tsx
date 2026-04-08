@@ -1,10 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Post } from '@/root/.contentlayer/generated'
-import { format, parseISO } from 'date-fns'
 
 import { marketingConfig } from '@/config/marketing'
-import { Button } from '@/components/ui/button-ui'
+
+import { Button } from '@/components/ui/button'
+
+import { Post } from '@/root/.contentlayer/generated'
+import { format, parseISO } from 'date-fns'
 
 interface BlogPostListItemProps {
   posts: Post[]
@@ -44,12 +46,13 @@ export function BlogPostListItem({ posts }: BlogPostListItemProps) {
               </p>
             </div>
             <Button
+              asChild
               className="ml-0 mt-4 justify-start pl-0 text-left font-semibold"
-              tabIndex={-1}
-              href={items.slug}
               variant="link"
             >
-              Read more
+              <Link href={items.slug} tabIndex={-1}>
+                Read more
+              </Link>
             </Button>
           </article>
         </li>

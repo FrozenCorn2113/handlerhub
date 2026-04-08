@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 
 import { useCollectEmailsModal } from '@/hooks/use-collect-emails-modal'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -155,9 +155,7 @@ export const CollectEmailsModal = () => {
               </p>
               <div className="text-center">
                 <Button
-                  variant={'primary'}
-                  loading={isPending}
-                  disabled={loading}
+                  disabled={loading || isPending}
                   type="submit"
                   className="mx-auto mt-6"
                 >

@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -164,12 +164,10 @@ function BookingCard({
             />
 
             {userRole === 'EXHIBITOR' && (
-              <Button
-                variant="secondary"
-                href={`/handlers/${booking.handler.id}`}
-                className="px-3 py-2 text-sm"
-              >
-                View Handler Profile
+              <Button asChild variant="outline" className="px-3 py-2 text-sm">
+                <Link href={`/handlers/${booking.handler.id}`}>
+                  View Handler Profile
+                </Link>
               </Button>
             )}
             {booking.exhibitor.email && userRole === 'HANDLER' && (

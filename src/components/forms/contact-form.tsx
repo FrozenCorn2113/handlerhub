@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { ContactFormSchema } from '@/lib/validations/contact-form'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -137,15 +137,11 @@ export default function ContactForm({ user }: contactFormProps) {
             )}
           />
           <div className="mt-3 flex flex-row justify-between">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              loading={loading}
-            >
+            <Button type="submit" disabled={loading}>
               Submit
             </Button>
             <Button
+              type="button"
               variant="link"
               className="text-xs text-muted-foreground"
               onClick={resetandCleanErros}

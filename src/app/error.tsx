@@ -2,11 +2,10 @@
 
 import { useEffect } from 'react'
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
-
-import { Icons } from '@/components/shared/icons'
 
 export default function ErrorPage({
   error,
@@ -20,18 +19,29 @@ export default function ErrorPage({
   }, [error])
 
   return (
-    <div className="flex flex-col items-center justify-center py-24">
-      <Icons.warning />
-      <h1 className="my-8 text-3xl">Something went wrong</h1>
-      <p className="mb-4 text-muted-foreground">
-        We&apos;re sorry, an unexpected error occurred. Please try again.
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-24">
+      <Link href="/" className="mb-8">
+        <Image
+          src="/handler-hub-logo-dark.png"
+          width={48}
+          height={48}
+          alt="HandlerHub"
+        />
+      </Link>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        Something went wrong
+      </h1>
+      <p className="mt-3 text-center text-gray-600 dark:text-gray-400">
+        An unexpected error occurred. Please try again.
       </p>
-      <Button onClick={() => reset()} className="mb-8">
-        Try Again
-      </Button>
-      <Link href="/">Back to Home</Link>
+      <div className="mt-8 flex gap-3">
+        <Button onClick={() => reset()}>Try Again</Button>
+        <Button variant="outline" asChild>
+          <Link href="/">Back to Home</Link>
+        </Button>
+      </div>
       {error.digest && (
-        <p className="mt-10 text-xs text-gray-500">Digest: {error.digest}</p>
+        <p className="mt-10 text-xs text-gray-400">Ref: {error.digest}</p>
       )}
     </div>
   )

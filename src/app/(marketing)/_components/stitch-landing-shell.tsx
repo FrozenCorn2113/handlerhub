@@ -18,6 +18,8 @@ import { List, X } from '@phosphor-icons/react'
 
 /* eslint-disable tailwindcss/classnames-order */
 
+/* eslint-disable tailwindcss/classnames-order */
+
 const navLinks = [
   { label: 'Find a Handler', href: '/handlers' },
   { label: 'How It Works', href: '/how-it-works' },
@@ -71,18 +73,21 @@ export function StitchLandingShell({
                 href="/dashboard"
                 className="hidden items-center gap-2 sm:flex"
               >
-                <span className="flex size-9 items-center justify-center overflow-hidden rounded-full bg-white/20 text-sm font-semibold text-[#F8F4EE]">
+                <span className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-white/20 text-sm font-semibold text-[#F8F4EE]">
                   {user.image ? (
                     <Image
                       src={user.image}
                       alt=""
-                      width={36}
-                      height={36}
+                      width={32}
+                      height={32}
                       className="size-full object-cover"
                     />
                   ) : (
                     (user.name?.[0] ?? '?').toUpperCase()
                   )}
+                </span>
+                <span className="font-sans text-[15px] font-medium text-[#F8F4EE]">
+                  Dashboard
                 </span>
               </Link>
             ) : (

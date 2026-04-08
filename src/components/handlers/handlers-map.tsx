@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapPin } from '@phosphor-icons/react'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
-// Larger close button for Mapbox popups (matching events map)
+// Larger close button for MapLibre popups (matching events map)
 const POPUP_STYLE = `
-.hh-popup .mapboxgl-popup-close-button {
+.hh-popup .maplibregl-popup-close-button {
   font-size: 20px;
   width: 28px;
   height: 28px;
@@ -18,7 +18,7 @@ const POPUP_STYLE = `
   right: 4px;
   top: 4px;
 }
-.hh-popup .mapboxgl-popup-close-button:hover {
+.hh-popup .maplibregl-popup-close-button:hover {
   background: #f3f4f6;
 }
 `
@@ -339,7 +339,9 @@ export function HandlersMap({
           if (!features.length) return
           const clusterId = features[0].properties.cluster_id
           try {
-            const zoom = await (map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(clusterId)
+            const zoom = await (
+              map.getSource(SOURCE_ID) as any
+            ).getClusterExpansionZoom(clusterId)
             map.easeTo({ center: features[0].geometry.coordinates, zoom })
           } catch {}
         })

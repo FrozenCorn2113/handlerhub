@@ -51,11 +51,8 @@ export function UserAvatar({ user: propUser, ...props }: UserAvatarProps) {
           referrerPolicy="no-referrer"
         />
       ) : (
-        <AvatarFallback>
-          <span className="sr-only">
-            {getInitials(displayUser.name) || 'User Avatar'}
-          </span>
-          <Icons.user className="size-4" />
+        <AvatarFallback className="bg-brand-100 text-brand-700 text-xs font-semibold">
+          {getInitials(displayUser.name) || <Icons.user className="size-4" />}
         </AvatarFallback>
       )}
     </Avatar>

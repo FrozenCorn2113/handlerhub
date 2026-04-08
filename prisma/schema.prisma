@@ -205,6 +205,8 @@ model HandlerProfile {
   city          String?
   state         String?
   country       String    @default("USA")
+  latitude      Float?    // Geocoded from city/state
+  longitude     Float?    // Geocoded from city/state
   regions       String[]  // Array of regions they serve (e.g., ["Pacific Northwest", "California", "Western US"])
   travelWillingness String[] // ["Local", "Regional", "National", "International"]
 

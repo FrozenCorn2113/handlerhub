@@ -1,9 +1,10 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 import { BookingsTabs } from '@/components/dashboard/bookings-tabs'
@@ -69,7 +70,9 @@ export default async function BookingsPage() {
         }
       >
         {user.role === 'EXHIBITOR' && (
-          <Button href="/dashboard/bookings/new">New Booking Request</Button>
+          <Button asChild>
+            <Link href="/dashboard/bookings/new">New Booking Request</Link>
+          </Button>
         )}
       </DashboardHeader>
 
@@ -83,21 +86,17 @@ export default async function BookingsPage() {
             </p>
             {user.role === 'EXHIBITOR' && (
               <div className="mt-4 flex justify-center gap-3">
-                <Button href="/handlers" variant="primary">
-                  Browse Handlers
+                <Button asChild>
+                  <Link href="/handlers">Browse Handlers</Link>
                 </Button>
-                <Button href="/dashboard/bookings/new" variant="secondary">
-                  New Request
+                <Button asChild variant="outline">
+                  <Link href="/dashboard/bookings/new">New Request</Link>
                 </Button>
               </div>
             )}
             {user.role === 'HANDLER' && (
-              <Button
-                href="/dashboard/profile"
-                variant="primary"
-                className="mt-4"
-              >
-                Complete Profile
+              <Button asChild className="mt-4">
+                <Link href="/dashboard/profile">Complete Profile</Link>
               </Button>
             )}
           </CardContent>

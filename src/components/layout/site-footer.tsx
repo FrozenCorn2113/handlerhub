@@ -29,13 +29,13 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             Help
           </Link>
           <Link
-            href="/privacy"
+            href="/legal/privacy-policy"
             className="text-xs text-warm-brown hover:underline"
           >
             Privacy
           </Link>
           <Link
-            href="/terms"
+            href="/legal/terms-of-service"
             className="text-xs text-warm-brown hover:underline"
           >
             Terms

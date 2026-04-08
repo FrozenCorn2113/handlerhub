@@ -4,7 +4,7 @@ import { useTransition } from 'react'
 
 import { userNameSchema } from '@/lib/validations/user'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -63,12 +63,7 @@ export function UserNameForm({ user }: UserProps) {
       </div>
 
       <div className="flex w-full">
-        <Button
-          type="submit"
-          variant="secondary"
-          loading={isPending}
-          disabled={isPending}
-        >
+        <Button type="submit" variant="outline" disabled={isPending}>
           Change Name
         </Button>
       </div>

@@ -8,13 +8,14 @@ import { getAlsoAtVenue, getEventBySlug } from '@/lib/events/queries'
 import { EventDetailContent } from '@/components/events/event-detail-content'
 
 interface EventDetailPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({
   params,
 }: EventDetailPageProps): Promise<Metadata> {
-  const event = await getEventBySlug(params.slug)
+  const { slug } = await params
+  const event = await getEventBySlug(slug)
   if (!event) {
     return { title: 'Event Not Found' }
   }
@@ -47,7 +48,8 @@ export async function generateMetadata({
 export default async function EventDetailPage({
   params,
 }: EventDetailPageProps) {
-  const event = await getEventBySlug(params.slug)
+  const { slug } = await params
+  const event = await getEventBySlug(slug)
   if (!event) {
     notFound()
   }

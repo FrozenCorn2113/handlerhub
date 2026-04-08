@@ -4,8 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
-import { Button as BrandButton } from '@/components/ui/button'
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -282,9 +281,9 @@ async function ExhibitorDashboard({ userId }: { userId: string }) {
                 Ready to find the perfect handler for your dog? Post a request
                 and let experienced professionals come to you.
               </p>
-              <BrandButton asChild variant="default" size="lg">
+              <Button asChild variant="default" size="lg">
                 <Link href="/handlers">Find Handlers</Link>
-              </BrandButton>
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -411,8 +410,8 @@ export default async function DashboardPage() {
         }
       >
         {userRole === 'ADMIN' && (
-          <Button variant="tertiary" href="/dashboard-admin">
-            Go to admin dashboard
+          <Button asChild variant="ghost">
+            <Link href="/dashboard-admin">Go to admin dashboard</Link>
           </Button>
         )}
       </DashboardHeader>

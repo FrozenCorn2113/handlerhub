@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { REGIONS } from '@/lib/constants/regions'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -1179,7 +1179,7 @@ export default function HandlerProfileForm({
         </Button>
         <Button
           type="button"
-          variant="secondary"
+          variant="outline"
           onClick={() => router.push('/dashboard')}
         >
           Cancel

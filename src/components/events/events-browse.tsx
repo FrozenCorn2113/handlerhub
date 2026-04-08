@@ -15,8 +15,13 @@ import {
   EventsFilters,
   type FilterState,
 } from './events-filters'
-import type { VenuePin } from './events-map'
+import type { MapBounds, VenuePin } from './events-map'
 import { EventsMobileSheet } from './events-mobile-sheet'
+import {
+  type VenueCluster,
+  VenueClusterCard,
+  groupEventsByVenue,
+} from './venue-cluster-card'
 import { MapPin } from '@phosphor-icons/react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
@@ -64,6 +69,7 @@ export function EventsBrowse({
     lat: number
     lng: number
   } | null>(null)
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
 
   const router = useRouter()
 
@@ -72,8 +78,14 @@ export function EventsBrowse({
   const loadMoreTriggerRef = useRef<HTMLDivElement>(null)
   const eventCardRefs = useRef<Map<string, HTMLDivElement>>(new Map())
   const fetchEventsRef = useRef<
-    (f: FilterState, append?: boolean) => Promise<void>
+    (
+      f: FilterState,
+      append?: boolean,
+      bounds?: MapBounds | null
+    ) => Promise<void>
   >(null!)
+  const mapBoundsRef = useRef<MapBounds | null>(null)
+  const boundsDebounceRef = useRef<NodeJS.Timeout>()
   const eventsLengthRef = useRef(initialEvents.length)
 
   // Track viewport to render only one map instance
@@ -85,13 +97,22 @@ export function EventsBrowse({
     return () => mql.removeEventListener('change', handler)
   }, [])
 
+  // Events are now filtered server-side by bounds, so display all loaded events
+  const displayedEvents = events
+
+  // Group events by venue into clusters for the sidebar list
+  const venueClusters = useMemo(
+    () => groupEventsByVenue(displayedEvents),
+    [displayedEvents]
+  )
+
   const hasMore = events.length < total
 
-  // Virtualizer for large lists
+  // Virtualizer for large lists - based on cluster count, not individual events
   const virtualizer = useVirtualizer({
-    count: events.length + (hasMore ? 1 : 0), // +1 for load-more sentinel
+    count: venueClusters.length + (hasMore ? 1 : 0), // +1 for load-more sentinel
     getScrollElement: () => listContainerRef.current,
-    estimateSize: () => 160, // estimated card height
+    estimateSize: () => 110, // estimated cluster card height
     overscan: 5,
   })
 
@@ -101,55 +122,72 @@ export function EventsBrowse({
   }, [events.length])
 
   // Unified fetch: events + pins in one call
-  const fetchEvents = useCallback(async (f: FilterState, append = false) => {
-    if (append) {
-      setLoadingMore(true)
-    } else {
-      setLoading(true)
-    }
-
-    try {
-      const params = new URLSearchParams()
-      if (f.search) params.set('search', f.search)
-      if (f.state) params.set('state', f.state)
-      if (f.eventType) params.set('eventType', f.eventType)
-      if (f.entryStatus) params.set('entryStatus', f.entryStatus)
-      if (f.dateFrom) params.set('dateFrom', f.dateFrom)
-      if (f.dateTo) params.set('dateTo', f.dateTo)
-      if (f.breed) params.set('breed', f.breed)
-      if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
-      if (f.superintendent) params.set('superintendent', f.superintendent)
-      if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
-      params.set('limit', String(PAGE_SIZE))
-      params.set('offset', append ? String(eventsLengthRef.current) : '0')
-      params.set('view', 'unified')
-
-      const res = await fetch(`/api/events?${params.toString()}`)
-      const data = await res.json()
-
+  // When bounds are provided, they filter the event list server-side.
+  // Pins are fetched WITHOUT bounds so the full map remains populated.
+  const fetchEvents = useCallback(
+    async (f: FilterState, append = false, bounds?: MapBounds | null) => {
       if (append) {
-        if (data.events) {
-          setEvents((prev) => [...prev, ...data.events])
-        }
-        if (data.total !== undefined) {
-          setTotal(data.total)
-        }
+        setLoadingMore(true)
       } else {
-        if (data.events) {
-          setEvents(data.events)
-          setTotal(data.total)
-        }
-        if (data.pins) {
-          setPins(data.pins)
-        }
+        setLoading(true)
       }
-    } catch (err) {
-      console.error('Failed to fetch events:', err)
-    } finally {
-      setLoading(false)
-      setLoadingMore(false)
-    }
-  }, [])
+
+      try {
+        const params = new URLSearchParams()
+        if (f.search) params.set('search', f.search)
+        if (f.state) params.set('state', f.state)
+        if (f.eventType) params.set('eventType', f.eventType)
+        if (f.entryStatus) params.set('entryStatus', f.entryStatus)
+        if (f.dateFrom) params.set('dateFrom', f.dateFrom)
+        if (f.dateTo) params.set('dateTo', f.dateTo)
+        if (f.breed) params.set('breed', f.breed)
+        if (f.indoorOutdoor) params.set('indoorOutdoor', f.indoorOutdoor)
+        if (f.superintendent) params.set('superintendent', f.superintendent)
+        if (f.sortBy && f.sortBy !== 'date') params.set('sortBy', f.sortBy)
+        params.set('limit', String(PAGE_SIZE))
+        params.set('offset', append ? String(eventsLengthRef.current) : '0')
+
+        // Pass map bounds so the server filters events geographically
+        if (bounds) {
+          params.set('boundsNorth', String(bounds.north))
+          params.set('boundsSouth', String(bounds.south))
+          params.set('boundsEast', String(bounds.east))
+          params.set('boundsWest', String(bounds.west))
+        }
+
+        // For non-append fetches, also get pins (without bounds so map stays full)
+        if (!append) {
+          params.set('view', 'unified')
+        }
+
+        const res = await fetch(`/api/events?${params.toString()}`)
+        const data = await res.json()
+
+        if (append) {
+          if (data.events) {
+            setEvents((prev) => [...prev, ...data.events])
+          }
+          if (data.total !== undefined) {
+            setTotal(data.total)
+          }
+        } else {
+          if (data.events) {
+            setEvents(data.events)
+            setTotal(data.total)
+          }
+          if (data.pins) {
+            setPins(data.pins)
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch events:', err)
+      } finally {
+        setLoading(false)
+        setLoadingMore(false)
+      }
+    },
+    []
+  )
 
   fetchEventsRef.current = fetchEvents
 
@@ -159,7 +197,7 @@ export function EventsBrowse({
       clearTimeout(debounceRef.current)
     }
     debounceRef.current = setTimeout(() => {
-      fetchEvents(filters)
+      fetchEvents(filters, false, mapBoundsRef.current)
     }, 500)
 
     return () => {
@@ -177,7 +215,7 @@ export function EventsBrowse({
       (entries) => {
         const entry = entries[0]
         if (entry?.isIntersecting && hasMore && !loading && !loadingMore) {
-          fetchEventsRef.current(filters, true)
+          fetchEventsRef.current(filters, true, mapBoundsRef.current)
         }
       },
       { rootMargin: '400px' }
@@ -187,13 +225,39 @@ export function EventsBrowse({
     return () => observer.disconnect()
   }, [hasMore, loading, loadingMore, filters])
 
-  // Map/list sync: click pin scrolls to card
-  const handlePinClick = useCallback((eventId: string) => {
-    const cardEl = eventCardRefs.current.get(eventId)
-    if (cardEl && listContainerRef.current) {
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  const handleBoundsChange = useCallback(
+    (bounds: MapBounds) => {
+      setMapBounds(bounds)
+      mapBoundsRef.current = bounds
+
+      // Debounce bounds-driven refetch to avoid spamming during pan/zoom
+      if (boundsDebounceRef.current) {
+        clearTimeout(boundsDebounceRef.current)
+      }
+      boundsDebounceRef.current = setTimeout(() => {
+        fetchEventsRef.current(filters, false, bounds)
+      }, 300)
+    },
+    [filters]
+  )
+
+  // Map/list sync: click pin highlights sidebar card and scrolls to it
+  const handlePinClick = useCallback((venueId: string) => {
+    const cardEl = eventCardRefs.current.get(venueId)
+    const container = listContainerRef.current
+    if (cardEl && container) {
+      // Scroll within the list container only, not the page
+      const containerRect = container.getBoundingClientRect()
+      const cardRect = cardEl.getBoundingClientRect()
+      const scrollTop =
+        cardRect.top -
+        containerRect.top +
+        container.scrollTop -
+        containerRect.height / 2 +
+        cardRect.height / 2
+      container.scrollTo({ top: scrollTop, behavior: 'smooth' })
     }
-    setHighlightedEventId(eventId)
+    setHighlightedEventId(venueId)
   }, [])
 
   // Card click: zoom map + open slide-over (desktop only)
@@ -206,6 +270,23 @@ export function EventsBrowse({
         })
       }
       router.push(`/events/${event.slug}`, { scroll: false })
+    },
+    [router]
+  )
+
+  // Cluster card click: zoom map + navigate to first event
+  const handleClusterClick = useCallback(
+    (cluster: VenueCluster) => {
+      if (cluster.latitude && cluster.longitude) {
+        setFocusLocation({
+          lat: cluster.latitude,
+          lng: cluster.longitude,
+        })
+      }
+      const firstEvent = cluster.events[0]
+      if (firstEvent) {
+        router.push(`/events/${firstEvent.slug}`, { scroll: false })
+      }
     },
     [router]
   )
@@ -237,27 +318,27 @@ export function EventsBrowse({
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
         </div>
-      ) : events.length === 0 ? (
+      ) : venueClusters.length === 0 ? (
         <div className="px-4 py-12 text-center">
           <p className="text-base font-medium text-ringside-black">
-            No events found
+            No events in this area
           </p>
           <p className="mt-1 text-sm text-warm-gray">
-            Try adjusting your filters or search terms
+            Try zooming out or panning the map to see more events
           </p>
         </div>
       ) : (
         <div className="space-y-3 p-4">
-          {events.map((event) => (
+          {venueClusters.map((cluster) => (
             <div
-              key={event.id}
+              key={cluster.venueId}
               ref={(el) => {
-                if (el) eventCardRefs.current.set(event.id, el)
+                if (el) eventCardRefs.current.set(cluster.venueId, el)
               }}
             >
-              <EventCard
-                event={event}
-                isHighlighted={highlightedEventId === event.id}
+              <VenueClusterCard
+                cluster={cluster}
+                isHighlighted={highlightedEventId === cluster.venueId}
                 onHover={setHighlightedEventId}
               />
             </div>
@@ -286,13 +367,13 @@ export function EventsBrowse({
         <div className="flex items-center justify-center py-12">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-paddock-green border-t-transparent" />
         </div>
-      ) : events.length === 0 ? (
+      ) : venueClusters.length === 0 ? (
         <div className="px-4 py-12 text-center">
           <p className="text-base font-medium text-ringside-black">
-            No events found
+            No events in this area
           </p>
           <p className="mt-1 text-sm text-warm-gray">
-            Try adjusting your filters or search terms
+            Try zooming out or panning the map to see more events
           </p>
         </div>
       ) : (
@@ -304,7 +385,7 @@ export function EventsBrowse({
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
-            const isLoadMore = virtualItem.index === events.length
+            const isLoadMore = virtualItem.index === venueClusters.length
 
             if (isLoadMore) {
               return (
@@ -332,16 +413,16 @@ export function EventsBrowse({
               )
             }
 
-            const event = events[virtualItem.index]
-            if (!event) return null
+            const cluster = venueClusters[virtualItem.index]
+            if (!cluster) return null
 
             return (
               <div
-                key={event.id}
+                key={cluster.venueId}
                 ref={(el) => {
                   if (el) {
                     virtualizer.measureElement(el)
-                    eventCardRefs.current.set(event.id, el)
+                    eventCardRefs.current.set(cluster.venueId, el)
                   }
                 }}
                 data-index={virtualItem.index}
@@ -354,11 +435,11 @@ export function EventsBrowse({
                   padding: '6px 16px',
                 }}
               >
-                <EventCard
-                  event={event}
-                  isHighlighted={highlightedEventId === event.id}
+                <VenueClusterCard
+                  cluster={cluster}
+                  isHighlighted={highlightedEventId === cluster.venueId}
                   onHover={setHighlightedEventId}
-                  onClick={handleCardClick}
+                  onClick={handleClusterClick}
                 />
               </div>
             )
@@ -386,6 +467,7 @@ export function EventsBrowse({
         onPinHover={setHighlightedEventId}
         onPinClick={handlePinClick}
         focusLocation={focusLocation}
+        onBoundsChange={handleBoundsChange}
       />
     </ErrorBoundary>
   )
@@ -408,6 +490,17 @@ export function EventsBrowse({
             {filterContent}
           </div>
 
+          {/* Viewport filter indicator */}
+          {mapBounds && (
+            <div className="border-b border-sand bg-light-sand px-4 py-2">
+              <p className="text-xs text-warm-gray">
+                {hasMore
+                  ? `Showing ${venueClusters.length} venues (${displayedEvents.length} of ${total} events) in this area`
+                  : `Showing all ${venueClusters.length} venues (${displayedEvents.length} events) in this area`}
+              </p>
+            </div>
+          )}
+
           {/* Virtualized event cards */}
           <div
             ref={listContainerRef}
@@ -429,7 +522,7 @@ export function EventsBrowse({
         {/* Bottom sheet drawer */}
         <EventsMobileSheet
           filterSummary={filterSummary}
-          eventCount={total}
+          eventCount={venueClusters.length}
           filterContent={filterContent}
           listContent={eventListContent}
         />

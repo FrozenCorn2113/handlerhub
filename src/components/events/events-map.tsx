@@ -1,13 +1,28 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { EVENT_TYPE_COLORS } from '@/lib/events/constants'
-
-import { useMapClusters } from './use-map-clusters'
 import { MapPin } from '@phosphor-icons/react'
 import type { EntryStatus, EventType } from '@prisma/client'
-import { Map, Marker, Overlay } from 'pigeon-maps'
+import 'maplibre-gl/dist/maplibre-gl.css'
+
+// Larger close button for MapLibre popups
+const POPUP_STYLE = `
+.hh-popup .maplibregl-popup-close-button {
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0;
+  text-align: center;
+  border-radius: 4px;
+  right: 4px;
+  top: 4px;
+}
+.hh-popup .maplibregl-popup-close-button:hover {
+  background: #f3f4f6;
+}
+`
 
 export interface VenuePin {
   venueId: string
@@ -28,13 +43,31 @@ export interface VenuePin {
   }>
 }
 
+export interface MapBounds {
+  north: number
+  south: number
+  east: number
+  west: number
+}
+
 interface EventsMapProps {
   pins: VenuePin[]
   highlightedEventId?: string | null
   onPinHover?: (eventId: string | null) => void
   onPinClick?: (eventId: string) => void
   focusLocation?: { lat: number; lng: number } | null
+  onBoundsChange?: (bounds: MapBounds) => void
 }
+
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+const MAP_STYLE = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+  : 'https://demotiles.maplibre.org/style.json'
+
+const SOURCE_ID = 'venues'
+const CLUSTERS_LAYER = 'venue-clusters'
+const CLUSTER_COUNT_LAYER = 'venue-cluster-count'
+const UNCLUSTERED_LAYER = 'venue-unclustered'
 
 export function EventsMap({
   pins,
@@ -42,246 +75,380 @@ export function EventsMap({
   onPinHover,
   onPinClick,
   focusLocation,
+  onBoundsChange,
 }: EventsMapProps) {
-  const [selectedPin, setSelectedPin] = useState<VenuePin | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<any>(null)
+  const popupRef = useRef<any>(null)
+  const onBoundsChangeRef = useRef(onBoundsChange)
+  onBoundsChangeRef.current = onBoundsChange
+  const [mapReady, setMapReady] = useState(false)
 
-  // Compute which venue is highlighted
-  const highlightedVenueId = useMemo(() => {
-    if (!highlightedEventId) return null
-    for (const pin of pins) {
-      if (pin.events.some((e) => e.id === highlightedEventId)) {
-        return pin.venueId
-      }
-    }
-    return null
-  }, [highlightedEventId, pins])
+  // Build GeoJSON from pins
+  const geojson = useMemo(
+    () => ({
+      type: 'FeatureCollection' as const,
+      features: pins.map((pin) => ({
+        type: 'Feature' as const,
+        geometry: { type: 'Point' as const, coordinates: [pin.lng, pin.lat] },
+        properties: {
+          venueId: pin.venueId,
+          name: pin.name,
+          city: pin.city,
+          state: pin.state,
+          eventCount: pin.eventCount,
+          events: JSON.stringify(pin.events),
+        },
+      })),
+    }),
+    [pins]
+  )
 
-  // Compute center from pins or default to US center
+  // Initial center
   const initialCenter = useMemo<[number, number]>(() => {
-    if (pins.length === 0) return [39.8283, -98.5795]
-    const avgLat = pins.reduce((sum, p) => sum + p.lat, 0) / pins.length
-    const avgLng = pins.reduce((sum, p) => sum + p.lng, 0) / pins.length
-    return [avgLat, avgLng]
+    if (pins.length === 0) return [-98.5795, 39.8283]
+    const avgLng = pins.reduce((s, p) => s + p.lng, 0) / pins.length
+    const avgLat = pins.reduce((s, p) => s + p.lat, 0) / pins.length
+    return [avgLng, avgLat]
   }, [pins])
 
-  // Controlled map state
-  const [mapCenter, setMapCenter] = useState<[number, number]>(initialCenter)
-  const [mapZoom, setMapZoom] = useState(4)
-  const [mapBounds, setMapBounds] = useState<{
-    ne: [number, number]
-    sw: [number, number]
-  } | null>(null)
-
-  // Clustering
-  const { clusters, getExpansionZoom } = useMapClusters(
-    pins,
-    mapBounds,
-    mapZoom
-  )
-
-  // Focus location support (Phase 3 will use this)
   useEffect(() => {
-    if (focusLocation) {
-      setMapCenter([focusLocation.lat, focusLocation.lng])
-      setMapZoom(12)
+    if (!containerRef.current) return
+
+    let map: any
+    let isDestroyed = false
+
+    // Inject popup styles once
+    if (!document.getElementById('hh-popup-style')) {
+      const styleEl = document.createElement('style')
+      styleEl.id = 'hh-popup-style'
+      styleEl.textContent = POPUP_STYLE
+      document.head.appendChild(styleEl)
     }
+
+    const init = async () => {
+      const maplibregl = (await import('maplibre-gl')).default
+      if (isDestroyed) return
+
+      map = new maplibregl.Map({
+        container: containerRef.current!,
+        style: MAP_STYLE,
+        center: initialCenter,
+        zoom: 4,
+        attributionControl: false,
+      })
+
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        'top-right'
+      )
+
+      map.on('load', () => {
+        if (isDestroyed) return
+
+        map.addSource(SOURCE_ID, {
+          type: 'geojson',
+          data: geojson,
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 50,
+          clusterProperties: {
+            totalEvents: ['+', ['get', 'eventCount']],
+          },
+        })
+
+        // Cluster circles
+        map.addLayer({
+          id: CLUSTERS_LAYER,
+          type: 'circle',
+          source: SOURCE_ID,
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'totalEvents'],
+              '#60A5FA',
+              10,
+              '#3B82F6',
+              30,
+              '#1D4ED8',
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'totalEvents'],
+              20,
+              10,
+              28,
+              30,
+              36,
+            ],
+            'circle-stroke-width': 2.5,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.92,
+          },
+        })
+
+        // Cluster count labels
+        map.addLayer({
+          id: CLUSTER_COUNT_LAYER,
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['to-string', ['get', 'totalEvents']],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 13,
+          },
+          paint: { 'text-color': '#ffffff' },
+        })
+
+        // Individual venue pins
+        map.addLayer({
+          id: UNCLUSTERED_LAYER,
+          type: 'circle',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'eventCount'],
+              '#60A5FA',
+              3,
+              '#3B82F6',
+              6,
+              '#2563EB',
+            ],
+            'circle-radius': 14,
+            'circle-stroke-width': 2.5,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.92,
+          },
+        })
+
+        // Event count label on individual pins
+        map.addLayer({
+          id: 'venue-unclustered-count',
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          layout: {
+            'text-field': ['to-string', ['get', 'eventCount']],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+          paint: { 'text-color': '#ffffff' },
+        })
+
+        mapRef.current = map
+        setMapReady(true)
+
+        // Helper to report current bounds to parent
+        const reportBounds = () => {
+          if (isDestroyed) return
+          const b = map.getBounds()
+          onBoundsChangeRef.current?.({
+            north: b.getNorth(),
+            south: b.getSouth(),
+            east: b.getEast(),
+            west: b.getWest(),
+          })
+        }
+
+        // Report initial bounds immediately so list filters on load
+        reportBounds()
+
+        // Notify parent of bounds changes on pan/zoom
+        map.on('moveend', reportBounds)
+
+        // Click cluster -> expand (MapLibre v3+ uses Promise API)
+        map.on('click', CLUSTERS_LAYER, async (e: any) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [CLUSTERS_LAYER],
+          })
+          if (!features.length) return
+          const clusterId = features[0].properties.cluster_id
+          try {
+            const zoom = await (map.getSource(SOURCE_ID) as any).getClusterExpansionZoom(clusterId)
+            map.easeTo({ center: features[0].geometry.coordinates, zoom })
+          } catch {}
+        })
+
+        // Click individual pin -> show popup
+        map.on('click', UNCLUSTERED_LAYER, (e: any) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [UNCLUSTERED_LAYER],
+          })
+          if (!features.length) return
+          const props = features[0].properties
+          const coords = features[0].geometry.coordinates.slice()
+          const events: VenuePin['events'] = JSON.parse(props.events || '[]')
+
+          if (popupRef.current) {
+            popupRef.current.remove()
+          }
+
+          const EVENT_TYPE_LABELS: Record<string, string> = {
+            ALL_BREED: 'All Breed',
+            LIMITED_BREED: 'Limited Breed',
+            SPECIALTY: 'Specialty',
+            PARENT_SPECIALTY: 'Parent Specialty',
+            DESIGNATED_SPECIALTY: 'Designated Specialty',
+            JUNIOR_SHOWMANSHIP: 'Junior Showmanship',
+            SWEEPSTAKES: 'Sweepstakes',
+            OTHER: 'Other',
+          }
+
+          const dates = events.map((ev) => new Date(ev.startDate).getTime())
+          const minDate = new Date(Math.min(...dates))
+          const maxDate = new Date(Math.max(...dates))
+          const fmtDate = (d: Date) =>
+            d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          const dateRange =
+            minDate.getTime() === maxDate.getTime()
+              ? fmtDate(minDate)
+              : `${fmtDate(minDate)} - ${fmtDate(maxDate)}`
+
+          const uniqueClubs = Array.from(
+            new Set(events.map((ev) => ev.clubName))
+          )
+          const clubHtml =
+            uniqueClubs.length === 1
+              ? uniqueClubs[0]
+              : `${uniqueClubs[0]} <span style="color:#7A6E5E">+${uniqueClubs.length - 1} more club${uniqueClubs.length - 1 > 1 ? 's' : ''}</span>`
+
+          const uniqueTypes = Array.from(
+            new Set(events.map((ev) => ev.eventType))
+          )
+          const typesList = uniqueTypes
+            .map((t) => EVENT_TYPE_LABELS[t] || t)
+            .join(', ')
+
+          const entryStatuses = Array.from(
+            new Set(events.map((ev) => ev.entryStatus).filter(Boolean))
+          )
+          const entryStatusLabels: Record<string, string> = {
+            OPEN: 'Entries Open',
+            CLOSED: 'Entries Closed',
+            PENDING: 'Entries Pending',
+          }
+          const entryStatusHtml = entryStatuses.length
+            ? `<div style="font-size:11px;color:#1F6B4A;font-weight:500;margin-bottom:10px">${entryStatuses.map((s) => entryStatusLabels[s] || s).join(', ')}</div>`
+            : ''
+
+          const html = `
+            <div style="min-width:220px;max-width:280px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+              <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:2px">${props.city}, ${props.state}</div>
+              <div style="font-size:12px;color:#7A6E5E;margin-bottom:8px">${dateRange}</div>
+              <div style="font-size:12px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${clubHtml}</div>
+              <div style="font-size:11px;color:#7A6E5E;margin-bottom:6px">${events.length} event${events.length > 1 ? 's' : ''}: ${typesList}</div>
+              ${entryStatusHtml}
+              <div style="display:flex;gap:8px;align-items:center">
+                <a href="/events/${events[0].slug}" style="font-size:12px;font-weight:600;color:#1F6B4A;text-decoration:none;padding:6px 12px;border:1px solid #1F6B4A;border-radius:6px;transition:background 0.15s;display:inline-block"
+                   onmouseover="this.style.backgroundColor='#1F6B4A';this.style.color='#fff'"
+                   onmouseout="this.style.backgroundColor='transparent';this.style.color='#1F6B4A'">View full details &rarr;</a>
+                <a href="/handlers?state=${encodeURIComponent(props.state)}&city=${encodeURIComponent(props.city)}" style="font-size:12px;font-weight:600;color:#fff;text-decoration:none;padding:6px 12px;background:#1F6B4A;border-radius:6px;transition:opacity 0.15s;display:inline-block"
+                   onmouseover="this.style.opacity='0.85'"
+                   onmouseout="this.style.opacity='1'">Find a Handler</a>
+              </div>
+            </div>
+          `
+
+          const popup = new maplibregl.Popup({
+            closeButton: true,
+            maxWidth: '300px',
+            offset: 8,
+            className: 'hh-popup',
+          })
+            .setLngLat(coords as [number, number])
+            .setHTML(html)
+            .addTo(map)
+
+          popupRef.current = popup
+
+          if (props.venueId) {
+            onPinClick?.(props.venueId)
+          }
+        })
+
+        // Hover cursors
+        map.on('mouseenter', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = ''
+        })
+        map.on('mouseenter', UNCLUSTERED_LAYER, (e: any) => {
+          map.getCanvas().style.cursor = 'pointer'
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [UNCLUSTERED_LAYER],
+          })
+          if (features.length) {
+            const props = features[0].properties
+            if (props.venueId) onPinHover?.(props.venueId)
+          }
+        })
+        map.on('mouseleave', UNCLUSTERED_LAYER, () => {
+          map.getCanvas().style.cursor = ''
+          onPinHover?.(null)
+        })
+      })
+    }
+
+    init()
+
+    return () => {
+      isDestroyed = true
+      popupRef.current?.remove()
+      map?.remove()
+      mapRef.current = null
+      setMapReady(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only init once; update source data separately below
+
+  // Update source data when pins change (after map is ready)
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    const source = map.getSource(SOURCE_ID)
+    if (source) {
+      source.setData(geojson)
+    }
+  }, [geojson, mapReady])
+
+  // Focus location
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !focusLocation) return
+    map.easeTo({ center: [focusLocation.lng, focusLocation.lat], zoom: 12 })
   }, [focusLocation])
 
-  // Close overlay when clicking outside (map click)
-  const handleMapClick = useCallback(() => {
-    setSelectedPin(null)
-  }, [])
-
-  const handleMarkerClick = useCallback(
-    (pin: VenuePin) => {
-      setSelectedPin((prev) => (prev?.venueId === pin.venueId ? null : pin))
-      if (pin.events.length > 0) {
-        onPinClick?.(pin.events[0].id)
-      }
-    },
-    [onPinClick]
-  )
+  // Highlight pin
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    if (!highlightedEventId) {
+      map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', 14)
+      return
+    }
+    const pin =
+      pins.find((p) => p.venueId === highlightedEventId) ||
+      pins.find((p) => p.events.some((e) => e.id === highlightedEventId))
+    if (!pin) return
+    map.setPaintProperty(UNCLUSTERED_LAYER, 'circle-radius', [
+      'case',
+      ['==', ['get', 'venueId'], pin.venueId],
+      18,
+      14,
+    ])
+  }, [highlightedEventId, pins, mapReady])
 
   return (
     <div className="relative h-full w-full">
-      <div className="h-full w-full cursor-grab overflow-hidden rounded-2xl border border-sand active:cursor-grabbing">
-        <Map
-          center={mapCenter}
-          zoom={mapZoom}
-          onBoundsChanged={({ center: c, zoom: z, bounds: b }) => {
-            setMapCenter(c)
-            setMapZoom(z)
-            if (b) {
-              setMapBounds(b)
-            }
-          }}
-          onClick={() => {
-            handleMapClick()
-          }}
-          attribution={false}
-        >
-          {clusters.map((item, i) => {
-            if (item.isCluster) {
-              // Cluster pin - larger circle with count
-              const size = Math.min(
-                56,
-                36 + Math.floor(Math.log2(item.pointCount)) * 5
-              )
-              return (
-                <Marker
-                  key={`cluster-${item.clusterId ?? i}`}
-                  anchor={[item.lat, item.lng]}
-                  onClick={() => {
-                    if (item.clusterId != null) {
-                      const expansionZoom = getExpansionZoom(item.clusterId)
-                      setMapCenter([item.lat, item.lng])
-                      setMapZoom(expansionZoom)
-                    }
-                  }}
-                >
-                  <div
-                    style={{
-                      background: '#1F6B4A',
-                      width: size,
-                      height: size,
-                      borderRadius: '50%',
-                      border: '2.5px solid white',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontSize: 14,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {item.pointCount}
-                  </div>
-                </Marker>
-              )
-            }
-
-            // Single venue pin
-            const pin = item.venuePin
-            if (!pin) return null
-
-            const primaryEvent = pin.events[0]
-            const color = primaryEvent
-              ? EVENT_TYPE_COLORS[primaryEvent.eventType]
-              : '#1F6B4A'
-            const isHighlighted = highlightedVenueId === pin.venueId
-            const isMulti = pin.eventCount > 1
-
-            return (
-              <Marker
-                key={pin.venueId}
-                anchor={[pin.lat, pin.lng]}
-                onClick={() => handleMarkerClick(pin)}
-                onMouseOver={() => {
-                  if (pin.events.length > 0) {
-                    onPinHover?.(pin.events[0].id)
-                  }
-                }}
-                onMouseOut={() => {
-                  onPinHover?.(null)
-                }}
-              >
-                <div
-                  style={{
-                    background: color,
-                    width: isMulti ? 32 : 14,
-                    height: isMulti ? 32 : 14,
-                    borderRadius: '50%',
-                    border: '2.5px solid white',
-                    boxShadow: isHighlighted
-                      ? '0 0 8px rgba(31, 107, 74, 0.6), 0 2px 6px rgba(0,0,0,0.25)'
-                      : '0 2px 6px rgba(0,0,0,0.25)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    transform: isHighlighted ? 'scale(1.3)' : 'scale(1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    cursor: 'pointer',
-                    zIndex: isHighlighted ? 1000 : 'auto',
-                  }}
-                >
-                  {isMulti ? pin.eventCount : null}
-                </div>
-              </Marker>
-            )
-          })}
-
-          {selectedPin && (
-            <Overlay
-              anchor={[selectedPin.lat, selectedPin.lng]}
-              offset={[110, 20]}
-            >
-              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-              <div
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                className="w-[220px] overflow-hidden rounded-xl bg-white shadow-md"
-              >
-                <div className="flex items-start justify-between px-3 pb-1 pt-2.5">
-                  <span className="text-[11px] font-medium text-warm-gray">
-                    {selectedPin.city}, {selectedPin.state}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPin(null)}
-                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-warm-gray transition-colors hover:bg-sand hover:text-ringside-black"
-                  >
-                    <svg
-                      className="size-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div className="px-3 pb-2.5">
-                  {selectedPin.events.slice(0, 3).map((e) => {
-                    const date = new Date(e.startDate).toLocaleDateString(
-                      'en-US',
-                      { month: 'short', day: 'numeric' }
-                    )
-                    return (
-                      <a
-                        key={e.id}
-                        href={`/events/${e.slug}`}
-                        className="block truncate py-0.5 text-[12px] leading-snug text-ringside-black no-underline hover:text-paddock-green"
-                      >
-                        {e.clubName}
-                        <span className="ml-1.5 text-[11px] text-warm-gray">
-                          {date}
-                        </span>
-                      </a>
-                    )
-                  })}
-                  {selectedPin.events.length > 3 && (
-                    <p className="mt-0.5 text-[11px] text-warm-gray">
-                      +{selectedPin.events.length - 3} more events
-                    </p>
-                  )}
-                </div>
-              </div>
-            </Overlay>
-          )}
-        </Map>
+      <div className="h-full w-full overflow-hidden rounded-2xl border border-sand">
+        <div ref={containerRef} className="h-full w-full" />
       </div>
 
-      {/* Empty state overlay */}
       {pins.length === 0 && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
           <MapPin size={40} weight="light" className="mb-2 text-warm-gray" />

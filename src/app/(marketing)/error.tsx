@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 
-export default function ErrorPage({
+export default function MarketingError({
   error,
   reset,
 }: {
@@ -32,12 +32,12 @@ export default function ErrorPage({
         Something went wrong
       </h1>
       <p className="mt-3 text-center text-gray-600 dark:text-gray-400">
-        An unexpected error occurred. Please try again.
+        {error.message || 'An unexpected error occurred. Please try again.'}
       </p>
       <div className="mt-8 flex gap-3">
         <Button onClick={() => reset()}>Try Again</Button>
         <Button variant="outline" asChild>
-          <Link href="/">Back to Home</Link>
+          <Link href="/">Go Home</Link>
         </Button>
       </div>
       {error.digest && (

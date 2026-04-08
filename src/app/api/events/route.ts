@@ -43,6 +43,33 @@ export async function GET(req: NextRequest) {
       : 0
     const view = searchParams.get('view') || 'unified' // 'unified' | 'list' | 'pins'
 
+    // Map bounds for geographic filtering
+    const boundsNorth = searchParams.get('boundsNorth')
+      ? parseFloat(searchParams.get('boundsNorth')!)
+      : undefined
+    const boundsSouth = searchParams.get('boundsSouth')
+      ? parseFloat(searchParams.get('boundsSouth')!)
+      : undefined
+    const boundsEast = searchParams.get('boundsEast')
+      ? parseFloat(searchParams.get('boundsEast')!)
+      : undefined
+    const boundsWest = searchParams.get('boundsWest')
+      ? parseFloat(searchParams.get('boundsWest')!)
+      : undefined
+
+    const bounds =
+      boundsNorth !== undefined &&
+      boundsSouth !== undefined &&
+      boundsEast !== undefined &&
+      boundsWest !== undefined
+        ? {
+            north: boundsNorth,
+            south: boundsSouth,
+            east: boundsEast,
+            west: boundsWest,
+          }
+        : undefined
+
     const filters = {
       state,
       city,
@@ -57,6 +84,7 @@ export async function GET(req: NextRequest) {
       dateTo,
       limit,
       offset,
+      bounds,
     }
 
     // Unified mode: return events + pins + total in one call

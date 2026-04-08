@@ -1,9 +1,12 @@
-import { allPosts } from '@/root/.contentlayer/generated'
-import { compareDesc } from 'date-fns'
+import Link from 'next/link'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
+
 import { BlockTitle } from '@/components/layout/main-title'
 import { BlogPostListItem } from '@/components/marketing/blog-list-item'
+
+import { allPosts } from '@/root/.contentlayer/generated'
+import { compareDesc } from 'date-fns'
 
 export default function LatestFromBlog() {
   const posts = allPosts
@@ -33,8 +36,8 @@ export default function LatestFromBlog() {
         </div>
       </div>
       <div className="mt-16 flex justify-center">
-        <Button href="/blog" variant="primary">
-          See all posts
+        <Button asChild>
+          <Link href="/blog">See all posts</Link>
         </Button>
       </div>
     </section>

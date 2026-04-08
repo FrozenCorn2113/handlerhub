@@ -1,137 +1,16 @@
-import Image from 'next/image'
 import { redirect } from 'next/navigation'
 
 import { getCurrentUser } from '@/lib/session'
 
-import PaginationNST from '@/components/ui/pagination-nst'
-
 import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
-
-const UserTableRow = ({ user }) => {
-  return (
-    <tr className="dark:text-white">
-      <td className="hidden p-3 text-center md:table-cell">
-        <Image
-          width={40}
-          height={40}
-          src={user.avatarSrc || '/images/avatars/noavatar.png'}
-          alt={`Profile Image of ${user.name}`}
-          className="inline-block size-10 rounded-full"
-        />
-      </td>
-      <td className="p-3">
-        <p className="font-medium">{user.name}</p>
-        <p className="text-gray-500">{user.jobTitle}</p>
-      </td>
-      <td className="hidden p-3 text-gray-500 md:table-cell">{user.email}</td>
-      <td className="p-3 text-center">
-        <span
-          className={`inline-block size-4 rounded-full${user.planBadgeColor} md:hidden`}
-        >
-          &nbsp;
-        </span>
-        <div
-          className={`hidden rounded-full ${user.planBadgeBg} px-2 py-1 text-xs font-semibold leading-4 ${user.planTextColor} md:inline-block`}
-        >
-          {user.plan}
-        </div>
-      </td>
-      <td className="p-3 text-center">
-        <button
-          type="button"
-          className="inline-flex items-center justify-center space-x-2 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-semibold leading-5 text-gray-800 shadow-sm hover:border-gray-300 hover:bg-gray-100 hover:text-gray-800 hover:shadow focus:outline-none focus:ring focus:ring-gray-500/25 active:border-white active:bg-white active:shadow-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white dark:active:border-gray-600 dark:active:bg-gray-800 dark:active:shadow-none"
-        >
-          <svg
-            className="hi-solid hi-pencil inline-block size-4"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-          </svg>
-          <span className="hidden sm:inline">Edit</span>
-        </button>
-      </td>
-    </tr>
-  )
-}
-
-const userData = [
-  {
-    id: 1,
-    name: 'Nansi Hart',
-    jobTitle: 'Web Designer',
-    email: 'n.hart@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=13',
-    plan: 'Agency',
-    planBadgeColor: 'bg-emerald-300',
-    planBadgeBg: 'bg-emerald-200',
-    planTextColor: 'text-emerald-700',
-  },
-  {
-    id: 2,
-    name: 'Lia Baker',
-    jobTitle: 'Web Developer',
-    email: 'l.baker@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=11',
-    plan: 'Freelancer',
-    planBadgeColor: 'bg-blue-300',
-    planBadgeBg: 'bg-blue-200',
-    planTextColor: 'text-blue-700',
-  },
-  {
-    id: 3,
-    name: 'Xavier Rosales',
-    jobTitle: 'Author',
-    email: 'x.rosales@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=10',
-    plan: 'Trial',
-    planBadgeColor: 'bg-orange-300',
-    planBadgeBg: 'bg-orange-200',
-    planTextColor: 'text-orange-700',
-  },
-  {
-    id: 4,
-    name: 'Danyal Clark',
-    jobTitle: 'Laravel Developer',
-    email: 'd.clark@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=12',
-    plan: 'Agency',
-    planBadgeColor: 'bg-emerald-300',
-    planBadgeBg: 'bg-emerald-200',
-    planTextColor: 'text-emerald-700',
-  },
-  {
-    id: 5,
-    name: 'Keira Simons',
-    jobTitle: 'Marketing Director',
-    email: 'k.simons@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=14',
-    plan: 'Freelancer',
-    planBadgeColor: 'bg-blue-300',
-    planBadgeBg: 'bg-blue-200',
-    planTextColor: 'text-blue-700',
-  },
-  {
-    id: 6,
-    name: 'John Doe',
-    jobTitle: 'Frontend Developer',
-    email: 'john.doe@example.com',
-    avatarSrc: 'https://i.pravatar.cc/120?img=15',
-    plan: 'Pro',
-    planBadgeColor: 'bg-purple-300',
-    planBadgeBg: 'bg-purple-200',
-    planTextColor: 'text-purple-700',
-  },
-]
 
 export const metadata = {
   title: 'Users',
   description: 'Manage your users.',
 }
 
-export default async function StatusPage() {
+export default async function UsersPage() {
   const user = await getCurrentUser()
 
   if (!user) {
@@ -141,38 +20,28 @@ export default async function StatusPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Users" text="Manage your users." />
-      <section className="grid gap-8">
-        <div className="min-w-full overflow-x-auto rounded-2xl border border-sand bg-white shadow-md">
-          <table className="min-w-full align-middle text-sm dark:bg-gray-800">
-            <thead className="dark:text-white">
-              <tr className="bg-gray-50 dark:bg-gray-700">
-                <th className="hidden bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 md:table-cell dark:bg-gray-700 dark:text-white">
-                  Avatar
-                </th>
-                <th className="bg-gray-100 p-3 text-left text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white">
-                  Name
-                </th>
-                <th className="hidden bg-gray-100 p-3 text-left text-sm font-semibold uppercase tracking-wider text-gray-700 md:table-cell dark:bg-gray-700 dark:text-white">
-                  Email
-                </th>
-                <th className="bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white">
-                  Plan
-                </th>
-                <th className="bg-gray-100 p-3 text-center text-sm font-semibold uppercase tracking-wider text-gray-700 dark:bg-gray-700 dark:text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {userData.map((user) => (
-                <UserTableRow key={user.id} user={user} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-      <div className="mb-6 w-full">
-        <PaginationNST />
+      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-sand bg-white p-12 text-center shadow-md">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="mb-4 h-12 w-12 text-warm-brown/40"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2.25 2.25 0 013 16.878V16.5a9.002 9.002 0 0112-8.485M15 19.128v-.003c0-1.113.285-2.16.786-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+          />
+        </svg>
+        <h3 className="font-display text-lg font-semibold text-ringside-black">
+          Coming Soon
+        </h3>
+        <p className="mt-2 max-w-sm font-body text-sm text-warm-brown">
+          User management is on its way. You will be able to view and manage
+          your clients, handlers, and team members here.
+        </p>
       </div>
     </DashboardShell>
   )

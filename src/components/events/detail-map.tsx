@@ -2,99 +2,87 @@
 
 import { useEffect, useRef } from 'react'
 
+import 'maplibre-gl/dist/maplibre-gl.css'
+
 interface DetailMapProps {
   lat: number
   lng: number
   name: string
 }
 
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+const MAP_STYLE = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+  : 'https://demotiles.maplibre.org/style.json'
+
 export function DetailMap({ lat, lng, name }: DetailMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const leafletMapRef = useRef<any>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<any>(null)
 
   useEffect(() => {
-    if (!mapRef.current) return
+    if (!containerRef.current) return
 
-    const initMap = async () => {
-      const L = (await import('leaflet')).default
+    let map: any
+    let marker: any
 
-      // Fix default icon paths
-      delete (L.Icon.Default.prototype as any)._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:
-          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      })
+    const init = async () => {
+      const maplibregl = (await import('maplibre-gl')).default
 
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
       }
 
-      const map = L.map(mapRef.current!, {
-        center: [lat, lng],
-        zoom: 14,
-        scrollWheelZoom: false,
-        zoomControl: true,
+      map = new maplibregl.Map({
+        container: containerRef.current!,
+        style: MAP_STYLE,
+        center: [lng, lat],
+        zoom: 13,
+        attributionControl: false,
       })
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18,
-      }).addTo(map)
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        'top-right'
+      )
 
-      // Custom pin
-      const icon = L.divIcon({
-        html: `<div style="
-          background: #1F6B4A;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          border: 3px solid white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        "></div>`,
-        className: 'custom-pin',
-        iconSize: [18, 18],
-        iconAnchor: [9, 9],
-      })
+      const el = document.createElement('div')
+      el.style.cssText = `
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #1F6B4A;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      `
 
-      L.marker([lat, lng], { icon })
+      marker = new maplibregl.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .setPopup(
+          new maplibregl.Popup({ offset: 16, closeButton: false }).setHTML(
+            `<div style="font-weight:600;font-size:13px;padding:2px 4px">${name}</div>`
+          )
+        )
         .addTo(map)
-        .bindPopup(`<strong>${name}</strong>`)
 
-      leafletMapRef.current = map
+      marker.togglePopup()
+      mapRef.current = map
     }
 
-    initMap()
+    init()
 
     return () => {
-      if (leafletMapRef.current) {
-        leafletMapRef.current.remove()
-        leafletMapRef.current = null
-      }
+      marker?.remove()
+      map?.remove()
+      mapRef.current = null
     }
   }, [lat, lng, name])
 
   return (
-    <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossOrigin=""
-      />
-      <style>{`
-        .custom-pin {
-          background: transparent !important;
-          border: none !important;
-        }
-      `}</style>
-      <div
-        ref={mapRef}
-        className="h-full w-full"
-        style={{ minHeight: '300px' }}
-      />
-    </>
+    <div
+      ref={containerRef}
+      className="h-full w-full"
+      style={{ minHeight: '300px' }}
+    />
   )
 }

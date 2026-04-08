@@ -7,6 +7,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+import type { MapBounds } from '@/components/handlers/handlers-map'
+
 import {
   Camera,
   Car,
@@ -42,6 +44,8 @@ interface Handler {
   regions: string[]
   city: string | null
   state: string | null
+  latitude: number | null
+  longitude: number | null
   rating: number | null
   reviewCount: number
   ratePerShow: number | null
@@ -514,10 +518,18 @@ function HandlersPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get('search') || ''
-  )
+  const [searchQuery, setSearchQuery] = useState(() => {
+    const search = searchParams.get('search')
+    if (search) return search
+    const city = searchParams.get('city')
+    const state = searchParams.get('state')
+    if (city && state) return `${city}, ${state}`
+    if (city) return city
+    if (state) return state
+    return ''
+  })
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<EventSuggestion | null>(
     null
   )
@@ -609,8 +621,22 @@ function HandlersPage() {
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    setFilter('search', searchQuery)
+    const params = new URLSearchParams(searchParams.toString())
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery)
+    } else {
+      params.delete('search')
+      params.delete('city')
+      params.delete('state')
+    }
+    params.delete('page')
+    setPage(1)
+    router.push(`/handlers?${params.toString()}`, { scroll: false })
   }
+
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    setMapBounds(bounds)
+  }, [])
 
   function handleEventSelect(event: EventSuggestion) {
     setSelectedEvent(event)
@@ -631,7 +657,7 @@ function HandlersPage() {
           <h1 className="mb-3 font-display text-xl font-bold text-ringside-black">
             Find a Professional
           </h1>
-          <div className="flex gap-3">
+          <div className="flex gap-2 overflow-x-auto sm:gap-3">
             {SERVICE_TYPES.map(({ label, value, icon: Icon }) => {
               const isSelected = activeServiceType === value
               return (
@@ -640,7 +666,7 @@ function HandlersPage() {
                   onClick={() =>
                     setFilter('serviceType', isSelected ? '' : value)
                   }
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 px-5 py-3 text-xs font-semibold transition-all ${
+                  className={`flex shrink-0 flex-col items-center gap-1.5 rounded-2xl border-2 px-3 py-2 text-xs font-semibold transition-all sm:px-5 sm:py-3 ${
                     isSelected
                       ? 'border-paddock-green bg-paddock-green text-white shadow-md'
                       : 'border-sand bg-white text-warm-brown hover:border-paddock-green/40 hover:shadow-sm'
@@ -655,8 +681,8 @@ function HandlersPage() {
         </div>
 
         {/* Search + Event row */}
-        <div className="flex gap-3 px-6 pb-1 pt-2">
-          <form onSubmit={handleSearch} className="relative max-w-md flex-1">
+        <div className="flex flex-col gap-2 px-6 pb-1 pt-2 md:flex-row md:gap-3">
+          <form onSubmit={handleSearch} className="relative min-w-0 flex-1">
             <MagnifyingGlass
               size={18}
               weight="bold"
@@ -670,7 +696,7 @@ function HandlersPage() {
               className="w-full rounded-full border border-sand bg-white py-2 pl-10 pr-4 text-sm text-ringside-black placeholder:text-warm-gray/60 focus:border-paddock-green focus:outline-none focus:ring-2 focus:ring-paddock-green/20"
             />
           </form>
-          <div className="w-72">
+          <div className="w-full md:w-72">
             <EventAutocomplete
               onSelect={handleEventSelect}
               selectedEvent={selectedEvent}
@@ -680,7 +706,7 @@ function HandlersPage() {
         </div>
 
         {/* Filter pills row */}
-        <div className="flex items-center gap-3 overflow-x-auto px-6 py-2.5">
+        <div className="scrollbar-none flex items-center gap-2 overflow-x-auto px-6 py-2.5 sm:gap-3">
           <FilterDropdown
             label={activeState || 'State'}
             icon={Globe}
@@ -896,6 +922,7 @@ function HandlersPage() {
             handlers={handlers}
             highlightedId={highlightedId}
             onPinHover={setHighlightedId}
+            onBoundsChange={handleBoundsChange}
           />
         </div>
       </div>

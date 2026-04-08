@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 
 import { userRoleSchema } from '@/lib/validations/user'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -107,8 +107,7 @@ export function UserRoleForm({ user }: UserNameFormProps) {
         <div className="flex w-full">
           <Button
             type="submit"
-            variant="secondary"
-            loading={isPending}
+            variant="outline"
             disabled={isPending || !updated}
           >
             Save

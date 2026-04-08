@@ -3,7 +3,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { MapPin } from '@phosphor-icons/react'
-import { Map, Marker, Overlay } from 'pigeon-maps'
+import 'maplibre-gl/dist/maplibre-gl.css'
+
+// Larger close button for MapLibre popups (matching events map)
+const POPUP_STYLE = `
+.hh-popup .maplibregl-popup-close-button {
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0;
+  text-align: center;
+  border-radius: 4px;
+  right: 4px;
+  top: 4px;
+}
+.hh-popup .maplibregl-popup-close-button:hover {
+  background: #f3f4f6;
+}
+`
 
 export interface HandlerPin {
   id: string
@@ -11,7 +29,18 @@ export interface HandlerPin {
   city: string | null
   state: string | null
   serviceType: string
+  serviceTypes?: string[]
   ratePerShow: number | null
+  latitude?: number | null
+  longitude?: number | null
+  profileImage?: string | null
+}
+
+export interface MapBounds {
+  north: number
+  south: number
+  east: number
+  west: number
 }
 
 interface HandlersMapProps {
@@ -19,9 +48,10 @@ interface HandlersMapProps {
   highlightedId?: string | null
   onPinHover?: (id: string | null) => void
   onPinClick?: (id: string) => void
+  onBoundsChange?: (bounds: MapBounds) => void
 }
 
-// Simple US city geocoding fallback - state centers
+// State center coordinates as fallback
 const STATE_COORDS: Record<string, [number, number]> = {
   AL: [32.806671, -86.79113],
   AK: [61.370716, -152.404419],
@@ -75,23 +105,21 @@ const STATE_COORDS: Record<string, [number, number]> = {
   WY: [42.755966, -107.30249],
 }
 
-interface PinWithCoords {
-  handler: HandlerPin
-  coords: [number, number]
-}
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY || ''
+const MAP_STYLE = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/streets-v2/style.json?key=${MAPTILER_KEY}`
+  : 'https://demotiles.maplibre.org/style.json'
 
-function getHandlerCoords(handler: HandlerPin): [number, number] | null {
-  if (handler.state) {
-    const coords = STATE_COORDS[handler.state.toUpperCase()]
-    if (coords) {
-      // Add small random offset so pins at same state don't stack
-      return [
-        coords[0] + (Math.random() - 0.5) * 1.5,
-        coords[1] + (Math.random() - 0.5) * 1.5,
-      ]
-    }
-  }
-  return null
+const SOURCE_ID = 'handlers'
+const CLUSTERS_LAYER = 'handler-clusters'
+const CLUSTER_COUNT_LAYER = 'handler-cluster-count'
+const PINS_LAYER = 'handler-pins'
+
+const SERVICE_TYPE_LABELS: Record<string, string> = {
+  HANDLING: 'Handler',
+  GROOMING: 'Groomer',
+  TRANSPORT: 'Transport',
+  PHOTOGRAPHY: 'Photographer',
 }
 
 export function HandlersMap({
@@ -99,137 +127,364 @@ export function HandlersMap({
   highlightedId,
   onPinHover,
   onPinClick,
+  onBoundsChange,
 }: HandlersMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [mapHeight, setMapHeight] = useState(600)
-  const [selectedPin, setSelectedPin] = useState<PinWithCoords | null>(null)
+  const mapRef = useRef<any>(null)
+  const popupRef = useRef<any>(null)
+  const onBoundsChangeRef = useRef(onBoundsChange)
+  onBoundsChangeRef.current = onBoundsChange
+  const [mapReady, setMapReady] = useState(false)
+
+  // Stable random offsets per handler id (so pins don't jump on re-render)
+  const offsets = useMemo(() => {
+    const m: Record<string, [number, number]> = {}
+    for (const h of handlers) {
+      m[h.id] = [(Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5]
+    }
+    return m
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handlers.map((h) => h.id).join(',')])
+
+  const geojson = useMemo(() => {
+    const features: any[] = []
+    for (const handler of handlers) {
+      let lat: number | null = null
+      let lng: number | null = null
+      if (handler.latitude != null && handler.longitude != null) {
+        lat = handler.latitude
+        lng = handler.longitude
+      } else if (handler.state) {
+        const coords = STATE_COORDS[handler.state.toUpperCase()]
+        if (coords) {
+          const off = offsets[handler.id] || [0, 0]
+          lat = coords[0] + off[0]
+          lng = coords[1] + off[1]
+        }
+      }
+      if (lat == null || lng == null) continue
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+        properties: {
+          id: handler.id,
+          name: handler.name,
+          city: handler.city || '',
+          state: handler.state || '',
+          serviceType: handler.serviceType,
+          serviceTypes: JSON.stringify(
+            handler.serviceTypes || [handler.serviceType]
+          ),
+          ratePerShow: handler.ratePerShow,
+          profileImage: handler.profileImage || '',
+        },
+      })
+    }
+    return { type: 'FeatureCollection', features }
+  }, [handlers, offsets])
+
+  const initialCenter = useMemo<[number, number]>(() => {
+    const pts = geojson.features
+    if (pts.length === 0) return [-98.5795, 39.8283]
+    const avgLng =
+      pts.reduce((s: number, f: any) => s + f.geometry.coordinates[0], 0) /
+      pts.length
+    const avgLat =
+      pts.reduce((s: number, f: any) => s + f.geometry.coordinates[1], 0) /
+      pts.length
+    return [avgLng, avgLat]
+  }, [geojson])
 
   useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setMapHeight(Math.round(entry.contentRect.height))
-      }
-    })
-    observer.observe(el)
-    setMapHeight(Math.round(el.clientHeight))
-    return () => observer.disconnect()
-  }, [])
+    if (!containerRef.current) return
+    let map: any
+    let isDestroyed = false
 
-  // Memoize pin positions so random offsets stay stable across renders
-  const pinsWithCoords = useMemo(() => {
-    return handlers
-      .map((h) => ({ handler: h, coords: getHandlerCoords(h) }))
-      .filter((p): p is PinWithCoords => p.coords !== null)
-  }, [handlers])
+    // Inject popup styles once
+    if (!document.getElementById('hh-handler-popup-style')) {
+      const styleEl = document.createElement('style')
+      styleEl.id = 'hh-handler-popup-style'
+      styleEl.textContent = POPUP_STYLE
+      document.head.appendChild(styleEl)
+    }
 
-  // Compute center from pins or default to US center
-  const center = useMemo<[number, number]>(() => {
-    if (pinsWithCoords.length === 0) return [39.8283, -98.5795]
-    const avgLat =
-      pinsWithCoords.reduce((sum, p) => sum + p.coords[0], 0) /
-      pinsWithCoords.length
-    const avgLng =
-      pinsWithCoords.reduce((sum, p) => sum + p.coords[1], 0) /
-      pinsWithCoords.length
-    return [avgLat, avgLng]
-  }, [pinsWithCoords])
+    const init = async () => {
+      const maplibregl = (await import('maplibre-gl')).default
+      if (isDestroyed) return
 
-  const handleMapClick = useCallback(() => {
-    setSelectedPin(null)
-  }, [])
+      map = new maplibregl.Map({
+        container: containerRef.current!,
+        style: MAP_STYLE,
+        center: initialCenter,
+        zoom: 4,
+        attributionControl: false,
+      })
 
-  const handleMarkerClick = useCallback(
-    (pin: PinWithCoords) => {
-      setSelectedPin((prev) =>
-        prev?.handler.id === pin.handler.id ? null : pin
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        'top-right'
       )
-      onPinClick?.(pin.handler.id)
-    },
-    [onPinClick]
-  )
+
+      map.on('load', () => {
+        if (isDestroyed) return
+
+        map.addSource(SOURCE_ID, {
+          type: 'geojson',
+          data: geojson,
+          cluster: true,
+          clusterMaxZoom: 12,
+          clusterRadius: 50,
+        })
+
+        // Cluster circles - blue gradient matching events map
+        map.addLayer({
+          id: CLUSTERS_LAYER,
+          type: 'circle',
+          source: SOURCE_ID,
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': [
+              'step',
+              ['get', 'point_count'],
+              '#60A5FA', // <10 handlers
+              10,
+              '#3B82F6', // 10-29
+              30,
+              '#1D4ED8', // 30+
+            ],
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              20,
+              10,
+              28,
+              30,
+              36,
+            ],
+            'circle-stroke-width': 2.5,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.92,
+          },
+        })
+
+        // Cluster count labels - white bold text
+        map.addLayer({
+          id: CLUSTER_COUNT_LAYER,
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 13,
+          },
+          paint: { 'text-color': '#ffffff' },
+        })
+
+        // Individual handler pins - blue gradient, 14px radius
+        map.addLayer({
+          id: PINS_LAYER,
+          type: 'circle',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': '#60A5FA',
+            'circle-radius': 14,
+            'circle-stroke-width': 2.5,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.92,
+          },
+        })
+
+        // Count label on individual pins (always "1" for handlers)
+        map.addLayer({
+          id: 'handler-unclustered-count',
+          type: 'symbol',
+          source: SOURCE_ID,
+          filter: ['!', ['has', 'point_count']],
+          layout: {
+            'text-field': '1',
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+          },
+          paint: { 'text-color': '#ffffff' },
+        })
+
+        mapRef.current = map
+        setMapReady(true)
+
+        // Helper to report current bounds to parent
+        const reportBounds = () => {
+          if (isDestroyed) return
+          const b = map.getBounds()
+          onBoundsChangeRef.current?.({
+            north: b.getNorth(),
+            south: b.getSouth(),
+            east: b.getEast(),
+            west: b.getWest(),
+          })
+        }
+
+        // Report initial bounds immediately so list filters on load
+        reportBounds()
+
+        // Notify parent of bounds changes on pan/zoom
+        map.on('moveend', reportBounds)
+
+        // Click cluster -> expand (Promise API)
+        map.on('click', CLUSTERS_LAYER, async (e: any) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [CLUSTERS_LAYER],
+          })
+          if (!features.length) return
+          const clusterId = features[0].properties.cluster_id
+          try {
+            const zoom = await (
+              map.getSource(SOURCE_ID) as any
+            ).getClusterExpansionZoom(clusterId)
+            map.easeTo({ center: features[0].geometry.coordinates, zoom })
+          } catch {}
+        })
+
+        // Click individual pin -> show popup
+        map.on('click', PINS_LAYER, (e: any) => {
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [PINS_LAYER],
+          })
+          if (!features.length) return
+          const props = features[0].properties
+          const coords = features[0].geometry.coordinates.slice()
+
+          if (popupRef.current) popupRef.current.remove()
+
+          const location = [props.city, props.state].filter(Boolean).join(', ')
+          const rate = props.ratePerShow ? `$${props.ratePerShow}/show` : ''
+
+          // Parse service types for badges
+          let serviceTypes: string[] = []
+          try {
+            serviceTypes = JSON.parse(props.serviceTypes || '[]')
+          } catch {
+            serviceTypes = [props.serviceType]
+          }
+          const badgesHtml = serviceTypes
+            .map((t: string) => {
+              const label = SERVICE_TYPE_LABELS[t] || t
+              return `<span style="display:inline-block;padding:2px 8px;background:#EFF6FF;color:#2563EB;border-radius:9999px;font-size:11px;font-weight:500">${label}</span>`
+            })
+            .join(' ')
+
+          // Profile photo or initials
+          const initials = (props.name || '')
+            .split(' ')
+            .map((w: string) => w[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase()
+          const photoHtml = props.profileImage
+            ? `<img src="${props.profileImage}" alt="${props.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.1)" />`
+            : `<div style="width:44px;height:44px;border-radius:50%;background:#1F6B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.1)">${initials}</div>`
+
+          const html = `
+            <div style="min-width:220px;max-width:280px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                ${photoHtml}
+                <div style="min-width:0">
+                  <div style="font-size:14px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${props.name}</div>
+                  ${location ? `<div style="font-size:12px;color:#7A6E5E;margin-top:1px">${location}</div>` : ''}
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+                ${badgesHtml}
+              </div>
+              ${rate ? `<div style="font-size:13px;font-weight:600;color:#1F6B4A;margin-bottom:10px">${rate}</div>` : '<div style="margin-bottom:6px"></div>'}
+              <a href="/handlers/${props.id}" style="display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:#1F6B4A;text-decoration:none;padding:6px 12px;border:1px solid #1F6B4A;border-radius:6px;transition:background 0.15s"
+                 onmouseover="this.style.backgroundColor='#1F6B4A';this.style.color='#fff'"
+                 onmouseout="this.style.backgroundColor='transparent';this.style.color='#1F6B4A'">View Profile &rarr;</a>
+            </div>
+          `
+
+          const popup = new maplibregl.Popup({
+            closeButton: true,
+            maxWidth: '300px',
+            offset: 8,
+            className: 'hh-popup',
+          })
+            .setLngLat(coords as [number, number])
+            .setHTML(html)
+            .addTo(map)
+
+          popupRef.current = popup
+          onPinClick?.(props.id)
+        })
+
+        // Hover cursors
+        map.on('mouseenter', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = 'pointer'
+        })
+        map.on('mouseleave', CLUSTERS_LAYER, () => {
+          map.getCanvas().style.cursor = ''
+        })
+        map.on('mouseenter', PINS_LAYER, (e: any) => {
+          map.getCanvas().style.cursor = 'pointer'
+          const features = map.queryRenderedFeatures(e.point, {
+            layers: [PINS_LAYER],
+          })
+          if (features.length) onPinHover?.(features[0].properties.id)
+        })
+        map.on('mouseleave', PINS_LAYER, () => {
+          map.getCanvas().style.cursor = ''
+          onPinHover?.(null)
+        })
+      })
+    }
+
+    init()
+
+    return () => {
+      isDestroyed = true
+      popupRef.current?.remove()
+      map?.remove()
+      mapRef.current = null
+      setMapReady(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Update data when handlers change
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    const source = map.getSource(SOURCE_ID)
+    if (source) source.setData(geojson)
+  }, [geojson, mapReady])
+
+  // Highlight - updated for 14px base radius
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+    map.setPaintProperty(
+      PINS_LAYER,
+      'circle-radius',
+      highlightedId
+        ? ['case', ['==', ['get', 'id'], highlightedId], 18, 14]
+        : 14
+    )
+    map.setPaintProperty(
+      PINS_LAYER,
+      'circle-opacity',
+      highlightedId
+        ? ['case', ['==', ['get', 'id'], highlightedId], 1, 0.7]
+        : 0.92
+    )
+  }, [highlightedId, mapReady])
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden">
       <div className="h-full w-full overflow-hidden rounded-2xl border border-sand">
-        <Map
-          defaultCenter={center}
-          defaultZoom={4}
-          height={mapHeight}
-          onClick={({ event }) => {
-            const target = event.target as HTMLElement
-            if (!target.closest('[data-pin-overlay]')) {
-              handleMapClick()
-            }
-          }}
-          attribution={false}
-        >
-          {pinsWithCoords.map((pin) => {
-            const isHighlighted = highlightedId === pin.handler.id
-
-            return (
-              <Marker
-                key={pin.handler.id}
-                anchor={pin.coords}
-                onClick={() => handleMarkerClick(pin)}
-                onMouseOver={() => onPinHover?.(pin.handler.id)}
-                onMouseOut={() => onPinHover?.(null)}
-              >
-                <div
-                  style={{
-                    background: '#1F6B4A',
-                    width: 14,
-                    height: 14,
-                    borderRadius: '50%',
-                    border: '2.5px solid white',
-                    boxShadow: isHighlighted
-                      ? '0 0 8px rgba(31, 107, 74, 0.6), 0 2px 6px rgba(0,0,0,0.25)'
-                      : '0 2px 6px rgba(0,0,0,0.25)',
-                    transform: isHighlighted ? 'scale(1.3)' : 'scale(1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    cursor: 'pointer',
-                    zIndex: isHighlighted ? 1000 : 'auto',
-                  }}
-                />
-              </Marker>
-            )
-          })}
-
-          {selectedPin && (
-            <Overlay anchor={selectedPin.coords} offset={[0, -20]}>
-              <div
-                data-pin-overlay
-                className="rounded-lg border border-sand bg-white p-3 shadow-md"
-                style={{ minWidth: 180, maxWidth: 260 }}
-              >
-                <div className="border-b-2 border-paddock-green pb-1 font-display text-sm font-bold text-ringside-black">
-                  {selectedPin.handler.name}
-                </div>
-                <p className="mb-1 mt-1 text-xs text-warm-gray">
-                  {[selectedPin.handler.city, selectedPin.handler.state]
-                    .filter(Boolean)
-                    .join(', ')}
-                </p>
-                <p className="mb-2 text-xs text-warm-gray">
-                  {selectedPin.handler.serviceType}
-                  {selectedPin.handler.ratePerShow
-                    ? ` · $${selectedPin.handler.ratePerShow}/show`
-                    : ''}
-                </p>
-                <a
-                  href={`/handlers/${selectedPin.handler.id}`}
-                  className="inline-flex items-center gap-1 rounded-lg bg-paddock-green px-2.5 py-1 text-xs font-semibold text-white no-underline"
-                >
-                  View Profile
-                </a>
-              </div>
-            </Overlay>
-          )}
-        </Map>
+        <div ref={containerRef} className="h-full w-full" />
       </div>
 
-      {/* Empty state overlay */}
       {handlers.length === 0 && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80">
           <MapPin size={40} weight="light" className="mb-2 text-warm-gray" />

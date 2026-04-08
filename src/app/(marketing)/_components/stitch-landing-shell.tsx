@@ -3,13 +3,20 @@
 
 import { useState } from 'react'
 
+import Image from 'next/image'
 import Link from 'next/link'
+
+import { useCurrentUser } from '@/hooks/use-current-user'
 
 import { Button } from '@/components/ui/button'
 
 import { StitchMarketingFooter } from '@/app/(marketing)/_components/stitch-marketing-footer'
 
 import { List, X } from '@phosphor-icons/react'
+
+/* eslint-disable tailwindcss/classnames-order */
+
+/* eslint-disable tailwindcss/classnames-order */
 
 /* eslint-disable tailwindcss/classnames-order */
 
@@ -26,6 +33,7 @@ export function StitchLandingShell({
   children: React.ReactNode
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const user = useCurrentUser()
 
   return (
     <div className="bg-white font-body text-[#1C1208] antialiased">
@@ -58,22 +66,48 @@ export function StitchLandingShell({
             ))}
           </nav>
 
-          {/* Right side: Sign In + Join + hamburger */}
+          {/* Right side: auth state + hamburger */}
           <div className="flex items-center gap-3">
-            <Link
-              className="hidden rounded-lg px-4 py-2 font-sans text-[15px] font-medium text-[#F8F4EE] transition-colors hover:text-white/80 sm:block"
-              href="/login"
-            >
-              Sign In
-            </Link>
-            <Button
-              variant="accent"
-              size="sm"
-              asChild
-              className="hidden sm:inline-flex"
-            >
-              <Link href="/register">Join</Link>
-            </Button>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="hidden items-center gap-2 sm:flex"
+              >
+                <span className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-white/20 text-sm font-semibold text-[#F8F4EE]">
+                  {user.image ? (
+                    <Image
+                      src={user.image}
+                      alt=""
+                      width={32}
+                      height={32}
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    (user.name?.[0] ?? '?').toUpperCase()
+                  )}
+                </span>
+                <span className="font-sans text-[15px] font-medium text-[#F8F4EE]">
+                  Dashboard
+                </span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  className="hidden rounded-lg px-4 py-2 font-sans text-[15px] font-medium text-[#F8F4EE] transition-colors hover:text-white/80 sm:block"
+                  href="/login"
+                >
+                  Sign In
+                </Link>
+                <Button
+                  variant="accent"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/register">Join</Link>
+                </Button>
+              </>
+            )}
             <button
               className="flex items-center justify-center md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -102,28 +136,40 @@ export function StitchLandingShell({
                   {link.label}
                 </Link>
               ))}
-              <Link
-                className="rounded-lg px-3 py-3 font-sans text-base font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign In
-              </Link>
-              <div className="mt-2">
-                <Button
-                  variant="accent"
-                  size="default"
-                  asChild
-                  className="w-full"
+              {user ? (
+                <Link
+                  className="rounded-lg px-3 py-3 font-sans text-base font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
                   <Link
-                    href="/register"
+                    className="rounded-lg px-3 py-3 font-sans text-base font-medium text-[#F8F4EE] transition-colors hover:bg-white/10"
+                    href="/login"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Join
+                    Sign In
                   </Link>
-                </Button>
-              </div>
+                  <div className="mt-2">
+                    <Button
+                      variant="accent"
+                      size="default"
+                      asChild
+                      className="w-full"
+                    >
+                      <Link
+                        href="/register"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Join
+                      </Link>
+                    </Button>
+                  </div>
+                </>
+              )}
             </nav>
           </div>
         )}

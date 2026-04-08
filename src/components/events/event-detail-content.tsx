@@ -12,6 +12,7 @@ import type { EventWithVenue } from '@/lib/events/queries'
 
 import {
   ArrowLeft,
+  ArrowSquareOut,
   Buildings,
   Calendar,
   Clock,
@@ -392,6 +393,31 @@ export function EventDetailContent({
                   </dd>
                 </div>
               </dl>
+
+              {/* External links */}
+              <div className="mt-4 space-y-2 border-t border-[#E8E0D4] pt-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-warm-gray">
+                  View Event On
+                </p>
+                <a
+                  href={`https://showdays.info/showjud.php?show=${event.eventNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-paddock-green transition-colors hover:text-forest"
+                >
+                  <ArrowSquareOut size={14} weight="bold" />
+                  ShowDays.info
+                </a>
+                <a
+                  href={`https://webapps.akc.org/event-search/#/event/${event.eventNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-paddock-green transition-colors hover:text-forest"
+                >
+                  <ArrowSquareOut size={14} weight="bold" />
+                  AKC Event Search
+                </a>
+              </div>
             </div>
 
             {/* Superintendent / Secretary */}

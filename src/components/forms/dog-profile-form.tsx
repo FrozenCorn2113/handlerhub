@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -399,7 +399,7 @@ export default function DogProfileForm({
         </Button>
         <Button
           type="button"
-          variant="secondary"
+          variant="outline"
           onClick={() => router.push('/dashboard/dogs')}
         >
           Cancel

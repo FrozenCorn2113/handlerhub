@@ -4,8 +4,6 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { getCurrentUser } from '@/lib/session'
 
-import { Button } from '@/components/ui/button-ui'
-
 import { DashboardHeader } from '@/components/dashboard/header'
 import { DashboardShell } from '@/components/dashboard/shell'
 import { DeleteDogButton } from '@/components/dogs/delete-dog-button'

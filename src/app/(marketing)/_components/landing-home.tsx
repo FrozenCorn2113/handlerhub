@@ -17,12 +17,9 @@ import {
   ArrowRight,
   Camera,
   Dog,
-  Gift,
   MagnifyingGlass,
   PawPrint,
   Scissors,
-  Trophy,
-  Users,
   Van,
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
@@ -56,23 +53,16 @@ function ScrollReveal({
 /*  Section 1 — Hero                                                   */
 /* ------------------------------------------------------------------ */
 
-const serviceTypes = [
-  { label: 'Handler', icon: Dog, param: 'handler' },
-  { label: 'Groomer', icon: Scissors, param: 'groomer' },
-  { label: 'Transport', icon: Van, param: 'transport' },
-  { label: 'Photographer', icon: Camera, param: 'photographer' },
-] as const
-
 function HeroSection() {
   const router = useRouter()
-  const [activeType, setActiveType] = useState('handler')
   const [location, setLocation] = useState('')
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
-    const params = new URLSearchParams({ type: activeType })
+    const params = new URLSearchParams()
     if (location.trim()) params.set('location', location.trim())
-    router.push(`/handlers?${params.toString()}`)
+    const qs = params.toString()
+    router.push(qs ? `/handlers?${qs}` : '/handlers')
   }
 
   return (
@@ -115,30 +105,7 @@ function HeroSection() {
             onSubmit={handleSearch}
             className="mx-auto w-full max-w-[640px] rounded-2xl bg-white p-4 shadow-[0_8px_48px_rgba(0,0,0,0.28)]"
           >
-            {/* Row 1 — Service Type Tabs */}
-            <div className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-ring-cream p-1 sm:grid-cols-4">
-              {serviceTypes.map((svc) => {
-                const Icon = svc.icon
-                const isActive = activeType === svc.param
-                return (
-                  <button
-                    key={svc.param}
-                    type="button"
-                    onClick={() => setActiveType(svc.param)}
-                    className={`flex cursor-pointer select-none items-center justify-center gap-1.5 rounded-lg px-3 py-2 font-body text-sm font-semibold transition-all duration-200 ${
-                      isActive
-                        ? 'bg-paddock-green text-white shadow-sm'
-                        : 'text-warm-brown/70 hover:text-warm-brown'
-                    }`}
-                  >
-                    <Icon size={16} weight={isActive ? 'fill' : 'regular'} />
-                    {svc.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Row 2 — Location Input + Search Button */}
+            {/* Location Input + Search Button */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 type="text"
@@ -156,66 +123,6 @@ function HeroSection() {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Section 2 — Trust Band                                             */
-/* ------------------------------------------------------------------ */
-function TrustBandSection({
-  handlerCount,
-  showCount,
-}: {
-  handlerCount: number
-  showCount: number
-}) {
-  const stats = [
-    {
-      icon: Users,
-      value: handlerCount === 0 ? 'Launching soon' : String(handlerCount),
-      label: 'handlers on the platform',
-    },
-    {
-      icon: Trophy,
-      value: showCount === 0 ? 'Launching soon' : `${showCount}+`,
-      label: 'dog shows represented',
-    },
-    {
-      icon: Gift,
-      value: 'Free',
-      label: 'for exhibitors',
-    },
-    {
-      icon: MagnifyingGlass,
-      value: 'Search by',
-      label: 'breed, region, and record',
-    },
-  ]
-
-  return (
-    <section className="border-t border-sand bg-ring-cream py-8 lg:py-10">
-      <div className="mx-auto max-w-[1200px] px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-tan">
-          {stats.map((stat, i) => {
-            const Icon = stat.icon
-            return (
-              <div
-                key={i}
-                className="flex flex-col items-center px-6 py-2 text-center"
-              >
-                <Icon size={24} weight="fill" className="text-paddock-green" />
-                <p className="mb-0.5 mt-2 font-display text-2xl font-bold text-ringside-black lg:text-3xl">
-                  {stat.value}
-                </p>
-                <p className="font-body text-sm leading-snug text-warm-brown/70">
-                  {stat.label}
-                </p>
-              </div>
-            )
-          })}
         </div>
       </div>
     </section>
@@ -642,16 +549,13 @@ function FoundingCtaSection({ handlerCount }: { handlerCount: number }) {
 export default function LandingHome({
   featuredHandlers,
   handlerCount,
-  showCount,
 }: {
   featuredHandlers: HandlerCardData[]
   handlerCount: number
-  showCount: number
 }) {
   return (
     <div className="bg-ring-cream">
       <HeroSection />
-      <TrustBandSection handlerCount={handlerCount} showCount={showCount} />
       <ServiceShowcaseSection />
       <FeaturedHandlersSection handlers={featuredHandlers} />
       <WhyHandlerHubSection />

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button-ui'
+import { Button } from '@/components/ui/button'
 
 import { BlockTitle } from '@/components/layout/main-title'
 
@@ -122,9 +122,8 @@ export default function CtaSubscribe() {
             />
             <Button
               disabled={loading}
-              loading={loading}
               type="submit"
-              className="mt-3 w-full rounded-md bg-indigo-600 px-5 py-3 text-white shadow-md outline-none ring-indigo-600 ring-offset-2 duration-150 hover:bg-indigo-500 focus:shadow-none focus:ring-2 active:bg-indigo-700 sm:ml-3 sm:mt-0 sm:w-auto"
+              className="mt-3 w-full sm:ml-3 sm:mt-0 sm:w-auto"
             >
               Subscribe
             </Button>
